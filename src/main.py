@@ -24,8 +24,8 @@ for model in Models.list_models():
       print(x_train.shape)
       x_test = model.resharper(x_test)
       
-      # 学習中の損失履歴を記録するコールバックを設定 (Utils内から呼び出し)
-      history = Utils.LossHistory()
+      # 学習中の詳細な損失履歴を記録するコールバックを設定 (必要に応じてメンバ変数 losses を参照可能)
+      history_callback = Utils.LossHistory()
       
       # モデルの学習実行
       model.model.fit(
@@ -34,11 +34,11 @@ for model in Models.list_models():
         epochs=model.epochs,
         verbose=1,
         validation_data=(x_test, y_test),
-        callbacks=[history]
+        callbacks=[history_callback]
       )
       
-      # 学習曲線のグラフをプロットして保存
-      Utils.plot_history(history, generator.name + "_" + model.name)
+      # 学習完了後，エポックごとの履歴辞書を渡してグラフ保存
+      Utils.plot_history(model.model.history.history, generator.name + "_" + model.name)
       
     except Exception as e:
       print("Error: generator: {}, model: {}".format(generator.name, model.name))
