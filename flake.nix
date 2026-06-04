@@ -21,6 +21,7 @@
           matplotlib
           scikit-learn
           tensorflow
+          keras
         ]);
       in
       {
