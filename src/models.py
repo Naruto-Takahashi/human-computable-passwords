@@ -5,11 +5,13 @@ from tensorflow.keras.layers import Dense, Dropout, LSTM, Flatten, Bidirectional
 from tensorflow.keras.models import Sequential, Model
 
 class SqueezeLayer(Layer):
+  # テンソルからサイズが1の次元を削除するカスタムレイヤー (最後の次元を削除)
   def call(self, inputs):
     return tf.squeeze(inputs, axis=-1)
 
 class Models:
   class ModelWithMetadata:
+    # Kerasモデルとそのトレーニングパラメータ (名前，バッチサイズ，エポック数，必要データ数) を保持するコンテナ
     def __init__(self, model, name :str, batch_size :int, epochs :int, required_data_size :int):
       self.model = model
       self.name = name
@@ -17,13 +19,14 @@ class Models:
       self.epochs = epochs
       self.required_data_size = required_data_size
 
+    # LSTMモデル向けに入力データの形状を (サンプル数, タイムステップ数, 特徴量数) に変形する
     def resharper(self, df :pd.DataFrame) -> (np.ndarray):
       if self.name.find("lstm") != -1:
         return df.to_numpy().reshape(df.shape[0], df.shape[1], 1)
       return df
 
   @staticmethod
-  # 機械学習モデルの選択
+  # 実験で使用する機械学習モデルを選択・取得する関数
   def list_models() -> list:
     models = []
     # models.append(Models.ModelWithMetadata(Models.embed_mlp(), "mlp_with_embedding", 25, 1024, 50000))
@@ -43,11 +46,10 @@ class Models:
     return models
 
   @staticmethod
-  # 埋め込み層 ＆ 多層パーセプトロン
+  # 埋め込み層 (Embedding) と全結合層 (MLP) を組み合わせたモデル
   def embed_mlp() -> Model:
     inputs = Input(shape=(14, 1))
     inputs_reshaped = Flatten()(inputs)
-    # inputs_flatten = Flatten()(inputs)
     embedding = Embedding(14, 1)(inputs)
     embedding = Flatten()(embedding)
     concat = Concatenate(axis = 1)([inputs_reshaped, embedding])
@@ -61,7 +63,7 @@ class Models:
     return model
   
   @staticmethod
-  # 埋め込み層 ＆ 双方向長短期記憶ニューラルネットワーク
+  # 埋め込み層 (Embedding) と双方向LSTM (Bi-LSTM) を組み合わせた再帰的ニューラルネットワークモデル
   def embed_lstm() -> Model:
     inputs = Input(shape=(14, 1))
     inputs_reshaped = Flatten()(inputs)
@@ -81,27 +83,24 @@ class Models:
     return model
 
   @staticmethod
-  # 埋め込み層 ＆ 畳み込みニューラルネットワーク
+  # 埋め込み層 (Embedding) と 1次元畳み込み層 (Conv1D) を組み合わせたCNNモデル
   def embed_cnn() -> Model:
-    N = 26 # the number of images
+    N = 26 # ユーザーの記憶情報 (画像数)
     inputs = Input(shape=(14, ))
     embedding = Embedding(input_dim=N, output_dim=3)(inputs)
     conv = Conv1D(filters=32, kernel_size=3, activation="relu")(embedding)
     conv = Conv1D(filters=64, kernel_size=3, activation="relu")(conv)
     conv = Flatten()(conv)
-    # conv = Dropout(0.2)(conv)    # ドロップアウト層
     dense = Dense(30, activation="relu")(conv)
-    # dense = Dropout(0.2)(dense)  # ドロップアウト層
     dense = Dense(30, activation="relu")(dense)
-    # dense = Dropout(0.2)(dense)  # ドロップアウト層
     dense = Dense(30, activation="relu")(dense)
-    # dense = Dropout(0.2)(dense)  # ドロップアウト層
     outputs = Dense(10, activation="softmax")(dense)
     model = Model(inputs=inputs, outputs=outputs)
     model.compile(loss="categorical_crossentropy", optimizer="Adam", metrics=["accuracy"])
     model.summary()
     return model
 
+# 以下のコメントアウトされたコードブロックは，必要に応じて有効化可能な代替モデル群です
 """
   # 人間計算可能なパスワードの予測に使うための機械学習モデル群
   # これらの関数を呼び出すと、指定したSequentialモデルがreturnされる
