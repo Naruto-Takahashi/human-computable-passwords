@@ -1,6 +1,6 @@
 # 人間計算可能なパスワード生成器からデータを取得し，各種モデルで学習を行うメインスクリプト
 from computable_password_generator import ComputablePasswordGenerator
-from utils import Utils
+from utils import Utils, LossHistory
 from models import Models
 
 # 定義されたすべての機械学習モデルに対してループ
@@ -20,12 +20,12 @@ for model in Models.list_models():
       x_train, x_test, y_train, y_test = Utils.split_to_train_and_valid(generated_passwords)
       
       # モデルの入力形式に合わせてデータをリシェイプ
-      x_train = model.resharper(x_train)
+      x_train = model.reshaper(x_train)
       print(x_train.shape)
-      x_test = model.resharper(x_test)
+      x_test = model.reshaper(x_test)
       
-      # 学習中の詳細な損失履歴を記録するコールバックを設定 (必要に応じてメンバ変数 losses を参照可能)
-      history_callback = Utils.LossHistory()
+      # 学習中の詳細な損失履歴を記録するコールバックを設定
+      history_callback = LossHistory()
       
       # モデルの学習実行
       model.model.fit(

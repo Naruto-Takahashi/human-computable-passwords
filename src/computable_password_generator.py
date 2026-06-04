@@ -6,6 +6,9 @@ class ComputablePasswordGenerator:
   # このクラスの関数を実行すると、人間計算可能なパスワードを模したデータが生成され、csvファイルとして保存される
   # 外部のプログラムから呼び出すときは、from computable_password_generator import ComputablePasswordGenerator としてimportを行う
 
+  # 生成される DataFrame の共通カラム定義
+  COLUMNS = [f"X{i}" for i in range(14)] + ["Z"]
+
   # この関数群の呼び出しには int: データ数 を引数として与える
   # この関数群はpandas.DataFrameをreturnする
   
@@ -44,12 +47,10 @@ class ComputablePasswordGenerator:
       row = np.append(X, Z)
       result.append(row)
     table_array = np.array(result)
-    return pd.DataFrame(table_array, columns=["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7",
-      "X8", "X9", "X10", "X11", "X12","X13", "Z"])
+    return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
 
   @staticmethod
-  # 中間変数を用いた暗号化アルゴリズム: ランダムキー (sgm) を用いてチャレンジ X を変換 (S_X) し，
-  # S_X[10]+S_X[11] の値をインデックスとして中間変数 mid を取得，それを用いて最終的な Z を生成する
+  # 中間変数を用いた暗号化アルゴリズム: 各チャレンジを変換して中間変数を求め，特定のインデックスを参照して最終的な Z を生成する
   def password_with_middle(datasize :int) -> np.ndarray:
     result = []
     sgm = ComputablePasswordGenerator.Utils.sgm(14)
@@ -63,12 +64,10 @@ class ComputablePasswordGenerator:
       row = np.append(X, Z)
       result.append(row)
     table_array = np.array(result)
-    return pd.DataFrame(table_array, columns=["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7",
-      "X8", "X9", "X10", "X11", "X12","X13", "Z"])
+    return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
 
   @staticmethod
-  # s_x アルゴリズム: N=100の画像（記憶情報）をもとに，ランダムチャレンジから得られた記憶配列 (S_X) のインデックスを
-  # S_X[10]+S_X[11] から求め，それと S_X[12] + S_X[13] の合計から Z を算出する (k1,k2) = (2,2)
+  # s_x アルゴリズム: N=100の記憶情報をもとに，ランダムチャレンジから得られた記憶配列 (S_X) のインデックスから Z を算出する (k1,k2) = (2,2)
   def s_x(datasize :int) -> np.ndarray:
     N = 100 # the number of images
     result = []
@@ -83,8 +82,7 @@ class ComputablePasswordGenerator:
       row = np.append(X, Z)
       result.append(row)
     table_array = np.array(result)
-    return pd.DataFrame(table_array, columns=["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7",
-      "X8", "X9", "X10", "X11", "X12","X13", "Z"])
+    return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
   
   @staticmethod
   # func_13: 記憶数 N=100 に対して (k1,k2) = (1,3) の構成．X[10] をポインタとして用いる
@@ -102,7 +100,7 @@ class ComputablePasswordGenerator:
       row = np.append( challenge_idx, Z )
       result.append( row )
     table_array = np.array( result )
-    return pd.DataFrame( table_array, columns = ["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10", "X11", "X12", "X13", "Z"] )
+    return pd.DataFrame( table_array, columns=ComputablePasswordGenerator.COLUMNS )
   
   @staticmethod
   # func_31: 記憶数 N=26 に対して (k1,k2) = (3,1) の構成．X[10], X[11], X[12] の和をポインタとして用いる
@@ -120,7 +118,7 @@ class ComputablePasswordGenerator:
       row = np.append( challenge_idx, Z )
       result.append( row )
     table_array = np.array( result )
-    return pd.DataFrame( table_array, columns = ["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10", "X11", "X12", "X13", "Z"] )
+    return pd.DataFrame( table_array, columns=ComputablePasswordGenerator.COLUMNS )
 
   @staticmethod
   # func_pow: 各チャレンジ値の多項式累乗 (4乗, 3乗, 2乗, 1乗) を計算し，10で割った余りを Z とする
@@ -137,4 +135,4 @@ class ComputablePasswordGenerator:
       row = np.append( challenge_idx, Z )
       result.append( row )
     table_array = np.array( result )
-    return pd.DataFrame( table_array, columns = ["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9", "X10", "X11", "X12", "X13", "Z"] )
+    return pd.DataFrame( table_array, columns=ComputablePasswordGenerator.COLUMNS )

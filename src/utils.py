@@ -4,11 +4,24 @@ from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
 
+class LossHistory(keras.callbacks.Callback):
+  # Kerasの各バッチ終了時に損失 (loss) を記録するためのカスタムコールバック
+  def on_train_begin(self, logs=None):
+    if logs is None:
+      logs = {}
+    self.losses = []
+
+  def on_batch_end(self, batch, logs=None):
+    if logs is None:
+      logs = {}
+    self.losses.append(logs.get('loss'))
+
+
 class Utils:
   # グラフのプロットを行う関数
   # keras.model.fit.historyおよび画像の保存名を引数として取る
   @staticmethod
-  def plot_history(history :str, name :str) -> None:
+  def plot_history(history :dict, name :str) -> None:
     # 学習時の訓練データおよび検証データに対する正解率を表示する
     pyplot.clf()
     pyplot.plot(history['accuracy'])
@@ -48,11 +61,3 @@ class Utils:
     y_test = keras.utils.to_categorical(y_test, 10)
 
     return x_train, x_test, y_train, y_test
-
-  # Kerasの各バッチ終了時に損失 (loss) を記録するためのカスタムコールバック
-  class LossHistory(keras.callbacks.Callback):
-    def on_train_begin(self, logs={}):
-      self.losses = []
-
-    def on_batch_end(self, batch, logs={}):
-      self.losses.append(logs.get('loss'))

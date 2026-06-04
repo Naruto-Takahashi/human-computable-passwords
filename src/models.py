@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras.layers import Dense, Dropout, LSTM, Flatten, Bidirectional, Concatenate, Input, Embedding, Reshape, Conv1D, Layer, Lambda
+from tensorflow.keras.layers import Dense, Dropout, LSTM, Flatten, Bidirectional, Concatenate, Input, Embedding, Conv1D, Layer
 from tensorflow.keras.models import Sequential, Model
 
 class SqueezeLayer(Layer):
@@ -20,7 +20,7 @@ class Models:
       self.required_data_size = required_data_size
 
     # LSTMモデル向けに入力データの形状を (サンプル数, タイムステップ数, 特徴量数) に変形する
-    def resharper(self, df :pd.DataFrame) -> (np.ndarray):
+    def reshaper(self, df :pd.DataFrame) -> (np.ndarray):
       if self.name.find("lstm") != -1:
         return df.to_numpy().reshape(df.shape[0], df.shape[1], 1)
       return df

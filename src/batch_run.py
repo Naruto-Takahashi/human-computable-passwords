@@ -38,8 +38,8 @@ for model in Models.list_models():
       x_train, x_test, y_train, y_test = Utils.split_to_train_and_valid(generated_passwords)
       
       # モデル入力に合わせたリシェイプ
-      x_train = model.resharper(x_train)
-      x_test = model.resharper(x_test)
+      x_train = model.reshaper(x_train)
+      x_test = model.reshaper(x_test)
       
       # 学習実行 (TensorBoard コールバックを適用)
       model.model.fit(
