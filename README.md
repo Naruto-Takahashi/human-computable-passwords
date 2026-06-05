@@ -18,27 +18,26 @@
 
 本リポジトリのディレクトリ構成および主要ファイルの説明は以下の通りです．
 
-```text
-human-computable-passwords/
-├── src/                      # 開発および評価実験用のソースコード
-│   ├── main.py               # メイン実行スクリプト
-│   ├── batch_run.py          # バッチ学習用スクリプト
-│   ├── models.py             # 従来の機械学習モデル（MLP, LSTM, CNN）の定義
-│   ├── computable_password_generator.py # HCPデータおよびチャレンジ生成器
-│   ├── summarize_results.py  # 実験結果の自動集計スクリプト（★追加）
-│   └── utils.py              # データ分割，乱数シード固定，可視化ユーティリティ
-├── research/                 # 研究資料およびドキュメント
-│   ├── previous-works/       # 既存研究の論文PDFおよび卒論スライド等
-│   ├── [plan.md](research/plan.md)               # 詳細な研究計画書（ベンチマーク設計）
-│   └── [log.md](research/log.md)                # 日々の実験記録や気づきを蓄積する研究ログ
-├── outputs/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
-│   └── summary.md            # 全実験結果の自動集計表（★追加）
-├── flake.nix                 # Nix (Flakes) による再現可能なPython開発環境の定義
-├── flake.lock                # Nix環境の依存パッケージのバージョンロックファイル
-├── .envrc                    # direnv用設定ファイル（ディレクトリ移動時の環境自動ロード用）
-├── requirements.txt          # Pythonパッケージの依存関係リスト
-└── README.md                 # 本ドキュメント
-```
+- **human-computable-passwords/**
+  - **src/**: 開発および評価実験用のソースコード
+    - `main.py`: メイン実行スクリプト
+    - `batch_run.py`: バッチ学習用スクリプト
+    - `models.py`: 従来の機械学習モデル（MLP, LSTM, CNN）の定義
+    - `computable_password_generator.py`: HCPデータおよびチャレンジ生成器
+    - `summarize_results.py`: 実験結果の自動集計スクリプト（★追加）
+    - `utils.py`: データ分割，乱数シード固定，可視化ユーティリティ
+  - **research/**: 研究資料およびドキュメント
+    - `previous-works/`: 既存研究の論文PDFおよび卒論スライド等
+    - [plan.md](research/plan.md): 詳細な研究計画書（ベンチマーク設計）
+    - [log.md](research/log.md): 日々の実験記録や気づきを蓄積する研究ログ
+  - **outputs/**: 実験結果の出力先ディレクトリ（Git管理対象外）
+    - [summary.md](outputs/summary.md): 全実験結果の自動集計表（★追加）
+  - `flake.nix`: Nix (Flakes) による再現可能なPython開発環境の定義
+  - `flake.lock`: Nix環境の依存パッケージのバージョンロックファイル
+  - `.envrc`: direnv用設定ファイル（ディレクトリ移動時の環境自動ロード用）
+  - `requirements.txt`: Pythonパッケージの依存関係リスト
+  - `README.md`: 本ドキュメント
+
 
 ---
 
