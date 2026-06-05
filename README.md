@@ -69,14 +69,23 @@ human-computable-passwords/
 ### 主要な実行ファイル
 
 - `src/main.py`
-  - `Models.list_models()` で設定されたモデルを順番に学習する．
-  - `LossHistory` コールバックで学習履歴を扱い，直接プロットを生成する．
-  - 学習データは train / validation に分割され，学習履歴のプロットが `outputs/` に保存される．
+  - `Models.list_models()` で設定されたモデルを順番に学習します．
+  - 各学習ごとに一意なタイムスタンプ付きディレクトリを `outputs/` 下に作成し，学習曲線プロット（`accuracy.png`, `loss.png`）および実験パラメータと精度を記録した `metadata.json` を自動保存します．
+  - 乱数シードが固定され，常に同一条件での実験再現が可能です．
 
 - `src/batch_run.py`
-  - `TensorBoard` によるログ出力を追加．
-  - `base_log_dir` を設定すると，ログが指定ディレクトリに保存される．
-  - 学習データは train / validation に分割され，学習履歴のプロットが `outputs/` に保存される．
+  - `TensorBoard` によるログ出力を追加したバッチ実行スクリプトです．
+
+### 実験の再現性と記録の自動化
+
+実験を科学的かつ効率的に進めるため，以下の仕組みを導入しています．
+
+1. **乱数シードの固定（再現性の確保）**
+   - [`src/utils.py`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/src/utils.py) の `Utils.fix_seed(seed)` により，Python標準の `random`，`numpy`，および `tensorflow` のシードを一括で固定し，データのシャッフルや重みの初期値を決定論的に固定しています．
+2. **メタデータの自動保存（結果の記録）**
+   - 実行ごとに `outputs/run_YYYYMMDD_HHMMSS_{generator}_{model}/` ディレクトリを作成し，以下の実験データを自動保存します．
+     - `accuracy.png` / `loss.png`: 学習曲線のプロット図．
+     - `metadata.json`: 学習にかかった時間（秒），バッチサイズ，エポック数，乱数シード値，および最終エポックにおける各種精度指標．
 
 ### 主要なモジュール
 
