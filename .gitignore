@@ -5,3 +5,6 @@
 *.pyc
 .DS_Store
 /.direnv/
+/.gemini/
+/outputs/
+*Zone.Identifier
