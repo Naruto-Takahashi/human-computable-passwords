@@ -29,8 +29,8 @@ human-computable-passwords/
 │   └── utils.py              # データ分割，乱数シード固定，可視化ユーティリティ
 ├── research/                 # 研究資料およびドキュメント
 │   ├── previous-works/       # 既存研究の論文PDFおよび卒論スライド等
-│   ├── plan.md               # 詳細な研究計画書（ベンチマーク設計）
-│   └── log.md                # 日々の実験記録や気づきを蓄積する研究ログ
+│   ├── [plan.md](research/plan.md)               # 詳細な研究計画書（ベンチマーク設計）
+│   └── [log.md](research/log.md)                # 日々の実験記録や気づきを蓄積する研究ログ
 ├── outputs/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
 │   └── summary.md            # 全実験結果の自動集計表（★追加）
 ├── flake.nix                 # Nix (Flakes) による再現可能なPython開発環境の定義
