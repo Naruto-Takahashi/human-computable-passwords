@@ -114,3 +114,6 @@ python src/summarize_results.py
 
 - `src/utils.py`
   - データ分割や可視化ヘルパーを提供する．
+
+- `src/summarize_results.py`
+  - `outputs/` 配下の全実験結果（`metadata.json`）を自動スキャンし，集計レポート `outputs/summary.md` を生成・更新する．
