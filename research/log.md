@@ -19,8 +19,8 @@
 ### 2026/06/05: 研究テーマの再定義および研究計画書の策定
 - **実施したこと**:
   - 卒論テーマである「人間計算可能なパスワードの安全性評価」の方向性を議論し，「実用化」から「推論特化型AIの論理・記号推論ベンチマークとしての再定義」へシフトすることを決定した．
-  - リポジトリのルートに [研究計画書 (research_plan.md)](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/research_plan.md) を作成した．
-  - 本研究開発ログファイル（`research_log.md`）のセットアップを行った．
+  - [研究計画書 (plan.md)](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/research/plan.md) を作成した．
+  - 本研究開発ログファイル（[log.md](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/research/log.md)）のセットアップを行った．
 - **得られた知見**:
   - HCPは暗算可能（＝短い計算ステップ，限られたメモリ）という人間の特性を満たしつつ，間接参照や剰余演算といった非線形な論理構造を持つため，LLMのコンテキスト内推論（Few-shot）の限界を測るベンチマークとして非常に親和性が高いことを整理した．
 - **次にやること（Next Actions）**:
