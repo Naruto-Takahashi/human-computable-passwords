@@ -25,12 +25,14 @@ human-computable-passwords/
 │   ├── batch_run.py          # バッチ学習用スクリプト
 │   ├── models.py             # 従来の機械学習モデル（MLP, LSTM, CNN）の定義
 │   ├── computable_password_generator.py # HCPデータおよびチャレンジ生成器
+│   ├── summarize_results.py  # 実験結果の自動集計スクリプト（★追加）
 │   └── utils.py              # データ分割，乱数シード固定，可視化ユーティリティ
 ├── research/                 # 研究資料およびドキュメント
 │   ├── previous-works/       # 既存研究の論文PDFおよび卒論スライド等
 │   ├── plan.md               # 詳細な研究計画書（ベンチマーク設計）
 │   └── log.md                # 日々の実験記録や気づきを蓄積する研究ログ
 ├── outputs/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
+│   └── summary.md            # 全実験結果の自動集計表（★追加）
 ├── flake.nix                 # Nix (Flakes) による再現可能なPython開発環境の定義
 ├── flake.lock                # Nix環境の依存パッケージのバージョンロックファイル
 ├── .envrc                    # direnv用設定ファイル（ディレクトリ移動時の環境自動ロード用）
@@ -87,10 +89,18 @@ human-computable-passwords/
 
 1. **乱数シードの固定（再現性の確保）**
    - [`src/utils.py`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/src/utils.py) の `Utils.fix_seed(seed)` により，Python標準の `random`，`numpy`，および `tensorflow` のシードを一括で固定し，データのシャッフルや重みの初期値を決定論的に固定しています．
-2. **メタデータの自動保存（結果の記録）**
+2. **メタデータの自動保存（結果の記録とコード追跡）**
    - 実行ごとに `outputs/run_YYYYMMDD_HHMMSS_{generator}_{model}/` ディレクトリを作成し，以下の実験データを自動保存します．
      - `accuracy.png` / `loss.png`: 学習曲線のプロット図．
-     - `metadata.json`: 学習にかかった時間（秒），バッチサイズ，エポック数，乱数シード値，および最終エポックにおける各種精度指標．
+     - `metadata.json`: 学習にかかった時間（秒），バッチサイズ，エポック数，乱数シード値，最終エポックにおける各種精度指標，および**実行時のGitコミットハッシュ**（再現用のコードバージョン特定用）．
+3. **実験結果の自動集計**
+   - スクリプト `src/summarize_results.py` を実行すると，`outputs/` 配下の全実験結果（`metadata.json`）を自動スキャンし，時系列順に整理した集計レポート [`outputs/summary.md`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/outputs/summary.md) を生成・更新します．
+
+#### 集計スクリプトの実行方法
+```bash
+python src/summarize_results.py
+```
+実行すると，コンソールにも最新の集計結果テーブルが表示されます．
 
 ### 主要なモジュール
 

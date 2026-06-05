@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import json
 import random
+import subprocess
 from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
 from tensorflow import keras
@@ -21,6 +22,18 @@ class LossHistory(keras.callbacks.Callback):
 
 
 class Utils:
+  # 現在のGitのコミットハッシュを取得する関数
+  @staticmethod
+  def get_git_commit_hash() -> str:
+    try:
+      commit_hash = subprocess.check_output(
+        ['git', 'rev-parse', '--short', 'HEAD'],
+        stderr=subprocess.DEVNULL
+      ).decode('ascii').strip()
+      return commit_hash
+    except Exception:
+      return "unknown"
+
   # 乱数シードを固定して再現性を確保する関数
   @staticmethod
   def fix_seed(seed :int) -> None:

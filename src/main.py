@@ -62,6 +62,7 @@ for model in Models.list_models():
       final_epoch_metrics = {metric: values[-1] for metric, values in model.model.history.history.items()}
       metadata = {
         "timestamp": timestamp,
+        "git_commit": Utils.get_git_commit_hash(),
         "seed": SEED,
         "model_name": model.name,
         "generator_name": generator.name,

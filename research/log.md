@@ -16,6 +16,17 @@
 
 ## 2. 活動記録
 
+### 2026/06/05: GitコミットID自動記録および実験結果集計の自動化
+- **実施したこと**:
+  - `metadata.json` 内に，実行時のGitコミットハッシュ（短縮ID）を自動的に記録する機能を実装した．（`git rev-parse --short HEAD` をプログラム内部で実行）．
+  - 依存ライブラリを必要としない，純粋なPythonのみによる実験結果自動集計スクリプト [`src/summarize_results.py`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/src/summarize_results.py) を新規に作成した．
+  - 同スクリプトにより，`outputs/` 下のメタデータを自動で読み込み，Markdownテーブルとして整形されたレポート [`outputs/summary.md`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/outputs/summary.md) を自動更新・作成できるようにした．
+- **得られた知見**:
+  - コミットIDが紐づくことで，過去の任意の実験データを生み出したソースコードの状態へ Git で一発で戻れるようになり，再現性が大幅に向上した．
+  - 集計スクリプトによって，実験が増えた場合でも一括で進捗やモデル精度を一覧化できるようになり，報告書の作成が非常に楽になった．
+- **次にやること（Next Actions）**:
+  - LLM（推論特化型AI）のFew-shotプロンプティングに適した，プロンプトへ注入可能な形式のデータセット（JSON等）を生成するジェネレータの整備．
+
 ### 2026/06/05: 実験の再現性確保およびメタデータ自動記録機構の導入
 - **実施したこと**:
   - 実験の再現性を高めるため，Pythonの `random`，`numpy`，および `tensorflow` の乱数シードを固定する `Utils.fix_seed()` を追加した．
