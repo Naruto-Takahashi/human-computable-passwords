@@ -110,7 +110,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--model",
         type    = str,
-        default = "gemini-2.0-flash",
+        default = "gemini-2.5-flash",
         help    = "使用する Gemini モデル名（デフォルト: gemini-2.0-flash）",
     )
     parser.add_argument(
