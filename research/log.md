@@ -16,6 +16,29 @@
 
 ## 2. 活動記録
 
+### 2026/06/08: LLMベンチマークスクリプト（`src/llm_benchmark/`）の実装
+
+- **実施したこと**:
+  - 研究計画書の「評価軸1: Few-shotインコンテキストルール推論」を実装するため，`src/llm_benchmark/` パッケージを新規に作成した．
+  - **`data_generator.py`**: 既存の `ComputablePasswordGenerator` をラップし，Few-shot 例題用とテスト用の DataFrame を生成する関数を実装した．ジェネレータの選択は `AVAILABLE_GENERATORS` dict で管理し，新ジェネレータの追加が容易な設計にした．
+  - **`prompt_builder.py`**: `PromptBuilder` 抽象基底クラスと `TextPromptBuilder` を実装した．将来の画像入力（マルチモーダル）への拡張を意識したポリモーフィックな設計を採用した．
+  - **`gemini_client.py`**: `google-genai` SDK（最新版, v1.67.0）を使用した Gemini API クライアントを実装した．`temperature=0.0` による決定論的出力の促進，正規表現によるレスポンスのパース（`Answer: <数字>` 形式），レートリミット対応のスリープ処理（デフォルト 4秒/リクエスト）を実装した．
+  - **`evaluator.py`**: `BenchmarkRecord` と `Evaluator` クラスを実装し，正解率の計算，結果詳細の CSV 保存，実験メタデータの JSON 保存，コンソールサマリー出力を実装した．
+  - **`benchmark_runner.py`**: `argparse` を用いた CLI エントリーポイントを実装した（`--generator`, `--n_shot`, `--n_test`, `--model`, `--sleep_sec`, `--seed` など）．
+  - **`dry_run_test.py`**: API キーなしで全モジュールの動作を検証するドライランテストスクリプトを作成し，正常動作を確認した．
+  - `flake.nix` と `requirements.txt` に `google-genai` パッケージを追加した．
+  - 全実装をコミット（`634b2b7`）した．
+
+- **得られた知見**:
+  - `google-generativeai` パッケージは非推奨となっており，後継の `google-genai` SDK（`from google import genai` でインポート）への移行が必要であることを確認した．
+  - Nix flake 環境での Python パッケージ追加は `flake.nix` の `withPackages` に追記するだけで完結し，`nix develop` 実行時にキャッシュから取得・環境再ビルドが行われる．
+  - ドライランテストにより，データ生成 → プロンプト構築 → 評価器の全パイプラインが正常に動作することを API 呼び出しなしで検証できた．
+
+- **次にやること（Next Actions）**:
+  - Google AI Studio から Gemini API キーを取得し，実際のベンチマーク実行（まずは `func_31`, `n_shot=10`, `n_test=50` 程度）を行う．
+  - 実験結果を確認し，Few-shot 数を変化させながら正解率の推移を測定する（研究計画3.1の評価項目）．
+  - `simple_add`（Level 1）と比較し，難易度による正解率の差を定量的に確認する．
+
 ### 2026/06/05: GitコミットID自動記録および実験結果集計の自動化
 - **実施したこと**:
   - `metadata.json` 内に，実行時のGitコミットハッシュ（短縮ID）を自動的に記録する機能を実装した．（`git rev-parse --short HEAD` をプログラム内部で実行）．
