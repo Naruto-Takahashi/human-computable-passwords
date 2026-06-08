@@ -22,6 +22,7 @@
           scikit-learn
           tensorflow
           keras
+          google-genai
         ]);
       in
       {

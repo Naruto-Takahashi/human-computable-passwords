@@ -1,0 +1,103 @@
+# =============================================================================
+# data_generator.py
+# =============================================================================
+# 人間計算可能なパスワード（HCP）の（チャレンジ, レスポンス）ペアを生成し，
+# Few-shot用サンプルとテスト用データに分割するモジュール．
+#
+# 依存: computable_password_generator.ComputablePasswordGenerator
+# =============================================================================
+
+import sys
+import os
+import numpy as np
+import pandas as pd
+from typing import Tuple
+
+# 親ディレクトリ (src/) をPythonのモジュール検索パスに追加し，
+# 既存の computable_password_generator をインポートできるようにする
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from computable_password_generator import ComputablePasswordGenerator
+
+
+# =============================================================================
+# ジェネレータ名 → ジェネレータ関数のマッピング
+# 新たなジェネレータを追加する際は，このdictにエントリーを追加するだけでよい
+# =============================================================================
+AVAILABLE_GENERATORS: dict = {
+    "simple_add": ComputablePasswordGenerator.password_simple_add,
+    "func_13"   : ComputablePasswordGenerator.func_13,
+    "func_31"   : ComputablePasswordGenerator.func_31,
+    "func_pow"  : ComputablePasswordGenerator.func_pow,
+}
+
+
+def list_available_generators() -> list[str]:
+    """
+    利用可能なジェネレータ名の一覧を返す．
+    コマンドラインの --generator 引数の選択肢として使用される．
+    """
+    return list(AVAILABLE_GENERATORS.keys())
+
+
+def generate_dataset(
+    generator_name : str,
+    n_shot         : int,
+    n_test         : int,
+    seed           : int = 42,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    指定したジェネレータを使用して，Few-shot用データとテスト用データを生成する．
+
+    Args:
+        generator_name : 使用するジェネレータの名前（AVAILABLE_GENERATORS のキー）．
+        n_shot         : Few-shot プロンプトに含める例題数．
+        n_test         : テスト問題数．
+        seed           : 乱数シード（再現性のために固定する）．
+
+    Returns:
+        shot_df : Few-shot 例題用 DataFrame（カラム: X0〜X13, Z）．
+        test_df : テスト用 DataFrame（カラム: X0〜X13, Z）．
+
+    Raises:
+        ValueError: 未知のジェネレータ名が指定された場合．
+    """
+    # ジェネレータ名のバリデーション
+    if generator_name not in AVAILABLE_GENERATORS:
+        raise ValueError(
+            f"未知のジェネレータです: '{generator_name}'．"
+            f"使用可能な選択肢: {list_available_generators()}"
+        )
+
+    # 乱数シードを固定して再現性を確保する
+    np.random.seed(seed)
+
+    generator_func = AVAILABLE_GENERATORS[generator_name]
+    total_size = n_shot + n_test
+
+    # 指定サイズのデータを一括生成し，Few-shot用とテスト用に分割する
+    all_df = generator_func(total_size)
+
+    # 行をシャッフルして偏りを排除する
+    all_df = all_df.sample(frac=1, random_state=seed).reset_index(drop=True)
+
+    shot_df = all_df.iloc[:n_shot].reset_index(drop=True)
+    test_df = all_df.iloc[n_shot:].reset_index(drop=True)
+
+    return shot_df, test_df
+
+
+def extract_challenge_and_response(row: pd.Series) -> Tuple[list[int], int]:
+    """
+    DataFrame の1行から，チャレンジ（14個の整数リスト）とレスポンス（1桁の整数）を抽出する．
+
+    Args:
+        row : DataFrame の1行（pd.Series，カラム X0〜X13 と Z を含む）．
+
+    Returns:
+        challenge : 14個の整数からなるリスト．
+        response  : 1桁の整数（正解ラベル Z）．
+    """
+    challenge_cols = [f"X{i}" for i in range(14)]
+    challenge = [int(row[col]) for col in challenge_cols]
+    response  = int(row["Z"])
+    return challenge, response
