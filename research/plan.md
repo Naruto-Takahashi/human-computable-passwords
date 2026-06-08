@@ -82,7 +82,10 @@ HCPの特性を活かし，情報の一部を提供した状態でのAIの推論
 - ✅ Gemini API を用いた自動評価スクリプトの構築（`src/llm_benchmark/gemini_client.py`, `benchmark_runner.py`）．
 - ✅ 評価結果の CSV/JSON 保存機構の実装（`src/llm_benchmark/evaluator.py`）．
 - ✅ ドライランテストによる全パイプラインの動作確認（API なし）．
-- ⬜ **Gemini API キーの取得と，実際のベンチマーク実行（`func_31`, `n_shot=10`, `n_test=50`）．**
+- ✅ Gemini API キーの新規作成および動作検証の完了．
+- ✅ API混雑（503）や一時クォータ上限（429）に対応する自動リトライ機能の実装．
+- ✅ 思考（Thinking）モデルの出力トークン切れ・オウム返しを抑制する `thinking_budget` の制御実装．
+- ⬜ **本番ベンチマークの完走と結果収集（`func_31`, `n_shot=10`, `n_test=50`）．** (※APIが混雑していない時間帯に実行)
 - ⬜ Few-shot 数（`n_shot`）を変化させながら正解率の推移を測定し，データ効率性を確認する．
 - ⬜ `simple_add`（Level 1），`func_31`（Level 2），`func_pow`（Level 3）の難易度別正解率の比較．
 - ⬜ Zero-shot プロンプトモード（`n_shot=0`）の実装と比較実験．

@@ -77,10 +77,15 @@ class GeminiClient:
         self.sleep_sec  = sleep_sec
 
         # ---- 生成設定: 出力の多様性を抑え，決定論的な回答を促す ----
+        # max_output_tokens: gemini-2.5-flash は思考型モデルのため，
+        # Chain-of-Thoughtの推論過程を書き終えてから最後に答えを出力する．
+        # 2048 では推論途中で打ち切られ「Answer: X」に到達しないため，
+        # 8192 に設定して十分な余裕を確保する．
         self._generation_config = types.GenerateContentConfig(
             temperature       = 0.0,   # 出力をできるだけ決定論的にする
             top_p             = 1.0,
-            max_output_tokens = 2048,  # 推論ステップを含めるため余裕を持たせる
+            max_output_tokens = 8192,  # 思考型モデル対応: 推論の書き切りを保証
+            thinking_config   = types.ThinkingConfig(thinking_budget=1024), # 思考量を制限して途切れを防ぐ
         )
 
         logger.info(f"GeminiClient 初期化完了: model={self.model_name}, sleep={self.sleep_sec}s")
@@ -91,9 +96,10 @@ class GeminiClient:
 
         処理フロー:
             1. Gemini API にプロンプトを送信
-            2. レスポンステキストから「Answer: <数字>」を正規表現で抽出
-            3. パースに失敗した場合は None を返す
-            4. レートリミット対応のために sleep_sec 秒待機する
+            2. レートリミット（429）や一時エラー（503）が発生した場合は指示された秒数待機してリトライ
+            3. レスポンステキストから「Answer: <数字>」を正規表現で抽出
+            4. パースに失敗した場合は None を返す
+            5. 正常終了後、レートリミット予防のために sleep_sec 秒待機する
 
         Args:
             prompt : Gemini API に送信するテキストプロンプト．
@@ -104,30 +110,47 @@ class GeminiClient:
         """
         raw_response: str = ""
         parsed_digit: Optional[int] = None
+        max_retries = 10
+        base_delay = 5.0
 
-        try:
-            # ---- API 呼び出し ----
-            logger.debug("Gemini API にリクエスト送信中...")
-            response = self.client.models.generate_content(
-                model    = self.model_name,
-                contents = prompt,
-                config   = self._generation_config,
-            )
-            raw_response = response.text
-            logger.debug(f"レスポンス受信: {raw_response[:100]}...")
+        for attempt in range(max_retries):
+            try:
+                logger.debug(f"Gemini API にリクエスト送信中... (試行 {attempt + 1}/{max_retries})")
+                response = self.client.models.generate_content(
+                    model    = self.model_name,
+                    contents = prompt,
+                    config   = self._generation_config,
+                )
+                raw_response = response.text
+                logger.debug(f"レスポンス受信: {raw_response[:100]}...")
 
-            # ---- レスポンスのパース ----
-            parsed_digit = self._parse_digit_from_response(raw_response)
+                # パース処理
+                parsed_digit = self._parse_digit_from_response(raw_response)
+                
+                # 正常終了時は標準スリープを挟んでループを抜ける
+                time.sleep(self.sleep_sec)
+                break
 
-        except Exception as e:
-            # API エラー（レートリミット超過，ネットワークエラー等）をログに記録
-            logger.error(f"Gemini API 呼び出しエラー: {e}")
-            raw_response = f"ERROR: {str(e)}"
+            except Exception as e:
+                err_msg = str(e)
+                logger.warning(f"API呼び出しエラー (試行 {attempt + 1}/{max_retries}): {err_msg}")
+                
+                if attempt == max_retries - 1:
+                    logger.error("最大リトライ回数に達しました。")
+                    raw_response = f"ERROR: {err_msg}"
+                    break
 
-        finally:
-            # ---- レートリミット対応: 必ず待機する ----
-            logger.debug(f"レートリミット対応: {self.sleep_sec}秒待機...")
-            time.sleep(self.sleep_sec)
+                # 待機秒数の解析 (例: Please retry in 47.991206402s のようなパターン)
+                wait_match = re.search(r"[Pp]lease retry in ([0-9.]+)\s*s", err_msg)
+                if wait_match:
+                    sleep_time = float(wait_match.group(1)) + 1.0 # 余裕を持って+1秒
+                    logger.info(f"APIからの指示に基づき，{sleep_time:.2f}秒待機して再試行します...")
+                else:
+                    # 指数バックオフ
+                    sleep_time = base_delay * (2 ** attempt)
+                    logger.info(f"指数バックオフに基づき，{sleep_time:.2f}秒待機して再試行します...")
+
+                time.sleep(sleep_time)
 
         return raw_response, parsed_digit
 
