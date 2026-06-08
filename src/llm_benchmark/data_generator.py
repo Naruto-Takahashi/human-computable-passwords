@@ -7,17 +7,17 @@
 # 依存: computable_password_generator.ComputablePasswordGenerator
 # =============================================================================
 
-import sys
 import os
+import sys
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
-from typing import Tuple
 
 # 親ディレクトリ (src/) をPythonのモジュール検索パスに追加し，
 # 既存の computable_password_generator をインポートできるようにする
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from computable_password_generator import ComputablePasswordGenerator
-
 
 # =============================================================================
 # ジェネレータ名 → ジェネレータ関数のマッピング
@@ -25,9 +25,9 @@ from computable_password_generator import ComputablePasswordGenerator
 # =============================================================================
 AVAILABLE_GENERATORS: dict = {
     "simple_add": ComputablePasswordGenerator.password_simple_add,
-    "func_13"   : ComputablePasswordGenerator.func_13,
-    "func_31"   : ComputablePasswordGenerator.func_31,
-    "func_pow"  : ComputablePasswordGenerator.func_pow,
+    "func_13": ComputablePasswordGenerator.func_13,
+    "func_31": ComputablePasswordGenerator.func_31,
+    "func_pow": ComputablePasswordGenerator.func_pow,
 }
 
 
@@ -40,10 +40,10 @@ def list_available_generators() -> list[str]:
 
 
 def generate_dataset(
-    generator_name : str,
-    n_shot         : int,
-    n_test         : int,
-    seed           : int = 42,
+    generator_name: str,
+    n_shot: int,
+    n_test: int,
+    seed: int = 42,
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
     指定したジェネレータを使用して，Few-shot用データとテスト用データを生成する．
@@ -99,5 +99,5 @@ def extract_challenge_and_response(row: pd.Series) -> Tuple[list[int], int]:
     """
     challenge_cols = [f"X{i}" for i in range(14)]
     challenge = [int(row[col]) for col in challenge_cols]
-    response  = int(row["Z"])
+    response = int(row["Z"])
     return challenge, response

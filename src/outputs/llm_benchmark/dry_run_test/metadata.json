@@ -1,0 +1,10 @@
+{
+  "mode": "dry_run",
+  "generator_name": "func_31",
+  "n_shot": 5,
+  "n_test": 10,
+  "total_count": 10,
+  "correct_count": 4,
+  "parse_error_count": 0,
+  "accuracy": 0.4
+}
