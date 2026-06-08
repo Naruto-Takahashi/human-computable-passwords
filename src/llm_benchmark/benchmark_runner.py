@@ -106,12 +106,19 @@ def parse_args() -> argparse.Namespace:
         help    = "乱数シード（デフォルト: 42）",
     )
 
-    # ---- Gemini API 設定 ----
+    # ---- API・プロバイダ設定 ----
+    parser.add_argument(
+        "--provider",
+        type    = str,
+        default = "gemini",
+        choices = ["gemini", "ollama"],
+        help    = "LLMプロバイダ名（gemini: Google API, ollama: ローカルOllama）（デフォルト: gemini）",
+    )
     parser.add_argument(
         "--model",
         type    = str,
         default = "gemini-2.5-flash",
-        help    = "使用する Gemini モデル名（デフォルト: gemini-2.0-flash）",
+        help    = "使用するモデル名（Gemini時デフォルト: gemini-2.5-flash、Ollama時推奨: qwen2.5:3b）",
     )
     parser.add_argument(
         "--sleep_sec",
@@ -119,7 +126,7 @@ def parse_args() -> argparse.Namespace:
         default = 4.0,
         help    = (
             "API リクエスト間の待機時間（秒）．"
-            "無料枠（15 RPM）では 4.0 秒以上を推奨（デフォルト: 4.0）"
+            "無料枠（15 RPM）では 4.0 秒以上を推奨（デフォルト: 4.0、Ollama時は 0.0 推奨）"
         ),
     )
     parser.add_argument(
@@ -129,6 +136,12 @@ def parse_args() -> argparse.Namespace:
         help    = (
             "Gemini API キー（省略時は環境変数 GEMINI_API_KEY を使用）"
         ),
+    )
+    parser.add_argument(
+        "--ollama_url",
+        type    = str,
+        default = "http://localhost:11434/api/generate",
+        help    = "OllamaのAPIエンドポイントURL（デフォルト: http://localhost:11434/api/generate）",
     )
 
     # ---- プロンプト設定 ----
@@ -172,7 +185,7 @@ def run_benchmark(args: argparse.Namespace) -> None:
         2. 各モジュール（クライアント，プロンプトビルダー，評価器）の初期化
         3. テスト問題ループ:
             a. プロンプトの構築
-            b. Gemini API への送信
+            b. API / ローカルLLM への送信
             c. 結果の記録
             d. 進捗の表示
         4. 結果の保存（CSV + JSON）
@@ -187,10 +200,11 @@ def run_benchmark(args: argparse.Namespace) -> None:
     # =========================================================================
     print(f"\n{'=' * 60}")
     print(f"【ベンチマーク設定】")
+    print(f"  プロバイダ   : {args.provider}")
+    print(f"  モデル       : {args.model}")
     print(f"  ジェネレータ : {args.generator}")
     print(f"  Few-shot 数  : {args.n_shot} 件")
     print(f"  テスト件数   : {args.n_test} 件")
-    print(f"  Gemini モデル: {args.model}")
     print(f"  API 待機時間 : {args.sleep_sec} 秒 / リクエスト")
     print(f"  乱数シード   : {args.seed}")
     print(f"{'=' * 60}\n")
@@ -210,12 +224,24 @@ def run_benchmark(args: argparse.Namespace) -> None:
     # =========================================================================
     print("\nモジュールを初期化中...")
 
-    # Gemini API クライアント
-    client = GeminiClient(
-        model_name = args.model,
-        sleep_sec  = args.sleep_sec,
-        api_key    = args.api_key,
-    )
+    # クライアントの差し替え分岐
+    if args.provider == "gemini":
+        from llm_benchmark.gemini_client import GeminiClient
+        client = GeminiClient(
+            model_name = args.model,
+            sleep_sec  = args.sleep_sec,
+            api_key    = args.api_key,
+        )
+    elif args.provider == "ollama":
+        from llm_benchmark.ollama_client import OllamaClient
+        client = OllamaClient(
+            model_name = args.model,
+            api_url    = args.ollama_url,
+        )
+        # ローカル推論向けに、タイムアウト対策でスリープ値を考慮
+        # (OllamaClient側で既にリクエスト後待機処理はないため、追加の sleep_sec が適用される)
+    else:
+        raise ValueError(f"未知のプロバイダ: {args.provider}")
 
     # プロンプトビルダー（テキストモード）
     prompt_builder = get_prompt_builder(mode=args.prompt_mode)
@@ -224,7 +250,7 @@ def run_benchmark(args: argparse.Namespace) -> None:
     output_dir = make_output_dir(
         base_dir       = args.output_base_dir,
         generator_name = args.generator,
-        model_name     = args.model,
+        model_name     = f"{args.provider}_{args.model.replace(':', '_')}",
     )
     evaluator = Evaluator(output_dir=output_dir)
 
@@ -272,6 +298,7 @@ def run_benchmark(args: argparse.Namespace) -> None:
 
     # 実験メタデータの構築
     metadata = {
+        "provider"       : args.provider,
         "generator_name" : args.generator,
         "n_shot"         : args.n_shot,
         "n_test"         : args.n_test,
