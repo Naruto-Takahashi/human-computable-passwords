@@ -137,12 +137,15 @@ class GeminiClient:
 
     def _parse_digit_from_response(self, text: str) -> Optional[int]:
         """
-        API レスポンステキストから「Answer: <数字>」形式の予測値を抽出する．
+        API レスポンステキストから予測値（0〜9の1桁整数）を抽出する．
 
-        パース優先度:
-            1. 「Answer: <0〜9>」形式（プロンプトで指定した形式）
-            2. 「Z = <0〜9>」形式（数式表記のフォールバック）
-            3. 上記いずれも見つからない場合は None を返す
+        パース優先度（上から順に試みる）:
+            1. "Answer: <digit>"  形式（プロンプトで指定した形式）
+            2. "答え: <digit>" / "答え：<digit>"  形式（日本語応答）
+            3. "Z = <digit>" / "Z=<digit>"  形式（数式表記）
+            4. レスポンスの最終行に含まれる唯一の1桁数字
+            5. レスポンス全体の末尾に最も近い1桁数字（最終フォールバック）
+            ※ 上記すべてに失敗した場合は None を返す
 
         Args:
             text : Gemini API のレスポンステキスト．
@@ -150,20 +153,48 @@ class GeminiClient:
         Returns:
             抽出した 0〜9 の整数，または None（パース失敗時）．
         """
-        # ---- パターン 1: "Answer: <digit>" ----
-        match = re.search(r"Answer\s*:\s*([0-9])", text, re.IGNORECASE)
+        # Markdown の強調記号（** __ * _）を除去してパースしやすくする
+        cleaned = re.sub(r"[*_`]", "", text)
+
+        # ---- パターン 1: "Answer: <digit>" (大文字小文字・空白・コロン全角半角を許容) ----
+        match = re.search(r"Answer\s*[：:]\s*([0-9])", cleaned, re.IGNORECASE)
         if match:
             digit = int(match.group(1))
             logger.debug(f"パース成功（Answer:パターン）: {digit}")
             return digit
 
-        # ---- パターン 2: "Z = <digit>" または "Z=<digit>"（行末） ----
-        match = re.search(r"Z\s*=\s*([0-9])\s*$", text, re.MULTILINE)
+        # ---- パターン 2: "答え: <digit>" / "答え：<digit>" (日本語応答) ----
+        match = re.search(r"答え\s*[：:]\s*([0-9])", cleaned)
+        if match:
+            digit = int(match.group(1))
+            logger.debug(f"パース成功（答え:パターン）: {digit}")
+            return digit
+
+        # ---- パターン 3: "Z = <digit>" / "Z=<digit>" (数式表記) ----
+        match = re.search(r"\bZ\s*=\s*([0-9])\b", cleaned)
         if match:
             digit = int(match.group(1))
             logger.debug(f"パース成功（Z=パターン）: {digit}")
             return digit
 
-        # ---- パース失敗 ----
+        # ---- パターン 4: 最終行に含まれる唯一の1桁数字 ----
+        # 空行を除いた最後の行を取得し，そこに数字が1つだけあれば採用する
+        non_empty_lines = [l.strip() for l in cleaned.splitlines() if l.strip()]
+        if non_empty_lines:
+            last_line = non_empty_lines[-1]
+            digits_in_last = re.findall(r"[0-9]", last_line)
+            if len(digits_in_last) == 1:
+                digit = int(digits_in_last[0])
+                logger.debug(f"パース成功（最終行単一数字パターン）: {digit}")
+                return digit
+
+        # ---- パターン 5: テキスト末尾に最も近い1桁数字（最終フォールバック） ----
+        all_digits = re.findall(r"[0-9]", cleaned)
+        if all_digits:
+            digit = int(all_digits[-1])
+            logger.debug(f"パース成功（末尾数字フォールバック）: {digit}")
+            return digit
+
+        # ---- パース完全失敗 ----
         logger.warning(f"レスポンスから予測値を抽出できませんでした．Raw: {text[:200]}")
         return None
