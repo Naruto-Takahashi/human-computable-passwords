@@ -6,6 +6,7 @@
 
 ### 単発テスト実行（思考プロセスの観察用）
 特定のアルゴリズムに対し、少数のテストでLLMの挙動（Chain-of-Thought）を詳しく見たい場合に使用します。
+`--verbose` を付けると、各回答の終わりにパースされた結果と推論の断片が表示されます。
 
 ```bash
 python experiments/benchmarks/runner.py \
@@ -22,8 +23,10 @@ python experiments/benchmarks/runner.py \
 
 ```bash
 python experiments/benchmarks/batch_benchmark.py \
-  --model qwen2.5:7b \
-  --parallel 12
+  --model deepseek-r1:7b \
+  --parallel 1 \
+  --n_shot 10 \
+  --n_test 20
 ```
 
 ### 結果の集計
@@ -49,15 +52,29 @@ python experiments/benchmarks/summarize.py
 
 ---
 
-## 3. 研究を進めるための Tips
+## 3. 実験結果の分析方法
+
+### 質的分析（思考ログの確認）
+今回のシステムでは、各テストケースの **「生の思考プロセス」** が自動保存されます。
+`outputs/benchmarks/run_.../reasoning_logs/` を覗いてください。
+- `case_001_correct.md`: 正解したケースの論理展開
+- `case_002_wrong.md`: 間違えたケースでの「迷い」や「誤解」
+- `case_003_parse_error.md`: 回答フォーマットが崩れた原因の特定
+
+### 定量的分析（統計データの集計）
+複数の実験が終わったら、`python experiments/benchmarks/summarize.py` を実行して、モデル間や難易度ごとの正解率を比較します。
+
+---
+
+## 4. 研究を進めるための Tips
 
 ### Q. モデルの「考え方」を知りたい
 **A.** `runner.py` に `--verbose` を付けて実行してください。
-画面に表示される `[Raw Response]` や `<think>` タグの中身を読むことで、モデルがルールをどう誤解しているか、どこで計算ミスをしたかが分かります。
+画面に表示される `[Result Tail]` やファイル内のフルログを読むことで、モデルがルールをどう誤解しているか、どこで計算ミスをしたかが分かります。
 
 ### Q. GPUの使用率を上げたい（高速化したい）
 **A.** `--parallel` の値を増やしてください。
-ただし、モデルが巨大な場合や `deepseek-r1` のように推論が重いモデルでは、値を上げすぎるとVRAM不足でクラッシュしたり、逆に遅くなったりします。
+ただし、`deepseek-r1` のように推論が重いモデルでは、値を上げすぎるとVRAM不足でクラッシュしたり、逆に遅くなったりします。RTX 2080 Ti (11GB) では 7B モデルなら 1〜2 並列が安全です。
 
 ### Q. 新しいモデルを試したい
 **A.** 以下の手順で簡単に追加できます。
@@ -66,6 +83,6 @@ python experiments/benchmarks/summarize.py
 
 ---
 
-## 4. 実行ディレクトリの注意
+## 5. 実行ディレクトリの注意
 全てのコマンドはプロジェクトのルートディレクトリ（`README.md` がある場所）で実行することを想定しています。
 環境が読み込まれていない場合は、先に `direnv allow` を実行してください。

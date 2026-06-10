@@ -167,6 +167,9 @@ class Evaluator:
         # ---- JSON 保存 ----
         self._save_json(metadata_with_results)
 
+        # ---- 思考プロセスの個別ログ保存 ----
+        self._save_reasoning_logs()
+
         # ---- コンソールへのサマリー出力 ----
         print("\n" + "=" * 60)
         print("【ベンチマーク結果サマリー】")
@@ -196,9 +199,43 @@ class Evaluator:
         出力先: {output_dir}/metadata.json
         """
         json_path = os.path.join(self.output_dir, "metadata.json")
-        with open(json_path, "w", encoding="utf-8") as f:
+        with open(json_path, "w", newline="", encoding="utf-8") as f:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
         logger.info(f"JSON 保存完了: {json_path}")
+
+    def _save_reasoning_logs(self) -> None:
+        """
+        各テスト問題の生の思考プロセスを個別ファイルとして保存する（内部メソッド）．
+        出力先: {output_dir}/reasoning_logs/case_XXX_判定.md
+        """
+        # 絶対パスに変換して確実に作成
+        abs_output_dir = os.path.abspath(self.output_dir)
+        log_dir = os.path.join(abs_output_dir, "reasoning_logs")
+        os.makedirs(log_dir, exist_ok=True)
+
+        logger.info(f"思考ログ保存を開始: {log_dir}")
+
+        for i, record in enumerate(self.records):
+            status = "correct" if record.is_correct else ("parse_error" if record.predicted is None else "wrong")
+            filename = f"case_{i+1:03d}_{status}.md"
+            filepath = os.path.join(log_dir, filename)
+
+            content = [
+                f"# Test Case {i+1:03d}",
+                f"- **Result**: {status.upper()}",
+                f"- **Challenge**: `{record.challenge}`",
+                f"- **Correct Answer**: `{record.correct_ans}`",
+                f"- **Predicted**: `{record.predicted if record.predicted is not None else 'N/A'}`",
+                "\n---",
+                "\n## Raw LLM Response\n",
+                record.raw_response
+            ]
+
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write("\n".join(content))
+
+        logger.info(f"思考ログ保存完了: {log_dir}")
+
 
 
 # =============================================================================

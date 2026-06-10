@@ -19,13 +19,15 @@ def run_batch():
     parser = argparse.ArgumentParser()
     parser.add_argument("--parallel", type=int, default=12, help="並列リクエスト数")
     parser.add_argument("--model", type=str, default="qwen2.5:7b", help="使用するモデル名")
+    parser.add_argument("--n_shot", type=int, default=10, help="Few-shot 例題数")
+    parser.add_argument("--n_test", type=int, default=50, help="テスト問題数")
     args = parser.parse_args()
 
     generators = list_available_generators()
     provider = "ollama"
     model = args.model
-    n_shot = 10
-    n_test = 50
+    n_shot = args.n_shot
+    n_test = args.n_test
     sleep_sec = 0.0
 
     print(f"Batch Benchmark Start: model={model}, generators={generators}, parallel={args.parallel}")

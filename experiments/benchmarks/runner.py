@@ -28,6 +28,7 @@ import argparse
 import logging
 import os
 import sys
+import re
 from typing import Optional
 
 # パッケージのルートディレクトリ（src/）をパスに追加
@@ -268,6 +269,9 @@ def run_benchmark(args: argparse.Namespace) -> None:
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     def process_item(i, row):
+        # ---- 開始メッセージ ----
+        print(f"  [{i + 1:3d}/{args.n_test}] 推論開始...")
+        
         # ---- チャレンジとレスポンスの取り出し ----
         challenge, correct_ans = extract_challenge_and_response(row)
 
@@ -300,17 +304,21 @@ def run_benchmark(args: argparse.Namespace) -> None:
             results[idx] = record
             evaluator.add_record(record)
             
-            # ---- 進捗表示 ----
+            # ---- 進捗表示 (改行を確実に入れて重なりを防ぐ) ----
             status_icon = "✓" if record.is_correct else ("?" if record.predicted is None else "✗")
             print(
-                f"  [{idx + 1:3d}/{args.n_test}] {status_icon} "
-                f"正解={record.correct_ans}, 予測={record.predicted if record.predicted is not None else 'ERR'} "
-                f"| 現在の正解率: {evaluator.accuracy():.2%}"
+                f"\n  [{idx + 1:3d}/{args.n_test}] {status_icon} "
+                f"正解={record.correct_ans}, 予測={record.predicted if record.predicted is not None else 'ERR'}"
             )
-            if args.verbose or idx < 5:
-                # 応答の最後の方を表示して Answer: があるか確認
-                tail_response = record.raw_response[-150:] if len(record.raw_response) > 150 else record.raw_response
-                print(f"      [Raw Response Tail ({idx+1})]: ...{tail_response.replace('\\n', ' ')}")
+            
+            if args.verbose:
+                # 思考プロセスが含まれる場合は think タグを除去した末尾を表示
+                clean_content = re.sub(r"<(think|思考過程)>.*?</(think|思考过程|思考過程)>", "[THINKING...]", record.raw_response, flags=re.DOTALL | re.IGNORECASE)
+                tail = clean_content[-100:].replace("\n", " ") if len(clean_content) > 100 else clean_content.replace("\n", " ")
+                print(f"      [Result Tail]: ...{tail}")
+            elif record.predicted is None:
+                # パースエラー時のみ、原因究明のために少しだけ末尾を出す
+                print(f"      [Parse Error Context]: {record.raw_response[-100:].replace('\\n', ' ')}")
 
 
     # =========================================================================

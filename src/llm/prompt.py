@@ -73,8 +73,8 @@ class TextPromptBuilder(PromptBuilder):
     _QUESTION_HEADER: str = "\n【予測課題】\n"
     _ANSWER_INSTRUCTION: str = (
         "入力: {challenge}\n"
-        "思考過程を2,3行で述べた後，必ず最後に次の形式のみで回答してください：\n"
-        "Answer: <数字>\n"
+        "思考過程を詳しく述べた後，必ず最後に次の形式で回答してください：\n"
+        "Answer: <0〜9の整数1桁>\n"
         "Z = "
     )
 
