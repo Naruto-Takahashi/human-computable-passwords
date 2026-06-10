@@ -30,7 +30,6 @@
         devShells.default = pkgs.mkShell {
           buildInputs = [
             pythonEnv
-            pkgs.ollama
           ];
         };
       }
