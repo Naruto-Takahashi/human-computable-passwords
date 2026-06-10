@@ -103,14 +103,11 @@ class TextPromptBuilder(PromptBuilder):
 
         # ---- (2) 観察データ（Few-shot 例題）の列挙 ----
         prompt_parts.append(self._EXAMPLES_HEADER)
-        for idx, row in shot_df.iterrows():
+        for _, row in shot_df.iterrows():
             challenge_vals = [int(row[f"X{i}"]) for i in range(14)]
             response_val   = int(row["Z"])
-            # 各例題を「入力: [x0, x1, ..., x13] → 出力: Z」形式で表記
-            example_line = (
-                f"例{idx + 1:03d}: 入力={challenge_vals} → Z={response_val}\n"
-            )
-            prompt_parts.append(example_line)
+            # 極めて簡潔な形式で記述（トークン節約）
+            prompt_parts.append(f"{challenge_vals} -> Z={response_val}\n")
 
         # ---- (3) テスト問題 ----
         prompt_parts.append(self._QUESTION_HEADER)

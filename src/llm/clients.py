@@ -180,8 +180,9 @@ class OllamaClient(BaseLLMClient):
             "temperature": 0.0,
             "top_p": 1.0,
             "seed": 42,
-            "num_predict": 4096,  # 長い思考を許容
-            "num_ctx": 8192,      # 思考ログを保存するためのコンテキスト確保
+            "num_predict": 16384,  # 推論モデルの非常に長い思考に対応
+            "num_ctx": 16384,      # コンテキスト窓を広げて長考を可能にする
+            "num_batch": 512,      # プロンプトの処理速度を向上
         }
         logger.info(f"OllamaClient 初期化完了: model={self.model_name}, endpoint={self.api_url}")
 
@@ -212,12 +213,14 @@ class OllamaClient(BaseLLMClient):
                     if line:
                         try:
                             chunk = json.loads(line.decode("utf-8"))
-                            if "response" in chunk:
-                                full_text.append(chunk["response"])
+                            # 'response' または 'message' > 'content' の中身を柔軟に拾う
+                            delta = chunk.get("response") or chunk.get("message", {}).get("content")
+                            if delta:
+                                full_text.append(delta)
+                            
                             if chunk.get("done"):
                                 break
                         except Exception as e:
-                            logger.warning(f"チャンクのパースに失敗しました: {e}")
                             continue
                 
                 raw_response = "".join(full_text)
