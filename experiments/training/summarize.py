@@ -37,11 +37,14 @@ def generate_markdown_table(headers, rows):
 
 
 def summarize_results():
-    output_dir = "outputs"
+    # experiments/training/summarize.py から見たプロジェクトルート
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    base_dir = os.path.dirname(os.path.dirname(current_dir))
+    output_dir = os.path.join(base_dir, "outputs", "training")
     metadata_files = glob.glob(os.path.join(output_dir, "run_*", "metadata.json"))
 
     if not metadata_files:
-        print("No experiment metadata files found.")
+        print("No training experiment metadata files found.")
         return
 
     headers = [
@@ -93,7 +96,7 @@ def summarize_results():
 
     summary_content = f"""# 実験結果 自動集計表
 
-このファイルは，`src/summarize_results.py` によって自動生成された実験結果の集計ログです．
+このファイルは，`experiments/training/summarize.py` によって自動生成された学習実験結果の集計ログです．
 
 ## 実行結果一覧
 
@@ -101,7 +104,7 @@ def summarize_results():
 """
 
     # outputs/summary.md へ保存
-    summary_filepath = os.path.join(output_dir, "summary.md")
+    summary_filepath = os.path.join(base_dir, "outputs", "summary.md")
     with open(summary_filepath, "w", encoding="utf-8") as f:
         f.write(summary_content)
 

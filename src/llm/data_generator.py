@@ -14,10 +14,12 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-# 親ディレクトリ (src/) をPythonのモジュール検索パスに追加し，
-# 既存の computable_password_generator をインポートできるようにする
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from computable_password_generator import ComputablePasswordGenerator
+# src/ をパスに追加し，hcp パッケージをインポートできるようにする
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "src"))
+
+from hcp.generator import ComputablePasswordGenerator
 
 # =============================================================================
 # ジェネレータ名 → ジェネレータ関数のマッピング

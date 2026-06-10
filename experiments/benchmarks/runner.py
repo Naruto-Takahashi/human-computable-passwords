@@ -31,13 +31,13 @@ import sys
 from typing import Optional
 
 # パッケージのルートディレクトリ（src/）をパスに追加
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "src"))
 
-# llm_benchmark パッケージの各モジュールをインポート
-from llm_benchmark.data_generator  import generate_dataset, extract_challenge_and_response, list_available_generators
-from llm_benchmark.prompt_builder  import get_prompt_builder
-from llm_benchmark.gemini_client   import GeminiClient
-from llm_benchmark.evaluator       import BenchmarkRecord, Evaluator, make_output_dir
+# llm パッケージからインポート
+from llm import (
+    generate_dataset, extract_challenge_and_response, list_available_generators,
+    get_prompt_builder, GeminiClient, OllamaClient, BenchmarkRecord, Evaluator, make_output_dir
+)
 
 
 # =============================================================================
@@ -143,6 +143,12 @@ def parse_args() -> argparse.Namespace:
         default = "http://localhost:11434/api/generate",
         help    = "OllamaのAPIエンドポイントURL（デフォルト: http://localhost:11434/api/generate）",
     )
+    parser.add_argument(
+        "--parallel",
+        type    = int,
+        default = 1,
+        help    = "並列リクエスト数（Ollama/ローカル実行時のみ推奨。デフォルト: 1）",
+    )
 
     # ---- プロンプト設定 ----
     parser.add_argument(
@@ -159,7 +165,7 @@ def parse_args() -> argparse.Namespace:
         type    = str,
         default = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-            "outputs", "llm_benchmark"
+            "outputs", "benchmarks"
         ),
         help    = "結果ファイルを保存するベースディレクトリ",
     )
@@ -226,14 +232,12 @@ def run_benchmark(args: argparse.Namespace) -> None:
 
     # クライアントの差し替え分岐
     if args.provider == "gemini":
-        from llm_benchmark.gemini_client import GeminiClient
         client = GeminiClient(
             model_name = args.model,
             sleep_sec  = args.sleep_sec,
             api_key    = args.api_key,
         )
     elif args.provider == "ollama":
-        from llm_benchmark.ollama_client import OllamaClient
         client = OllamaClient(
             model_name = args.model,
             api_url    = args.ollama_url,
@@ -259,10 +263,11 @@ def run_benchmark(args: argparse.Namespace) -> None:
     # =========================================================================
     # Step 3: テスト問題ループ
     # =========================================================================
-    print(f"\nベンチマークを開始します（推定所要時間: {args.n_test * args.sleep_sec:.0f} 秒以上）...\n")
+    print(f"\nベンチマークを開始します（並列数: {args.parallel}）...\n")
 
-    for i, (_, row) in enumerate(test_df.iterrows()):
+    from concurrent.futures import ThreadPoolExecutor, as_completed
 
+    def process_item(i, row):
         # ---- チャレンジとレスポンスの取り出し ----
         challenge, correct_ans = extract_challenge_and_response(row)
 
@@ -272,25 +277,41 @@ def run_benchmark(args: argparse.Namespace) -> None:
             test_challenge = challenge,
         )
 
-        # ---- Gemini API 呼び出し ----
+        # ---- API / ローカルLLM 呼び出し ----
         raw_response, predicted = client.predict(prompt)
 
-        # ---- 評価記録の追加 ----
+        # ---- 評価記録の構築 ----
         record = BenchmarkRecord(
             challenge    = challenge,
             correct_ans  = correct_ans,
             predicted    = predicted,
             raw_response = raw_response,
         )
-        evaluator.add_record(record)
+        return i, record
 
-        # ---- 進捗表示 ----
-        status_icon = "✓" if record.is_correct else ("?" if predicted is None else "✗")
-        print(
-            f"  [{i + 1:3d}/{args.n_test}] {status_icon} "
-            f"正解={correct_ans}, 予測={predicted if predicted is not None else 'ERR'} "
-            f"| 現在の正解率: {evaluator.accuracy():.2%}"
-        )
+    # 結果を順番通りに格納するためのリスト
+    results = [None] * len(test_df)
+
+    with ThreadPoolExecutor(max_workers=args.parallel) as executor:
+        futures = {executor.submit(process_item, i, row): i for i, row in test_df.iterrows()}
+        
+        for future in as_completed(futures):
+            idx, record = future.result()
+            results[idx] = record
+            evaluator.add_record(record)
+            
+            # ---- 進捗表示 ----
+            status_icon = "✓" if record.is_correct else ("?" if record.predicted is None else "✗")
+            print(
+                f"  [{idx + 1:3d}/{args.n_test}] {status_icon} "
+                f"正解={record.correct_ans}, 予測={record.predicted if record.predicted is not None else 'ERR'} "
+                f"| 現在の正解率: {evaluator.accuracy():.2%}"
+            )
+            if args.verbose or idx < 5:
+                # 応答の最後の方を表示して Answer: があるか確認
+                tail_response = record.raw_response[-150:] if len(record.raw_response) > 150 else record.raw_response
+                print(f"      [Raw Response Tail ({idx+1})]: ...{tail_response.replace('\\n', ' ')}")
+
 
     # =========================================================================
     # Step 4: 結果の保存

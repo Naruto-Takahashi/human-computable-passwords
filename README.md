@@ -10,7 +10,7 @@
 
 人間計算可能なパスワード（HCP）とは，ユーザーが記憶している秘密のテーブル（鍵）と，頭の中で実行可能な簡素なアルゴリズムを用いて，提示されたランダムな「チャレンジ」に対する「レスポンス」を暗算で計算し，認証を行う仕組みです．
 
-従来の安全性評価では，チャレンジとレスポンスの組み合わせが流出した際の「従来の機械学習（MLP, LSTM, CNN等）に対する耐性」が主な焦点でした．しかし本研究では，HCPが持つ「人間の暗算で実行できる簡潔さ」と「間接参照（ポインタ）やモジュロ演算（剰余）などの構造的・非線形なアルゴリズム関係」という性質に着目し，**近年の推論特化型AI（o1, o3-mini, Gemini, Claude等）の記号論理的・アルゴリズム的推論能力を検証するためのベンチマーク**として再定義し，評価を行います．
+従来の安全性評価では，チャレンジとレスポンスの組み合わせが流出した際の「従来の機械学習（MLP, LSTM, CNN等）に対する耐性」が主な焦点でした．しかし本研究では，HCPが持つ「人間の暗算で実行できる簡潔さ」と「間接参照（ポインタ）やモジュロ演算（剰余）などの構造的・非線形なアルゴリズム関係」という性質に着目し，**近年の推論特化型AI（o1, o3-mini, Gemini, Claude, Qwen等）の記号論理的・アルゴリズム的推論能力を検証するためのベンチマーク**として再定義し，評価を行います．
 
 ---
 
@@ -20,47 +20,48 @@
 
 ```text
 human-computable-passwords/
-├── src/                      # 開発および評価実験用のソースコード
-│   ├── main.py               # メイン実行スクリプト
-│   ├── batch_run.py          # バッチ学習用スクリプト
-│   ├── models.py             # 従来の機械学習モデル（MLP, LSTM, CNN）の定義
-│   ├── computable_password_generator.py # HCPデータおよびチャレンジ生成器
-│   ├── summarize_results.py  # 実験結果の自動集計スクリプト
-│   └── utils.py              # データ分割，乱数シード固定，可視化ユーティリティ
+├── src/                      # コアライブラリ（再利用可能なロジック）
+│   ├── hcp/                  # HCP生成・モデル・ユーティリティ
+│   │   ├── generator.py      # HCPデータおよびチャレンジ生成器
+│   │   ├── models.py         # 従来の機械学習モデル（MLP, LSTM, CNN）の定義
+│   │   └── utils.py          # データ分割，乱数シード固定，可視化ユーティリティ
+│   └── llm/                  # LLM推論用モジュール
+│       ├── clients.py        # Gemini / Ollama (ローカルLLM) クライアント
+│       ├── prompt.py         # Few-shot プロンプト構築ロジック
+│       ├── evaluator.py      # 推論結果の評価・パース・記録
+│       └── data_generator.py # LLM評価用データセット生成器
+├── experiments/              # 実行用スクリプト（実験の入り口）
+│   ├── training/             # 従来の機械学習モデルの学習実験
+│   │   ├── train.py          # 個別学習実行スクリプト
+│   │   ├── batch_run.py      # 複数条件のバッチ学習
+│   │   └── summarize.py      # 学習結果の自動集計
+│   └── benchmarks/           # LLMベンチマーク評価実験
+│       ├── runner.py         # LLM推論実行スクリプト
+│       ├── batch_benchmark.py # 全アルゴリズムの一括評価
+│       └── summarize.py      # LLM評価結果の自動集計
 ├── research/                 # 研究資料およびドキュメント
 │   ├── previous-works/       # 既存研究の論文PDFおよび卒論スライド等
-│   ├── plan.md               # 詳細な研究計画書（ベンチマーク設計）
-│   └── log.md                # 日々の実験記録や気づきを蓄積する研究ログ
+│   └── log/                  # 研究計画書 (plan.md) および研究ログ (log.md)
 ├── outputs/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
-│   └── summary.md            # 全実験結果の自動集計表
+│   ├── training/             # 学習実験のログ・グラフ・メタデータ
+│   ├── benchmarks/           # LLMベンチマークのCSV結果・メタデータ
+│   ├── summary.md            # 学習実験結果の自動集計表
+│   └── summary_llm.md        # LLMベンチマーク結果の自動集計表
 ├── flake.nix                 # Nix (Flakes) による再現可能なPython開発環境の定義
 ├── flake.lock                # Nix環境の依存パッケージのバージョンロックファイル
-├── .envrc                    # direnv用設定ファイル（ディレクトリ移動時の環境自動ロード用）
+├── .envrc                    # direnv用設定ファイル
 ├── requirements.txt          # Pythonパッケージの依存関係リスト
 └── README.md                 # 本ドキュメント
 ```
 
-- **ドキュメント・実行結果へのクイックリンク**:
-  - [詳細な研究計画書 (`plan.md`)](research/plan.md)
-  - [研究ログ (`log.md`)](research/log.md)
-  - [全実験結果の自動集計表 (`summary.md`)](outputs/summary.md)
-
-
-
 ---
 
-## 本研究の意義（4つの独自の価値）
+## 本研究の意義
 
-既存のLLMベンチマーク（MMLU, GSM8K, MATH等）が多数存在する中で，本研究のアプローチには以下の4つの強力な意義があります．
-
-1. **「データ汚染（Data Contamination）」からの完全な脱却**
-   - 評価用データ（チャレンジ・レスポンスの組み合わせ）は，独自のアルゴリズムと乱数によって無限に新規生成（合成）可能です．事前学習データに紛れ込むことがないため，LLMにとって「完全な未知データ」に対する真の論理推論能力（ルール解読能力）を純粋に測定できます．
-2. **人間とAIの「Jagged Frontier（ギザギザの境界線）」の可視化**
-   - HCPは「人間が脳内で1分以内に計算できる」ように設計されています．これほど人間に最適化された簡単なルールが，高度な数学問題を解く最新LLMにとってどの程度の障壁になるかを評価し，AIと人間の推論プロセスの違いを浮き彫りにします．
-3. **パラメータ設定による「難易度の厳密な理論的制御」**
-   - 整数パラメータ $(k_1, k_2)$ や関数定義の設定によって，難易度（安全性指標）を数理的・決定論的に精密に制御可能です．LLMの推論がどの難易度でブレイクダウン（ハルシネーション等）を起こすかを段階的にスキャンできます．
-4. **AIの「暗号解読能力（Cryptanalysis）」と「敵対的耐性」の実践的評価**
-   - 流出情報（チャレンジ・レスポンス）から背後の秘密ルールを逆算する行為は，一種の「ブラックボックス攻撃（既知平文攻撃）」です．LLMがサイバー攻撃に悪用された際のリスクやセキュリティ能力の限界値を測定する実践的な評価指標となります．
+1. **「データ汚染（Data Contamination）」からの完全な脱却**: 合成データによる未知の論理推論能力の測定．
+2. **人間とAIの「Jagged Frontier」の可視化**: 暗算可能なルールがAIにとってどの程度の障壁になるかを評価．
+3. **難易度の厳密な理論的制御**: アルゴリズムの構造を変更することで難易度を段階的に制御．
+4. **AIの暗号解読能力の実践的評価**: 既知平文攻撃に対するLLMの耐性を測定．
 
 ---
 
@@ -68,59 +69,43 @@ human-computable-passwords/
 
 ### 開発環境の構築
 
-本プロジェクトでは，`Nix` (Flakes) と `direnv` を用いてPythonの開発環境およびライブラリを管理しています．以下の手順でセットアップが完了します．
+`Nix` (Flakes) と `direnv` を用いて環境を管理しています．
 
-1. **direnvの許可**:
-   本ディレクトリに移動後，以下のコマンドを実行して環境変数のロードを許可します．
-   ```bash
-   direnv allow
-   ```
-2. **自動ロード**:
-   以降，本ディレクトリに入るだけで，`flake.nix` に定義されたPythonおよび必要なライブラリ（`numpy`, `pandas`, `matplotlib`, `scikit-learn`, `tensorflow` 等）が自動的に読み込まれます．
-
-*(※ Nix/direnvを使用しない場合は，`pip install -r requirements.txt` からライブラリを手動でインストールすることも可能です．)*
-
-### 主要な実行ファイル
-
-- `src/main.py`
-  - `Models.list_models()` で設定されたモデルを順番に学習します．
-  - 各学習ごとに一意なタイムスタンプ付きディレクトリを `outputs/` 下に作成し，学習曲線プロット（`accuracy.png`, `loss.png`）および実験パラメータと精度を記録した `metadata.json` を自動保存します．
-  - 乱数シードが固定され，常に同一条件での実験再現が可能です．
-
-- `src/batch_run.py`
-  - `TensorBoard` によるログ出力を追加したバッチ実行スクリプトです．
-
-### 実験の再現性と記録の自動化
-
-実験を科学的かつ効率的に進めるため，以下の仕組みを導入しています．
-
-1. **乱数シードの固定（再現性の確保）**
-   - [`src/utils.py`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/src/utils.py) の `Utils.fix_seed(seed)` により，Python標準の `random`，`numpy`，および `tensorflow` のシードを一括で固定し，データのシャッフルや重みの初期値を決定論的に固定しています．
-2. **メタデータの自動保存（結果の記録とコード追跡）**
-   - 実行ごとに `outputs/run_YYYYMMDD_HHMMSS_{generator}_{model}/` ディレクトリを作成し，以下の実験データを自動保存します．
-     - `accuracy.png` / `loss.png`: 学習曲線のプロット図．
-     - `metadata.json`: 学習にかかった時間（秒），バッチサイズ，エポック数，乱数シード値，最終エポックにおける各種精度指標，および**実行時のGitコミットハッシュ**（再現用のコードバージョン特定用）．
-3. **実験結果の自動集計**
-   - スクリプト `src/summarize_results.py` を実行すると，`outputs/` 配下の全実験結果（`metadata.json`）を自動スキャンし，時系列順に整理した集計レポート [`outputs/summary.md`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/outputs/summary.md) を生成・更新します．
-
-#### 集計スクリプトの実行方法
 ```bash
-python src/summarize_results.py
+direnv allow
 ```
-実行すると，コンソールにも最新の集計結果テーブルが表示されます．
 
-### 主要なモジュール
+以降，ディレクトリに入るだけで必要なライブラリが自動的に読み込まれます．ローカルLLMの評価には `ollama` が必要です．
 
-- `src/computable_password_generator.py`
-  - 人間計算可能なパスワードのチャレンジ-レスポンス形式データを自動生成する．
-  - `list_generators()` で利用する生成関数を選択．
+### 従来の機械学習モデルの学習
 
-- `src/models.py`
-  - 学習に使う機械学習モデルを定義する．
-  - `list_models()` で利用するモデルを選択．
+```bash
+# 個別モデルの学習
+python experiments/training/train.py
 
-- `src/utils.py`
-  - データ分割や可視化ヘルパーを提供する．
+# 学習結果の集計
+python experiments/training/summarize.py
+```
 
-- `src/summarize_results.py`
-  - `outputs/` 配下の全実験結果（`metadata.json`）を自動スキャンし，集計レポート `outputs/summary.md` を生成・更新する．
+### LLMベンチマーク評価
+
+ローカルLLM（Ollama）または Gemini API を用いた評価が可能です．
+
+```bash
+# ローカルLLMを用いた一括評価（RTX 2080 Ti等での並列実行に対応）
+python experiments/benchmarks/batch_benchmark.py --model qwen2.5:7b --parallel 12
+
+# 評価結果の集計
+python experiments/benchmarks/summarize.py
+```
+
+- **並列実行**: `--parallel` オプションにより，GPUリソースを最大限活用した高速な推論が可能です．
+- **対応モデル**: Ollamaで動作する任意のモデル（Qwen2.5, Llama3.1等）および Gemini シリーズ．
+
+---
+
+## ドキュメント・実行結果へのリンク
+
+- [研究ログ (`log.md`)](research/log/log.md)
+- [学習実験結果のサマリー (`summary.md`)](outputs/summary.md)
+- [LLMベンチマーク結果のサマリー (`summary_llm.md`)](outputs/summary_llm.md)

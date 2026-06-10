@@ -1,11 +1,14 @@
 # 人間計算可能なパスワード生成器からデータを取得し，各種モデルで学習を行うメインスクリプト
 import os
 import time
+import sys
 from datetime import datetime
 
-from computable_password_generator import ComputablePasswordGenerator
-from models import Models
-from utils import LossHistory, Utils
+# src/ をパスに追加
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "src"))
+
+from hcp import Models, Utils, LossHistory
+from hcp.generator import ComputablePasswordGenerator
 
 # 実験の再現性のためのシード値固定
 SEED = 42
@@ -26,7 +29,10 @@ for model in Models.list_models():
             # 今回の実験結果を保存する一意なディレクトリを作成
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             run_name = f"run_{timestamp}_{generator.name}_{model.name}"
-            output_dir = os.path.join("outputs", run_name)
+            
+            # プロジェクトルートの outputs/training/ に保存
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            output_dir = os.path.join(base_dir, "outputs", "training", run_name)
             os.makedirs(output_dir, exist_ok=True)
 
             # 指定されたサイズで模擬パスワードデータを生成

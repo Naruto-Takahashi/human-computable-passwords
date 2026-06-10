@@ -1,21 +1,23 @@
 # TensorBoard と EarlyStopping を用いて，バッチサイズやエポック数を管理しつつ学習を実行するスクリプト
 import os
+import sys
 import traceback
 
 from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
 
-from computable_password_generator import ComputablePasswordGenerator
-from models import Models
-from utils import Utils
+# src/ をパスに追加
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "src"))
+
+from hcp import Models, Utils
+from hcp.generator import ComputablePasswordGenerator
 
 iter = 0
-base_log_dir = r""  # TensorBoardのログ保存先ベースディレクトリ
+base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+base_output_dir = os.path.join(base_dir, "outputs", "training", str(iter))
+base_log_dir = os.path.join(base_output_dir, "logs")  # TensorBoardのログ保存先ベースディレクトリ
 
 # 出力用ディレクトリの作成
-try:
-    os.mkdir("outputs/{}".format(iter))
-except Exception:
-    pass
+os.makedirs(base_output_dir, exist_ok=True)
 
 # すべての機械学習モデルに対してループ
 for model in Models.list_models():
@@ -62,9 +64,9 @@ for model in Models.list_models():
 
             # 学習履歴の取得とグラフ保存
             history = model.model.history.history
-            Utils.plot_history(
-                history, "{}/".format(iter) + generator.name + "_" + model.name
-            )
+            plot_dir = os.path.join(base_output_dir, f"{generator.name}_{model.name}")
+            os.makedirs(plot_dir, exist_ok=True)
+            Utils.plot_history(history, plot_dir)
 
         except Exception as e:
             print("Error: generator: {}, model: {}".format(generator.name, model.name))
