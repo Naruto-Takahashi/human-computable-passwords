@@ -202,24 +202,35 @@ class OllamaClient(BaseLLMClient):
         }
 
         for attempt in range(max_retries):
+            full_text = []
             try:
                 # タイムアウトを 1800 秒（30分）に設定
                 response = requests.post(self.api_url, json=payload, timeout=1800, stream=True)
                 response.raise_for_status()
                 
-                full_text = []
                 for line in response.iter_lines():
                     if line:
-                        chunk = json.loads(line.decode("utf-8"))
-                        if "response" in chunk:
-                            full_text.append(chunk["response"])
-                        if chunk.get("done"):
-                            break
+                        try:
+                            chunk = json.loads(line.decode("utf-8"))
+                            if "response" in chunk:
+                                full_text.append(chunk["response"])
+                            if chunk.get("done"):
+                                break
+                        except Exception as e:
+                            logger.warning(f"チャンクのパースに失敗しました: {e}")
+                            continue
                 
                 raw_response = "".join(full_text)
                 parsed_digit = self._parse_digit_from_response(raw_response)
                 break
             except Exception as e:
+                # 途中まで受信できていれば、それを結果として返す（救済措置）
+                if full_text:
+                    raw_response = "".join(full_text)
+                    parsed_digit = self._parse_digit_from_response(raw_response)
+                    logger.warning(f"推論の途中で接続エラーが発生しましたが，受信済みの内容で継続します: {e}")
+                    break
+
                 raw_response = f"ERROR: {str(e)}"
                 if attempt < max_retries - 1:
                     time.sleep(1)

@@ -44,7 +44,7 @@ human-computable-passwords/
 │   └── log/                  # 研究計画書 (plan.md) および研究ログ (log.md)
 ├── outputs/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
 │   ├── training/             # 学習実験のログ・グラフ・メタデータ
-│   ├── benchmarks/           # LLMベンチマークのCSV結果・メタデータ
+│   ├── benchmarks/           # LLMベンチマークの結果（モデル/アルゴリズム/実行日時の階層構造）
 │   ├── summary.md            # 学習実験結果の自動集計表
 │   └── summary_llm.md        # LLMベンチマーク結果の自動集計表
 ├── flake.nix                 # Nix (Flakes) による再現可能なPython開発環境の定義

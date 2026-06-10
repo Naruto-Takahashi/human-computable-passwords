@@ -28,7 +28,8 @@ def summarize_llm_results():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     base_dir = os.path.dirname(os.path.dirname(current_dir))
     output_dir = os.path.join(base_dir, "outputs", "benchmarks")
-    metadata_files = glob.glob(os.path.join(output_dir, "run_*", "metadata.json"))
+    # 階層化されたディレクトリから全ての metadata.json を再帰的に検索
+    metadata_files = glob.glob(os.path.join(output_dir, "**", "metadata.json"), recursive=True)
 
     if not metadata_files:
         print("No LLM benchmark metadata files found.")

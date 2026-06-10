@@ -101,7 +101,7 @@ class Evaluator:
         Evaluator を初期化し，出力ディレクトリを作成する．
 
         Args:
-            output_dir : 結果ファイル（CSV, JSON）の保存先ディレクトリのパス．
+            output_dir : 結果ファイル（CSV, JSON）の保存先ディレクトリ의 パス．
         """
         self.output_dir : str = output_dir
         self.records    : list[BenchmarkRecord] = []
@@ -112,12 +112,40 @@ class Evaluator:
 
     def add_record(self, record: BenchmarkRecord) -> None:
         """
-        1問分の評価記録をリストに追加する．
+        1問分の評価記録をリストに追加し，思考ログを即座に保存する．
 
         Args:
             record : 追加する BenchmarkRecord インスタンス．
         """
         self.records.append(record)
+        # 思考ログをリアルタイムで保存（研究の利便性のため）
+        self._save_single_record_log(record, len(self.records))
+
+    def _save_single_record_log(self, record: BenchmarkRecord, index: int) -> None:
+        """
+        特定のレコードの思考ログをファイルとして保存する（内部メソッド）．
+        """
+        abs_output_dir = os.path.abspath(self.output_dir)
+        log_dir = os.path.join(abs_output_dir, "reasoning_logs")
+        os.makedirs(log_dir, exist_ok=True)
+
+        status = "correct" if record.is_correct else ("parse_error" if record.predicted is None else "wrong")
+        filename = f"case_{index:03d}_{status}.md"
+        filepath = os.path.join(log_dir, filename)
+
+        content = [
+            f"# Test Case {index:03d}",
+            f"- **Result**: {status.upper()}",
+            f"- **Challenge**: `{record.challenge}`",
+            f"- **Correct Answer**: `{record.correct_ans}`",
+            f"- **Predicted**: `{record.predicted if record.predicted is not None else 'N/A'}`",
+            "\n---",
+            "\n## Raw LLM Response\n",
+            record.raw_response
+        ]
+
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write("\n".join(content))
 
     def accuracy(self) -> float:
         """
@@ -167,9 +195,6 @@ class Evaluator:
         # ---- JSON 保存 ----
         self._save_json(metadata_with_results)
 
-        # ---- 思考プロセスの個別ログ保存 ----
-        self._save_reasoning_logs()
-
         # ---- コンソールへのサマリー出力 ----
         print("\n" + "=" * 60)
         print("【ベンチマーク結果サマリー】")
@@ -199,43 +224,9 @@ class Evaluator:
         出力先: {output_dir}/metadata.json
         """
         json_path = os.path.join(self.output_dir, "metadata.json")
-        with open(json_path, "w", newline="", encoding="utf-8") as f:
+        with open(json_path, "w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
         logger.info(f"JSON 保存完了: {json_path}")
-
-    def _save_reasoning_logs(self) -> None:
-        """
-        各テスト問題の生の思考プロセスを個別ファイルとして保存する（内部メソッド）．
-        出力先: {output_dir}/reasoning_logs/case_XXX_判定.md
-        """
-        # 絶対パスに変換して確実に作成
-        abs_output_dir = os.path.abspath(self.output_dir)
-        log_dir = os.path.join(abs_output_dir, "reasoning_logs")
-        os.makedirs(log_dir, exist_ok=True)
-
-        logger.info(f"思考ログ保存を開始: {log_dir}")
-
-        for i, record in enumerate(self.records):
-            status = "correct" if record.is_correct else ("parse_error" if record.predicted is None else "wrong")
-            filename = f"case_{i+1:03d}_{status}.md"
-            filepath = os.path.join(log_dir, filename)
-
-            content = [
-                f"# Test Case {i+1:03d}",
-                f"- **Result**: {status.upper()}",
-                f"- **Challenge**: `{record.challenge}`",
-                f"- **Correct Answer**: `{record.correct_ans}`",
-                f"- **Predicted**: `{record.predicted if record.predicted is not None else 'N/A'}`",
-                "\n---",
-                "\n## Raw LLM Response\n",
-                record.raw_response
-            ]
-
-            with open(filepath, "w", encoding="utf-8") as f:
-                f.write("\n".join(content))
-
-        logger.info(f"思考ログ保存完了: {log_dir}")
-
 
 
 # =============================================================================
@@ -244,17 +235,14 @@ class Evaluator:
 
 def make_output_dir(base_dir: str, generator_name: str, model_name: str) -> str:
     """
-    タイムスタンプ・ジェネレータ名・モデル名を組み合わせた，
-    一意な実験出力ディレクトリのパスを生成する．
+    モデル名・ジェネレータ名ごとに階層化された実験出力ディレクトリのパスを生成する．
 
-    Args:
-        base_dir       : ベースとなるディレクトリ（例: "outputs/llm_benchmark"）．
-        generator_name : 使用したジェネレータ名（例: "func_31"）．
-        model_name     : 使用した Gemini モデル名（例: "gemini-2.0-flash"）．
-
-    Returns:
-        生成した出力ディレクトリの絶対パス文字列．
+    構造: {base_dir}/{model_name}/{generator_name}/run_{timestamp}
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_name  = f"run_{timestamp}_{generator_name}_{model_name.replace('/', '_')}"
-    return os.path.join(base_dir, run_name)
+    # モデル名からファイルシステムに不適切な文字を除去
+    safe_model_name = model_name.replace(":", "_").replace("/", "_")
+    
+    # 階層構造を構築
+    path = os.path.join(base_dir, safe_model_name, generator_name, f"run_{timestamp}")
+    return path
