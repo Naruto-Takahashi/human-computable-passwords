@@ -9,7 +9,7 @@
 
 import os
 import sys
-from typing import Tuple
+from typing import Tuple, Optional
 
 import numpy as np
 import pandas as pd
@@ -46,22 +46,9 @@ def generate_dataset(
     n_shot: int,
     n_test: int,
     seed: int = 42,
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
+) -> Tuple[pd.DataFrame, pd.DataFrame, Optional[list[int]]]:
     """
     指定したジェネレータを使用して，Few-shot用データとテスト用データを生成する．
-
-    Args:
-        generator_name : 使用するジェネレータの名前（AVAILABLE_GENERATORS のキー）．
-        n_shot         : Few-shot プロンプトに含める例題数．
-        n_test         : テスト問題数．
-        seed           : 乱数シード（再現性のために固定する）．
-
-    Returns:
-        shot_df : Few-shot 例題用 DataFrame（カラム: X0〜X13, Z）．
-        test_df : テスト用 DataFrame（カラム: X0〜X13, Z）．
-
-    Raises:
-        ValueError: 未知のジェネレータ名が指定された場合．
     """
     # ジェネレータ名のバリデーション
     if generator_name not in AVAILABLE_GENERATORS:
@@ -77,7 +64,7 @@ def generate_dataset(
     total_size = n_shot + n_test
 
     # 指定サイズのデータを一括生成し，Few-shot用とテスト用に分割する
-    all_df = generator_func(total_size)
+    all_df, sgm = generator_func(total_size)
 
     # 行をシャッフルして偏りを排除する
     all_df = all_df.sample(frac=1, random_state=seed).reset_index(drop=True)
@@ -85,7 +72,7 @@ def generate_dataset(
     shot_df = all_df.iloc[:n_shot].reset_index(drop=True)
     test_df = all_df.iloc[n_shot:].reset_index(drop=True)
 
-    return shot_df, test_df
+    return shot_df, test_df, sgm
 
 
 def extract_challenge_and_response(row: pd.Series) -> Tuple[list[int], int]:

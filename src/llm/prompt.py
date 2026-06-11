@@ -94,7 +94,8 @@ class TextPromptBuilder(PromptBuilder):
         test_challenge : list[int],
         generator_name : str = "unknown",
         include_rationale: bool = False,
-        use_code       : bool = False
+        use_code       : bool = False,
+        sgm            : list[int] = None
     ) -> str:
         """
         Few-shot 例題とテスト問題を組み合わせたテキストプロンプトを構築する．
@@ -102,32 +103,35 @@ class TextPromptBuilder(PromptBuilder):
         from hcp.generator import ComputablePasswordGenerator
 
         # ---- (1) タスク説明 ----
-        prompt_parts = [self._SYSTEM_INSTRUCTION]
+        prompt = self._SYSTEM_INSTRUCTION
+        
+        # 秘密の鍵テーブル（sgm）が存在する場合は公開する
+        if sgm is not None:
+            prompt += "【秘密の鍵テーブル】\n"
+            prompt += f"SGM_TABLE = {sgm}\n"
+            prompt += "このテーブルは，入力の各値（インデックス）を実際の計算用数値に変換するために使用されます．\n"
+            prompt += "例: 入力が 5 の場合，実際の計算には SGM_TABLE[5] の値を使用してください．\n\n"
 
         # ---- (2) 観察データ（Few-shot 例題）の列挙 ----
-        prompt_parts.append(self._EXAMPLES_HEADER)
+        prompt += self._EXAMPLES_HEADER
         for _, row in shot_df.iterrows():
             challenge_vals = [int(row[f"X{i}"]) for i in range(14)]
             response_val   = int(row["Z"])
             # 少し構造的な形式で記述
-            prompt_parts.append(f"Input: {challenge_vals} | Output: Z = {response_val}\n")
+            prompt += f"Input: {challenge_vals} | Output: Z = {response_val}\n"
             
             if include_rationale and generator_name != "unknown":
-                rationale = ComputablePasswordGenerator.explain_logic(generator_name, row)
-                prompt_parts.append(f"Reasoning:\n{rationale}\n\n")
+                rationale = ComputablePasswordGenerator.explain_logic(generator_name, row, sgm=sgm)
+                prompt += f"Reasoning:\n{rationale}\n\n"
 
         # ---- (3) テスト問題 ----
-        prompt_parts.append(self._QUESTION_HEADER)
+        prompt += self._QUESTION_HEADER
         if use_code:
-            prompt_parts.append(
-                self._CODE_INSTRUCTION.format(challenge=test_challenge)
-            )
+            prompt += self._CODE_INSTRUCTION.format(challenge=test_challenge)
         else:
-            prompt_parts.append(
-                self._ANSWER_INSTRUCTION.format(challenge=test_challenge)
-            )
+            prompt += self._ANSWER_INSTRUCTION.format(challenge=test_challenge)
 
-        return "".join(prompt_parts)
+        return prompt
 
 
 # =============================================================================

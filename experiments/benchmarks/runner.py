@@ -171,7 +171,7 @@ def run_benchmark(args):
     print(f"  Few-shot 数  : {args.n_shot} 件")
     print(f"  テスト件数   : {args.n_test} 件")
     print(f"  API 待機時間 : {args.sleep_sec} 秒 / リクエスト")
-    print(f"  乱数シード   : {args.seed} 件")
+    print(f"  乱数シード   : {args.seed}")
     print(f"  PoT方式      : {'ON' if args.use_code else 'OFF'}")
     print("=" * 60)
 
@@ -179,7 +179,7 @@ def run_benchmark(args):
     # Step 1: データセットの準備
     # =========================================================================
     print("\nデータセットを生成中...")
-    shot_df, test_df = generate_dataset(
+    shot_df, test_df, sgm = generate_dataset(
         generator_name = args.generator,
         n_shot         = args.n_shot,
         n_test         = args.n_test,
@@ -187,6 +187,8 @@ def run_benchmark(args):
     )
     print(f"  Few-shot 例題: {len(shot_df)} 件")
     print(f"  テスト問題  : {len(test_df)} 件")
+    if sgm:
+        print(f"  秘密のテーブル(sgm)をロードしました（サイズ: {len(sgm)}）")
 
     # =========================================================================
     # Step 2: クライアントとビルダーの初期化
@@ -244,7 +246,8 @@ def run_benchmark(args):
             test_challenge    = challenge,
             generator_name    = args.generator,
             include_rationale = args.rationale,
-            use_code          = args.use_code
+            use_code          = args.use_code,
+            sgm               = sgm
         )
 
         raw_response, predicted = client.predict(prompt)

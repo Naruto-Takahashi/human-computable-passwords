@@ -24,9 +24,17 @@ class BaseLLMClient:
     def _parse_digit_from_response(self, text: str) -> Optional[int]:
         """
         API レスポンステキストから予測値（0〜9の1桁整数）を抽出する．
-        JSON 形式での回答を優先的に処理し，フォールバックとして従来の正規表現パースも行う．
+        モデルが降参している場合や，意図しない場所の数字を拾わないように厳格に処理する．
         """
-        # ---- 1. JSON パースを試行 ----
+        # ---- 0. 回答拒否・不明の検出 ----
+        # モデルが「分からない」と言っている場合は，数字を拾わずに終了する
+        refusal_keywords = ["unknown", "cannot determine", "不明", "分かりません", "わからない"]
+        for kw in refusal_keywords:
+            if kw in text.lower():
+                logger.debug(f"パース中止（拒否ワード検出）: {kw}")
+                return None
+
+        # ---- 1. JSON パースを試行 (最も信頼性が高い) ----
         try:
             # Markdown のコードブロック ```json ... ``` がある場合は中身を抽出
             json_text = text
@@ -40,23 +48,21 @@ class BaseLLMClient:
                 data = json.loads(json_match.group(1))
                 if "answer" in data:
                     val = data["answer"]
-                    # 数字が文字列として入っている場合も考慮
+                    # 数字以外（"unknown"など）が入っている場合は無視
                     if isinstance(val, (int, float)):
-                        return int(val)
+                        return int(val) % 10
                     if isinstance(val, str) and val.isdigit():
-                        return int(val)
+                        return int(val) % 10
         except Exception:
             pass
 
-        # ---- 2. 思考プロセス（thinkタグ）を削除して最終回答セクションのみを対象にする ----
-        # <think>...</think> または <思考過程>...</思考過程> を除去
-        cleaned = re.sub(r"<(think|思考過程)>.*?</(think|思考过程|思考過程)>", "", text, flags=re.DOTALL | re.IGNORECASE)
-        
-        # Markdown の強調記号（** __ * _）を除去
-        cleaned = re.sub(r"[*_`]", "", cleaned)
+        # ---- 2. 思考プロセス（thinkタグ）を除去 ----
+        # 思考の迷いの中にある数字を拾わないため
+        main_content = re.sub(r"<(think|思考過程)>.*?</(think|思考过程|思考過程)>", "", text, flags=re.DOTALL | re.IGNORECASE)
+        main_content = re.sub(r"[*_`]", "", main_content)
 
-        # パースを試行する関数（DRY原則のため）
-        def find_digit(src: str) -> Optional[int]:
+        # パースを試行する関数（意図的な回答箇所のみを探す）
+        def find_explicit_answer(src: str) -> Optional[int]:
             # パターン 1: "Answer: <digit>"
             match = re.search(r"Answer\s*[：:]\s*.*?([0-9])", src, re.IGNORECASE | re.DOTALL)
             if match: return int(match.group(1))
@@ -68,40 +74,22 @@ class BaseLLMClient:
             if match: return int(match.group(1))
             return None
 
-        # ---- 1. 回答セクション（thinkタグの外）から探す ----
-        digit = find_digit(cleaned)
+        # 回答セクションから探す
+        digit = find_explicit_answer(main_content)
         if digit is not None:
-            logger.debug(f"パース成功（回答セクション）: {digit}")
             return digit
 
-        # ---- 2. 思考プロセス（thinkタグの中）の末尾から探す (フォールバック) ----
+        # ---- 3. 思考プロセスの末尾から探す (最終救済) ----
         think_match = re.search(r"<(think|思考過程)>(.*?)</(think|思考过程|思考過程)>", text, flags=re.DOTALL | re.IGNORECASE)
         if think_match:
             think_content = think_match.group(2)
-            # 思考プロセスの最後の200文字程度から答えを探す
-            tail_think = think_content[-200:]
-            digit = find_digit(tail_think)
+            # 思考プロセスの最後の方に結論が書かれている場合のみ拾う
+            digit = find_explicit_answer(think_content[-200:])
             if digit is not None:
-                logger.debug(f"パース成功（思考内フォールバック）: {digit}")
                 return digit
 
-        # ---- 3. 最終行に含まれる唯一の1桁数字 ----
-        non_empty_lines = [l.strip() for l in cleaned.splitlines() if l.strip()]
-        if non_empty_lines:
-            last_line = non_empty_lines[-1]
-            # 行の中に1つだけ数字があるか確認
-            digits_in_last = re.findall(r"[0-9]", last_line)
-            if len(digits_in_last) == 1:
-                digit = int(digits_in_last[0])
-                logger.debug(f"パース成功（最終行単一数字パターン）: {digit}")
-                return digit
-
-        # ---- 4. テキスト末尾に最も近い1桁数字 ----
-        all_digits = re.findall(r"[0-9]", cleaned)
-        if all_digits:
-            digit = int(all_digits[-1])
-            logger.debug(f"パース成功（末尾数字フォールバック）: {digit}")
-            return digit
+        # ここで、以前のような「テキスト末尾から適当に拾う」ロジックはあえて削除します
+        # 意図が不明確な数字を拾うのは研究のノイズになるためです
 
         return None
 
@@ -185,9 +173,9 @@ class OllamaClient(BaseLLMClient):
             "temperature": 0.0,
             "top_p": 1.0,
             "seed": 42,
-            "num_predict": 16384,  # 推論モデルの非常に長い思考に対応
-            "num_ctx": 16384,      # コンテキスト窓を広げて長考を可能にする
-            "num_batch": 512,      # プロンプトの処理速度を向上
+            "num_predict": 4096,  # 通常のモデルの長考に十分なサイズ
+            "num_ctx": 4096,      # 9Bモデルを確実にGPUへ収めるためのサイズ
+            "num_batch": 512,      # プロンプトの処理速度を維持
         }
         logger.info(f"OllamaClient 初期化完了: model={self.model_name}, endpoint={self.api_url}")
 

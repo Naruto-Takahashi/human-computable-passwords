@@ -3,15 +3,8 @@ import pandas as pd
 
 
 class ComputablePasswordGenerator:
-    # 人間計算可能なパスワードの流出データを模したデータを自動生成する関数群
-    # このクラスの関数を実行すると、人間計算可能なパスワードを模したデータが生成され、csvファイルとして保存される
-    # 外部のプログラムから呼び出すときは、from computable_password_generator import ComputablePasswordGenerator としてimportを行う
-
     # 生成される DataFrame の共通カラム定義
     COLUMNS = [f"X{i}" for i in range(14)] + ["Z"]
-
-    # この関数群の呼び出しには int: データ数 を引数として与える
-    # この関数群はpandas.DataFrameをreturnする
 
     class Utils:
         @staticmethod
@@ -20,31 +13,13 @@ class ComputablePasswordGenerator:
             sgm = np.random.randint(0, 10, n)
             return sgm
 
-    class GeneratorWithMetadata:
-        # ジェネレータ関数本体と，そのメタデータ（識別名）を保持するクラス
-        def __init__(self, generator, name: str):
-            self.generator = generator
-            self.name = name
-
     @staticmethod
-    # 使用するジェネレータ（パスワード生成アルゴリズム）の選択リストを取得
     def list_generators() -> list:
-        generators = []
-        # generators.append(ComputablePasswordGenerator.GeneratorWithMetadata(ComputablePasswordGenerator.password_simple_add, "simple_add"))
-        # generators.append(ComputablePasswordGenerator.GeneratorWithMetadata(ComputablePasswordGenerator.password_with_middle, "middle"))
-        # generators.append(ComputablePasswordGenerator.GeneratorWithMetadata(ComputablePasswordGenerator.s_x, "s_x"))
-        # generators.append( ComputablePasswordGenerator.GeneratorWithMetadata( ComputablePasswordGenerator.func_13, "func_13" ) )
-        generators.append(
-            ComputablePasswordGenerator.GeneratorWithMetadata(
-                ComputablePasswordGenerator.func_31, "func_31"
-            )
-        )
-        # generators.append( ComputablePasswordGenerator.GeneratorWithMetadata( ComputablePasswordGenerator.func_pow, "func_pow" ) )
-        return generators
+        # 従来のコードとの互換性のため残す
+        return []
 
     @staticmethod
-    # 単純加算アルゴリズム: 最初の3つの数字の合計を10で割った余りを Z (パスワード) とし，X に Z を付加して返す
-    def password_simple_add(datasize: int) -> np.ndarray:
+    def password_simple_add(datasize: int) -> tuple[pd.DataFrame, None]:
         result = []
         for row in range(datasize):
             X = ComputablePasswordGenerator.Utils.sgm(14)
@@ -52,49 +27,13 @@ class ComputablePasswordGenerator:
             row = np.append(X, Z)
             result.append(row)
         table_array = np.array(result)
-        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
+        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS), None
 
     @staticmethod
-    # 中間変数を用いた暗号化アルゴリズム: 各チャレンジを変換して中間変数を求め，特定のインデックスを参照して最終的な Z を生成する
-    def password_with_middle(datasize: int) -> np.ndarray:
+    def func_13(datasize: int) -> tuple[pd.DataFrame, list[int]]:
+        N_user_memory = 100
         result = []
-        sgm = ComputablePasswordGenerator.Utils.sgm(14)
-        for row in range(datasize):
-            X = ComputablePasswordGenerator.Utils.sgm(14)
-            S_X = np.zeros(14)
-            for k in range(14):
-                S_X[k] = sgm[X[k]]
-            mid = (S_X[10] + S_X[11]) % 10
-            Z = (S_X[int(mid)] + S_X[12]) % 10
-            row = np.append(X, Z)
-            result.append(row)
-        table_array = np.array(result)
-        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
-
-    @staticmethod
-    # s_x アルゴリズム: N=100の記憶情報をもとに，ランダムチャレンジから得られた記憶配列 (S_X) のインデックスから Z を算出する (k1,k2) = (2,2)
-    def s_x(datasize: int) -> np.ndarray:
-        N = 100  # the number of images
-        result = []
-        sgm = ComputablePasswordGenerator.Utils.sgm(N)
-        for row in range(datasize):
-            X = np.random.randint(0, N, 14)
-            S_X = np.zeros(14, dtype=int)
-            for k in range(14):
-                S_X[k] = sgm[X[k]]
-            mid = (S_X[10] + S_X[11]) % 10
-            Z = (S_X[12] + S_X[13] + S_X[int(mid)]) % 10
-            row = np.append(X, Z)
-            result.append(row)
-        table_array = np.array(result)
-        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
-
-    @staticmethod
-    # func_13: 記憶数 N=100 に対して (k1,k2) = (1,3) の構成．X[10] をポインタとして用いる
-    def func_13(datasize: int) -> np.ndarray:
-        N_user_memory = 100  # the number of images
-        result = []
-        sgm = ComputablePasswordGenerator.Utils.sgm(N_user_memory)
+        sgm = ComputablePasswordGenerator.Utils.sgm(N_user_memory).tolist()
         for row in range(datasize):
             challenge_idx = np.random.randint(0, N_user_memory, 14)
             X = np.zeros(14, dtype=int)
@@ -105,14 +44,13 @@ class ComputablePasswordGenerator:
             row = np.append(challenge_idx, Z)
             result.append(row)
         table_array = np.array(result)
-        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
+        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS), sgm
 
     @staticmethod
-    # func_31: 記憶数 N=26 に対して (k1,k2) = (3,1) の構成．X[10], X[11], X[12] の和をポインタとして用いる
-    def func_31(datasize: int) -> np.ndarray:
-        N_user_memory = 26  # the number of images
+    def func_31(datasize: int) -> tuple[pd.DataFrame, list[int]]:
+        N_user_memory = 26
         result = []
-        sgm = ComputablePasswordGenerator.Utils.sgm(N_user_memory)
+        sgm = ComputablePasswordGenerator.Utils.sgm(N_user_memory).tolist()
         for row in range(datasize):
             challenge_idx = np.random.randint(0, N_user_memory, 14)
             X = np.zeros(14, dtype=int)
@@ -123,56 +61,13 @@ class ComputablePasswordGenerator:
             row = np.append(challenge_idx, Z)
             result.append(row)
         table_array = np.array(result)
-        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
+        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS), sgm
 
     @staticmethod
-    def explain_logic(generator_name: str, row: pd.Series) -> str:
-        """
-        特定のアルゴリズムとデータ行に対して，正解に至る論理ステップを解説文として生成する．
-        """
-        X = [int(row[f"X{i}"]) for i in range(14)]
-        Z = int(row["Z"])
-        
-        if generator_name == "simple_add":
-            return (
-                f"1. 最初の3つの数字を取得: X0={X[0]}, X1={X[1]}, X2={X[2]}\n"
-                f"2. 和を計算: {X[0]} + {X[1]} + {X[2]} = {X[0]+X[1]+X[2]}\n"
-                f"3. 10で割った余りを算出: {X[0]+X[1]+X[2]} mod 10 = {Z}"
-            )
-        
-        elif generator_name == "func_13":
-            j = X[10] % 10
-            return (
-                f"1. ポインタ j = X10 mod 10 = {X[10]} mod 10 = {j} を計算\n"
-                f"2. インデックス {j} の値 X{j}={X[j]} を取得\n"
-                f"3. Z = (X{j} + X11 + X12 + X13) mod 10 = ({X[j]} + {X[11]} + {X[12]} + {X[13]}) mod 10 = {Z}"
-            )
-
-        elif generator_name == "func_31":
-            j = (X[10] + X[11] + X[12]) % 10
-            return (
-                f"1. ポインタ j = (X10 + X11 + X12) mod 10 = ({X[10]} + {X[11]} + {X[12]}) mod 10 = {j} を計算\n"
-                f"2. インデックス {j} の値 X{j}={X[j]} を取得\n"
-                f"3. Z = (X{j} + X13) mod 10 = ({X[j]} + {X[13]}) mod 10 = {Z}"
-            )
-
-        elif generator_name == "func_pow":
-            v10, v11, v12, v13 = pow(X[10],4), pow(X[11],3), pow(X[12],2), pow(X[13],1)
-            total = (1*v10 + 2*v11 + 3*v12 + 4*v13)
-            return (
-                f"1. 各項を計算: 1*X10^4={v10}, 2*X11^3={2*v11}, 3*X12^2={3*v12}, 4*X13^1={4*v13}\n"
-                f"2. 総和を計算: {1*v10} + {2*v11} + {3*v12} + {4*v13} = {total}\n"
-                f"3. 10で割った余りを算出: {total} mod 10 = {Z}"
-            )
-            
-        return "解説が定義されていないアルゴリズムです．"
-
-    @staticmethod
-    # func_pow: 各チャレンジ値の多項式累乗 (4乗, 3乗, 2乗, 1乗) を計算し，10で割った余りを Z とする
-    def func_pow(datasize: int) -> np.ndarray:
-        N_user_memory = 26  # the number of images
+    def func_pow(datasize: int) -> tuple[pd.DataFrame, list[int]]:
+        N_user_memory = 26
         result = []
-        sgm = ComputablePasswordGenerator.Utils.sgm(N_user_memory)
+        sgm = ComputablePasswordGenerator.Utils.sgm(N_user_memory).tolist()
         for row in range(datasize):
             challenge_idx = np.random.randint(0, N_user_memory, 14)
             X = np.zeros(14, dtype=int)
@@ -187,4 +82,57 @@ class ComputablePasswordGenerator:
             row = np.append(challenge_idx, Z)
             result.append(row)
         table_array = np.array(result)
-        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
+        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS), sgm
+
+    @staticmethod
+    def explain_logic(generator_name: str, row: pd.Series, sgm: list[int] = None) -> str:
+        """
+        特定のアルゴリズムとデータ行に対して，正解に至る論理ステップを解説文として生成する．
+        """
+        # プロンプトに渡されている X は実は challenge_idx (sgmのインデックス)
+        idx = [int(row[f"X{i}"]) for i in range(14)]
+        Z = int(row["Z"])
+        
+        if generator_name == "simple_add":
+            return (
+                f"1. 最初の3つの数字を取得: X0={idx[0]}, X1={idx[1]}, X2={idx[2]}\n"
+                f"2. 和を計算: {idx[0]} + {idx[1]} + {idx[2]} = {idx[0]+idx[1]+idx[2]}\n"
+                f"3. 10で割った余りを算出: {idx[0]+idx[1]+idx[2]} mod 10 = {Z}"
+            )
+        
+        # sgm を使ったアルゴリズムの場合の解説
+        if sgm is None:
+            return "解説の生成に秘密のテーブル(sgm)が必要です．"
+
+        if generator_name == "func_13":
+            # 実際の計算に使われる値 X
+            X = [sgm[i] for i in idx]
+            j = X[10] % 10
+            return (
+                f"1. インデックスに対応するテーブル値を参照: X10=sgm[{idx[10]}]={X[10]}\n"
+                f"2. ポインタ j = X10 mod 10 = {X[10]} mod 10 = {j} を計算\n"
+                f"3. インデックス {j} の値をテーブルから取得: X{j}=sgm[{idx[j]}]={X[j]}\n"
+                f"4. Z = (X{j} + X11 + X12 + X13) mod 10 = ({X[j]} + {X[11]} + {X[12]} + {X[13]}) mod 10 = {Z}"
+            )
+
+        elif generator_name == "func_31":
+            X = [sgm[i] for i in idx]
+            j = (X[10] + X[11] + X[12]) % 10
+            return (
+                f"1. テーブル値を参照: X10=sgm[{idx[10]}]={X[10]}, X11=sgm[{idx[11]}]={X[11]}, X12=sgm[{idx[12]}]={X[12]}\n"
+                f"2. ポインタ j = (X10 + X11 + X12) mod 10 = ({X[10]} + {X[11]} + {X[12]}) mod 10 = {j} を計算\n"
+                f"3. インデックス {j} の値を参照: X{j}=sgm[{idx[j]}]={X[j]}\n"
+                f"4. Z = (X{j} + X13) mod 10 = ({X[j]} + {X[13]}) mod 10 = {Z}"
+            )
+
+        elif generator_name == "func_pow":
+            X = [sgm[i] for i in idx]
+            v10, v11, v12, v13 = pow(X[10],4), pow(X[11],3), pow(X[12],2), pow(X[13],1)
+            total = (1*v10 + 2*v11 + 3*v12 + 4*v13)
+            return (
+                f"1. テーブル値を参照: X10=sgm[{idx[10]}]={X[10]}, X11=sgm[{idx[11]}]={X[11]}, X12=sgm[{idx[12]}]={X[12]}, X13=sgm[{idx[13]}]={X[13]}\n"
+                f"2. 各項を計算: 1*X10^4={v10}, 2*X11^3={2*v11}, 3*X12^2={3*v12}, 4*X13^1={4*v13}\n"
+                f"3. 10で割った余りを算出: {total} mod 10 = {Z}"
+            )
+            
+        return "解説が定義されていないアルゴリズムです．"

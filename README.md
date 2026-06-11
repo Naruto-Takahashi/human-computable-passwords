@@ -92,15 +92,19 @@ python experiments/training/summarize.py
 ローカルLLM（Ollama）または Gemini API を用いた評価が可能です．
 
 ```bash
-# ローカルLLMを用いた一括評価（RTX 2080 Ti等での並列実行に対応）
-python experiments/benchmarks/batch_benchmark.py --model qwen2.5:7b --parallel 12
+# 1. 単発手法の実行
+python experiments/benchmarks/runner.py --model gemma2:9b --generator simple_add --rationale --use_code
 
-# 評価結果の集計
+# 2. 全4パラダイム（手法）の自動比較
+python experiments/benchmarks/run_paradigms.py --model gemma2:9b --generator simple_add
+
+# 評価結果の集計（ summary_llm.md の生成）
 python experiments/benchmarks/summarize.py
 ```
 
-- **並列実行**: `--parallel` オプションにより，GPUリソースを最大限活用した高速な推論が可能です．
-- **対応モデル**: Ollamaで動作する任意のモデル（Qwen2.5, Llama3.1等）および Gemini シリーズ．
+- **実験パラダイム**: `pure` (ゼロショット), `rationale` (ヒントあり), `pot` (コード実行), `rationale_pot` (最強構成) の4段階で評価可能．
+- **PoT (Program-of-Thought)**: `--use_code` を有効にすると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
+- **出力構造**: `outputs/benchmarks/<モデル>/<アルゴリズム>/<手法>/run_<日時>/` に自動整理されます．
 
 ---
 
