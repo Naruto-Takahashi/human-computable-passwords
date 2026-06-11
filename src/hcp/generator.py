@@ -126,6 +126,48 @@ class ComputablePasswordGenerator:
         return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS)
 
     @staticmethod
+    def explain_logic(generator_name: str, row: pd.Series) -> str:
+        """
+        特定のアルゴリズムとデータ行に対して，正解に至る論理ステップを解説文として生成する．
+        """
+        X = [int(row[f"X{i}"]) for i in range(14)]
+        Z = int(row["Z"])
+        
+        if generator_name == "simple_add":
+            return (
+                f"1. 最初の3つの数字を取得: X0={X[0]}, X1={X[1]}, X2={X[2]}\n"
+                f"2. 和を計算: {X[0]} + {X[1]} + {X[2]} = {X[0]+X[1]+X[2]}\n"
+                f"3. 10で割った余りを算出: {X[0]+X[1]+X[2]} mod 10 = {Z}"
+            )
+        
+        elif generator_name == "func_13":
+            j = X[10] % 10
+            return (
+                f"1. ポインタ j = X10 mod 10 = {X[10]} mod 10 = {j} を計算\n"
+                f"2. インデックス {j} の値 X{j}={X[j]} を取得\n"
+                f"3. Z = (X{j} + X11 + X12 + X13) mod 10 = ({X[j]} + {X[11]} + {X[12]} + {X[13]}) mod 10 = {Z}"
+            )
+
+        elif generator_name == "func_31":
+            j = (X[10] + X[11] + X[12]) % 10
+            return (
+                f"1. ポインタ j = (X10 + X11 + X12) mod 10 = ({X[10]} + {X[11]} + {X[12]}) mod 10 = {j} を計算\n"
+                f"2. インデックス {j} の値 X{j}={X[j]} を取得\n"
+                f"3. Z = (X{j} + X13) mod 10 = ({X[j]} + {X[13]}) mod 10 = {Z}"
+            )
+
+        elif generator_name == "func_pow":
+            v10, v11, v12, v13 = pow(X[10],4), pow(X[11],3), pow(X[12],2), pow(X[13],1)
+            total = (1*v10 + 2*v11 + 3*v12 + 4*v13)
+            return (
+                f"1. 各項を計算: 1*X10^4={v10}, 2*X11^3={2*v11}, 3*X12^2={3*v12}, 4*X13^1={4*v13}\n"
+                f"2. 総和を計算: {1*v10} + {2*v11} + {3*v12} + {4*v13} = {total}\n"
+                f"3. 10で割った余りを算出: {total} mod 10 = {Z}"
+            )
+            
+        return "解説が定義されていないアルゴリズムです．"
+
+    @staticmethod
     # func_pow: 各チャレンジ値の多項式累乗 (4乗, 3乗, 2乗, 1乗) を計算し，10で割った余りを Z とする
     def func_pow(datasize: int) -> np.ndarray:
         N_user_memory = 26  # the number of images

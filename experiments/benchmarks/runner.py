@@ -2,26 +2,8 @@
 # =============================================================================
 # benchmark_runner.py
 # =============================================================================
-# 人間計算可能なパスワード（HCP）を題材とした LLM ベンチマークのメインスクリプト．
-#
-# 機能概要:
-#   1. コマンドライン引数でベンチマーク設定を受け取る
-#   2. HCP データセットを生成し，Few-shot 用とテスト用に分割する
-#   3. テスト問題ごとにプロンプトを構築し，Gemini API に送信する
-#   4. 予測結果を正解と照合し，結果を CSV / JSON に保存する
-#
-# 使い方:
-#   cd src/
-#   python llm_benchmark/benchmark_runner.py \
-#     --generator func_31 \
-#     --n_shot 10 \
-#     --n_test 50 \
-#     --model gemini-2.0-flash \
-#     --sleep_sec 4.0 \
-#     --seed 42
-#
-# 必要な環境変数:
-#   GEMINI_API_KEY : Google AI Studio から取得した API キー
+# 人間計算可能なパスワード（HCP）を題材とした LLM アルゴリズム推論ベンチマークの
+# 実行エントリーポイント．
 # =============================================================================
 
 import argparse
@@ -37,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
 # llm パッケージからインポート
 from llm import (
     generate_dataset, extract_challenge_and_response, list_available_generators,
-    get_prompt_builder, GeminiClient, OllamaClient, BenchmarkRecord, Evaluator, make_output_dir
+    get_prompt_builder, GeminiClient, OllamaClient, BenchmarkRecord, Evaluator, make_output_dir, CodeExecutor
 )
 
 
@@ -45,98 +27,81 @@ from llm import (
 # ログ設定
 # =============================================================================
 
-def setup_logging(verbose: bool = False) -> None:
+def setup_logging(verbose: bool = False):
     """
-    ロギングレベルと出力フォーマットを設定する．
-
-    Args:
-        verbose : True の場合は DEBUG レベルで詳細ログを出力する．
-                  False の場合は INFO レベルで通常ログを出力する．
+    ロギングの設定を行う．
+    verbose=True の場合は DEBUG レベル，それ以外は INFO レベル．
     """
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
-        level   = level,
-        format  = "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        datefmt = "%Y-%m-%d %H:%M:%S",
+        level  = level,
+        format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+        datefmt= "%Y-%m-%d %H:%M:%S",
     )
 
 
 # =============================================================================
-# コマンドライン引数のパース
+# コマンドライン引数の定義
 # =============================================================================
 
-def parse_args() -> argparse.Namespace:
-    """
-    コマンドライン引数をパースして返す．
-
-    Returns:
-        解析済みの引数を保持する Namespace オブジェクト．
-    """
+def parse_args():
     parser = argparse.ArgumentParser(
-        description=(
-            "人間計算可能なパスワード（HCP）を題材とした LLM Few-shot 推論ベンチマーク．\n"
-            "Gemini API を使用して，隠れたアルゴリズムルールを推論させる実験を自動実行します．"
-        ),
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="HCP LLM ベンチマーク実行スクリプト",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    # ---- データセット設定 ----
+    # ---- 実験設定 ----
     parser.add_argument(
         "--generator",
         type    = str,
         default = "func_31",
         choices = list_available_generators(),
-        help    = f"使用するパスワードジェネレータ名（デフォルト: func_31）",
+        help    = "使用する HCP アルゴリズム名",
     )
     parser.add_argument(
         "--n_shot",
         type    = int,
         default = 10,
-        help    = "Few-shot プロンプトに含める例題数（デフォルト: 10）",
+        help    = "Few-shot 用の正解例数",
     )
     parser.add_argument(
         "--n_test",
         type    = int,
         default = 50,
-        help    = "テスト問題数（デフォルト: 50）",
+        help    = "評価を行うテスト問題数",
     )
     parser.add_argument(
         "--seed",
         type    = int,
         default = 42,
-        help    = "乱数シード（デフォルト: 42）",
+        help    = "データ生成に使用する乱数シード",
     )
 
-    # ---- API・プロバイダ設定 ----
+    # ---- モデル設定 ----
     parser.add_argument(
         "--provider",
         type    = str,
         default = "gemini",
         choices = ["gemini", "ollama"],
-        help    = "LLMプロバイダ名（gemini: Google API, ollama: ローカルOllama）（デフォルト: gemini）",
+        help    = "LLM プロバイダ",
     )
     parser.add_argument(
         "--model",
         type    = str,
-        default = "gemini-2.5-flash",
-        help    = "使用するモデル名（Gemini時デフォルト: gemini-2.5-flash、Ollama時推奨: qwen2.5:3b）",
+        default = "gemini-2.0-flash",
+        help    = "使用するモデル名（Gemini: gemini-2.0-flash, Ollama: qwen2.5:7b 等）",
     )
     parser.add_argument(
         "--sleep_sec",
         type    = float,
         default = 4.0,
-        help    = (
-            "API リクエスト間の待機時間（秒）．"
-            "無料枠（15 RPM）では 4.0 秒以上を推奨（デフォルト: 4.0、Ollama時は 0.0 推奨）"
-        ),
+        help    = "リクエスト間の待機時間（Gemini の API レートリミット回避用）",
     )
     parser.add_argument(
         "--api_key",
         type    = str,
         default = None,
-        help    = (
-            "Gemini API キー（省略時は環境変数 GEMINI_API_KEY を使用）"
-        ),
+        help    = "Gemini API キー（未指定の場合は環境変数 GEMINI_API_KEY を参照）",
     )
     parser.add_argument(
         "--ollama_url",
@@ -147,17 +112,28 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--parallel",
         type    = int,
-        default = 1,
-        help    = "並列リクエスト数（Ollama/ローカル実行時のみ推奨。デフォルト: 1）",
+        default = 32,
+        help    = "並列リクエスト数（Ollama/ローカル実行時のみ推奨。デフォルト: 32）",
     )
+    parser.add_argument(
+        "--rationale",
+        action  = "store_true",
+        help    = "Few-shot例題に計算過程の解説を含める（精度向上用）",
+    )
+    parser.add_argument(
+        "--use_code",
+        action  = "store_true",
+        help    = "LLMにPythonコードを書かせ，それを実行して回答を得る (PoT方式)",
+    )
+
 
     # ---- プロンプト設定 ----
     parser.add_argument(
         "--prompt_mode",
         type    = str,
         default = "text",
-        choices = ["text"],   # 将来: ["text", "image"]
-        help    = "プロンプトのモード（デフォルト: text）",
+        choices = ["text"],
+        help    = "プロンプトの構成モード",
     )
 
     # ---- 出力設定 ----
@@ -173,50 +149,36 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--verbose",
         action  = "store_true",
-        help    = "詳細なデバッグログを出力する",
+        help    = "デバッグログと詳細な推論過程を表示する",
     )
 
     return parser.parse_args()
 
 
 # =============================================================================
-# メイン処理
+# メイン実行ロジック
 # =============================================================================
 
-def run_benchmark(args: argparse.Namespace) -> None:
+def run_benchmark(args):
     """
-    ベンチマークのメイン処理を実行する．
-
-    処理フロー:
-        1. データセット生成（Few-shot 用 + テスト用）
-        2. 各モジュール（クライアント，プロンプトビルダー，評価器）の初期化
-        3. テスト問題ループ:
-            a. プロンプトの構築
-            b. API / ローカルLLM への送信
-            c. 結果の記録
-            d. 進捗の表示
-        4. 結果の保存（CSV + JSON）
-
-    Args:
-        args : parse_args() で得た引数オブジェクト．
+    ベンチマーク実験を一通り実行し，結果を保存する．
     """
-    logger = logging.getLogger(__name__)
-
-    # =========================================================================
-    # Step 1: データセット生成
-    # =========================================================================
-    print(f"\n{'=' * 60}")
-    print(f"【ベンチマーク設定】")
+    print("=" * 60)
+    print("【ベンチマーク設定】")
     print(f"  プロバイダ   : {args.provider}")
     print(f"  モデル       : {args.model}")
     print(f"  ジェネレータ : {args.generator}")
     print(f"  Few-shot 数  : {args.n_shot} 件")
     print(f"  テスト件数   : {args.n_test} 件")
     print(f"  API 待機時間 : {args.sleep_sec} 秒 / リクエスト")
-    print(f"  乱数シード   : {args.seed}")
-    print(f"{'=' * 60}\n")
+    print(f"  乱数シード   : {args.seed} 件")
+    print(f"  PoT方式      : {'ON' if args.use_code else 'OFF'}")
+    print("=" * 60)
 
-    print("データセットを生成中...")
+    # =========================================================================
+    # Step 1: データセットの準備
+    # =========================================================================
+    print("\nデータセットを生成中...")
     shot_df, test_df = generate_dataset(
         generator_name = args.generator,
         n_shot         = args.n_shot,
@@ -227,11 +189,10 @@ def run_benchmark(args: argparse.Namespace) -> None:
     print(f"  テスト問題  : {len(test_df)} 件")
 
     # =========================================================================
-    # Step 2: モジュールの初期化
+    # Step 2: クライアントとビルダーの初期化
     # =========================================================================
     print("\nモジュールを初期化中...")
 
-    # クライアントの差し替え分岐
     if args.provider == "gemini":
         client = GeminiClient(
             model_name = args.model,
@@ -243,19 +204,24 @@ def run_benchmark(args: argparse.Namespace) -> None:
             model_name = args.model,
             api_url    = args.ollama_url,
         )
-        # ローカル推論向けに、タイムアウト対策でスリープ値を考慮
-        # (OllamaClient側で既にリクエスト後待機処理はないため、追加の sleep_sec が適用される)
-    else:
-        raise ValueError(f"未知のプロバイダ: {args.provider}")
 
-    # プロンプトビルダー（テキストモード）
     prompt_builder = get_prompt_builder(mode=args.prompt_mode)
 
-    # 評価器（出力ディレクトリを自動生成）
+    # 実験手法（paradigm）の判定
+    if args.rationale and args.use_code:
+        paradigm = "rationale_pot"
+    elif args.rationale:
+        paradigm = "rationale"
+    elif args.use_code:
+        paradigm = "pot"
+    else:
+        paradigm = "pure"
+
     output_dir = make_output_dir(
         base_dir       = args.output_base_dir,
         generator_name = args.generator,
-        model_name     = f"{args.provider}_{args.model.replace(':', '_')}",
+        model_name     = args.model,
+        paradigm       = paradigm,
     )
     evaluator = Evaluator(output_dir=output_dir)
 
@@ -269,22 +235,29 @@ def run_benchmark(args: argparse.Namespace) -> None:
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     def process_item(i, row):
-        # ---- 開始メッセージ ----
         print(f"  [{i + 1:3d}/{args.n_test}] 推論開始...")
         
-        # ---- チャレンジとレスポンスの取り出し ----
         challenge, correct_ans = extract_challenge_and_response(row)
 
-        # ---- プロンプトの構築 ----
         prompt = prompt_builder.build_fewshot_prompt(
-            shot_df        = shot_df,
-            test_challenge = challenge,
+            shot_df           = shot_df,
+            test_challenge    = challenge,
+            generator_name    = args.generator,
+            include_rationale = args.rationale,
+            use_code          = args.use_code
         )
 
-        # ---- API / ローカルLLM 呼び出し ----
         raw_response, predicted = client.predict(prompt)
 
-        # ---- 評価記録の構築 ----
+        # コード実行が有効な場合，コードを抽出して実行
+        if args.use_code:
+            code_match = re.search(r"```python\s+(.*?)\s+```", raw_response, re.DOTALL)
+            if code_match:
+                code_str = code_match.group(1)
+                code_result = CodeExecutor.execute_llm_code(code_str, challenge)
+                if code_result is not None:
+                    predicted = code_result
+
         record = BenchmarkRecord(
             challenge    = challenge,
             correct_ans  = correct_ans,
@@ -293,7 +266,6 @@ def run_benchmark(args: argparse.Namespace) -> None:
         )
         return i, record
 
-    # 結果を順番通りに格納するためのリスト
     results = [None] * len(test_df)
 
     with ThreadPoolExecutor(max_workers=args.parallel) as executor:
@@ -304,7 +276,6 @@ def run_benchmark(args: argparse.Namespace) -> None:
             results[idx] = record
             evaluator.add_record(record)
             
-            # ---- 進捗表示 (改行を確実に入れて重なりを防ぐ) ----
             status_icon = "✓" if record.is_correct else ("?" if record.predicted is None else "✗")
             print(
                 f"\n  [{idx + 1:3d}/{args.n_test}] {status_icon} "
@@ -312,20 +283,12 @@ def run_benchmark(args: argparse.Namespace) -> None:
             )
             
             if args.verbose:
-                # 思考プロセスが含まれる場合は think タグを除去した末尾を表示
                 clean_content = re.sub(r"<(think|思考過程)>.*?</(think|思考过程|思考過程)>", "[THINKING...]", record.raw_response, flags=re.DOTALL | re.IGNORECASE)
                 tail = clean_content[-100:].replace("\n", " ") if len(clean_content) > 100 else clean_content.replace("\n", " ")
                 print(f"      [Result Tail]: ...{tail}")
             elif record.predicted is None:
-                # パースエラー時のみ、原因究明のために少しだけ末尾を出す
                 print(f"      [Parse Error Context]: {record.raw_response[-100:].replace('\\n', ' ')}")
 
-
-    # =========================================================================
-    # Step 4: 結果の保存
-    # =========================================================================
-
-    # 実験メタデータの構築
     metadata = {
         "provider"       : args.provider,
         "generator_name" : args.generator,
@@ -335,15 +298,13 @@ def run_benchmark(args: argparse.Namespace) -> None:
         "model_name"     : args.model,
         "sleep_sec"      : args.sleep_sec,
         "prompt_mode"    : args.prompt_mode,
+        "rationale"      : args.rationale,
+        "use_code"       : args.use_code,
         "output_dir"     : output_dir,
     }
 
     evaluator.save_results(metadata=metadata)
 
-
-# =============================================================================
-# エントリーポイント
-# =============================================================================
 
 if __name__ == "__main__":
     args = parse_args()

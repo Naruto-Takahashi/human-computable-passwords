@@ -2,23 +2,44 @@
 import glob
 import json
 import os
+import unicodedata
 from datetime import datetime
+
+def get_display_width(text):
+    """全角文字を2、半角文字を1として文字列の表示幅を計算する"""
+    width = 0
+    for char in str(text):
+        if unicodedata.east_asian_width(char) in ('W', 'F', 'A'):
+            width += 2
+        else:
+            width += 1
+    return width
+
+def pad_text(text, width):
+    """表示幅を考慮したパディングを行う"""
+    text_str = str(text)
+    curr_width = get_display_width(text_str)
+    padding = max(0, width - curr_width)
+    return text_str + (" " * padding)
 
 def generate_markdown_table(headers, rows):
     if not rows:
         return "データがありません。"
 
-    col_widths = [len(str(h)) for h in headers]
+    # 各カラムの最大表示幅を計算
+    col_widths = [get_display_width(h) for h in headers]
     for row in rows:
         for i, cell in enumerate(row):
-            col_widths[i] = max(col_widths[i], len(str(cell)))
+            col_widths[i] = max(col_widths[i], get_display_width(cell))
 
-    header_line = "| " + " | ".join(f"{str(h):<{col_widths[i]}}" for i, h in enumerate(headers)) + " |"
+    # ヘッダー行
+    header_line = "| " + " | ".join(pad_text(h, col_widths[i]) for i, h in enumerate(headers)) + " |"
+    # セパレータ
     separator_line = "|-" + "-|-".join("-" * w for w in col_widths) + "-|"
     
     data_lines = []
     for row in rows:
-        line = "| " + " | ".join(f"{str(cell):<{col_widths[i]}}" for i, cell in enumerate(row)) + " |"
+        line = "| " + " | ".join(pad_text(cell, col_widths[i]) for i, cell in enumerate(row)) + " |"
         data_lines.append(line)
 
     return "\n".join([header_line, separator_line] + data_lines)
@@ -39,6 +60,7 @@ def summarize_llm_results():
         "実行日時",
         "モデル名",
         "アルゴリズム",
+        "手法",
         "Few-shot",
         "テスト数",
         "Accuracy",
@@ -51,14 +73,32 @@ def summarize_llm_results():
             with open(filepath, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            # フォルダ名からタイムスタンプを抽出 (run_YYYYMMDD_HHMMSS_...)
-            folder_name = os.path.basename(os.path.dirname(filepath))
-            timestamp = folder_name.split("_")[1] + "_" + folder_name.split("_")[2]
+            # ディレクトリ構造から情報を取得 (model/generator/paradigm/run_timestamp)
+            parts = os.path.relpath(os.path.dirname(filepath), output_dir).split(os.sep)
+            if len(parts) >= 4:
+                model_name = parts[0]
+                gen_name = parts[1]
+                paradigm = parts[2]
+                run_dir = parts[3]
+                timestamp = run_dir.replace("run_", "")
+            else:
+                # 以前の構造へのフォールバック
+                model_name = data.get("model_name", "unknown")
+                gen_name = data.get("generator_name", "unknown")
+                timestamp = os.path.basename(os.path.dirname(filepath)).replace("run_", "")
+                # メタデータから手法を判定
+                is_rationale = data.get("rationale", False)
+                is_use_code = data.get("use_code", False)
+                if is_rationale and is_use_code: paradigm = "rationale_pot"
+                elif is_rationale: paradigm = "rationale"
+                elif is_use_code: paradigm = "pot"
+                else: paradigm = "pure"
 
             row = [
                 timestamp,
-                data.get("model_name", ""),
-                data.get("generator_name", ""),
+                model_name,
+                gen_name,
+                paradigm,
                 str(data.get("n_shot", "")),
                 str(data.get("n_test", "")),
                 f"{data.get('accuracy', 0):.2%}",
@@ -75,7 +115,7 @@ def summarize_llm_results():
 
     summary_content = f"""# LLM ベンチマーク実験結果 サマリー
 
-このファイルは `src/llm_benchmark/summarize_llm_results.py` によって自動生成されました。
+このファイルは `experiments/benchmarks/summarize.py` によって自動生成されました。
 最終更新: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## 実験結果一覧

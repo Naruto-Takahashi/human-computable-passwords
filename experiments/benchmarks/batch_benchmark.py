@@ -21,6 +21,7 @@ def run_batch():
     parser.add_argument("--model", type=str, default="qwen2.5:7b", help="使用するモデル名")
     parser.add_argument("--n_shot", type=int, default=10, help="Few-shot 例題数")
     parser.add_argument("--n_test", type=int, default=50, help="テスト問題数")
+    parser.add_argument("--rationale", action="store_true", help="計算過程の解説を含める")
     args = parser.parse_args()
 
     generators = list_available_generators()
@@ -30,7 +31,7 @@ def run_batch():
     n_test = args.n_test
     sleep_sec = 0.0
 
-    print(f"Batch Benchmark Start: model={model}, generators={generators}, parallel={args.parallel}")
+    print(f"Batch Benchmark Start: model={model}, generators={generators}, parallel={args.parallel}, rationale={args.rationale}")
 
     # 実行スクリプトのパス
     script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "runner.py")
@@ -47,6 +48,10 @@ def run_batch():
             "--sleep_sec", str(sleep_sec),
             "--parallel", str(args.parallel)
         ]
+        if args.rationale:
+            cmd.append("--rationale")
+        if args.use_code:
+            cmd.append("--use_code")
         
         try:
             subprocess.run(cmd, check=True)
@@ -54,6 +59,10 @@ def run_batch():
             print(f"Error running benchmark for {gen}: {e}")
 
     print("\nBatch Benchmark Completed.")
+
+if __name__ == "__main__":
+    run_batch()
+Benchmark Completed.")
 
 if __name__ == "__main__":
     run_batch()

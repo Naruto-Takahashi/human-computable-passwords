@@ -61,9 +61,10 @@ class TextPromptBuilder(PromptBuilder):
 
     # タスク説明部分: LLMへの役割・目標の指示
     _SYSTEM_INSTRUCTION: str = (
-        "あなたは入出力ペアを観察し，ルールを推論して新しい入力に対する出力を予測する専門家です．\n"
+        "あなたは入出力ペアを観察し，隠れたルールを特定して新しい入力に対する出力を予測する専門家です．\n"
+        "提示されるデータには，シンプルかつ論理的な算術ルールが存在します．\n"
         "入力は14個の整数（X0〜X13），出力は0から9の整数1桁（Z）です．\n"
-        "指示に従い，簡潔な思考過程の後に回答を提示してください．\n\n"
+        "注意深く観察し，思考過程を述べた後，必ず最後に回答を提示してください．\n\n"
     )
 
     # Few-shot 例題セクションのヘッダー
@@ -72,32 +73,34 @@ class TextPromptBuilder(PromptBuilder):
     # テスト問題セクション
     _QUESTION_HEADER: str = "\n【予測課題】\n"
     _ANSWER_INSTRUCTION: str = (
-        "入力: {challenge}\n"
-        "思考過程を詳しく述べた後，必ず最後に次の形式で回答してください：\n"
-        "Answer: <0〜9の整数1桁>\n"
-        "Z = "
+        "Input: {challenge}\n"
+        "思考過程を記述した後，必ず最後に以下のJSON形式でのみ回答を出力してください：\n"
+        "{{\n"
+        "  \"answer\": <0〜9の整数1桁>\n"
+        "}}\n"
+    )
+
+    # コード出力指示セクション
+    _CODE_INSTRUCTION: str = (
+        "Input: {challenge}\n"
+        "この入出力データの法則に従い，新しい Input に対する Z を計算する Python 関数 `predict_z(X)` を作成してください．\n"
+        "X は 14 個の整数のリストです．\n"
+        "思考過程を述べた後，必ず最後に ```python ... ``` ブロックで関数を定義してください．\n"
     )
 
     def build_fewshot_prompt(
         self,
         shot_df        : pd.DataFrame,
         test_challenge : list[int],
+        generator_name : str = "unknown",
+        include_rationale: bool = False,
+        use_code       : bool = False
     ) -> str:
         """
         Few-shot 例題とテスト問題を組み合わせたテキストプロンプトを構築する．
-
-        プロンプトの構造:
-            1. タスク説明（LLMへの役割・目標の指示）
-            2. 観察データ（Few-shot 例題ペアの一覧）
-            3. 予測課題（テスト問題のチャレンジ）
-
-        Args:
-            shot_df        : Few-shot 例題の DataFrame．
-            test_challenge : テスト問題のチャレンジ（14個の整数のリスト）．
-
-        Returns:
-            構築されたプロンプト文字列．
         """
+        from hcp.generator import ComputablePasswordGenerator
+
         # ---- (1) タスク説明 ----
         prompt_parts = [self._SYSTEM_INSTRUCTION]
 
@@ -106,14 +109,23 @@ class TextPromptBuilder(PromptBuilder):
         for _, row in shot_df.iterrows():
             challenge_vals = [int(row[f"X{i}"]) for i in range(14)]
             response_val   = int(row["Z"])
-            # 極めて簡潔な形式で記述（トークン節約）
-            prompt_parts.append(f"{challenge_vals} -> Z={response_val}\n")
+            # 少し構造的な形式で記述
+            prompt_parts.append(f"Input: {challenge_vals} | Output: Z = {response_val}\n")
+            
+            if include_rationale and generator_name != "unknown":
+                rationale = ComputablePasswordGenerator.explain_logic(generator_name, row)
+                prompt_parts.append(f"Reasoning:\n{rationale}\n\n")
 
         # ---- (3) テスト問題 ----
         prompt_parts.append(self._QUESTION_HEADER)
-        prompt_parts.append(
-            self._ANSWER_INSTRUCTION.format(challenge=test_challenge)
-        )
+        if use_code:
+            prompt_parts.append(
+                self._CODE_INSTRUCTION.format(challenge=test_challenge)
+            )
+        else:
+            prompt_parts.append(
+                self._ANSWER_INSTRUCTION.format(challenge=test_challenge)
+            )
 
         return "".join(prompt_parts)
 

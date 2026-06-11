@@ -233,16 +233,16 @@ class Evaluator:
 # ヘルパー関数: 出力ディレクトリ名の生成
 # =============================================================================
 
-def make_output_dir(base_dir: str, generator_name: str, model_name: str) -> str:
+def make_output_dir(base_dir: str, generator_name: str, model_name: str, paradigm: str = "pure") -> str:
     """
-    モデル名・ジェネレータ名ごとに階層化された実験出力ディレクトリのパスを生成する．
+    モデル名・ジェネレータ名・手法（paradigm）ごとに階層化された実験出力ディレクトリのパスを生成する．
 
-    構造: {base_dir}/{model_name}/{generator_name}/run_{timestamp}
+    構造: {base_dir}/{model_name}/{generator_name}/{paradigm}/run_{timestamp}
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # モデル名からファイルシステムに不適切な文字を除去
     safe_model_name = model_name.replace(":", "_").replace("/", "_")
     
     # 階層構造を構築
-    path = os.path.join(base_dir, safe_model_name, generator_name, f"run_{timestamp}")
+    path = os.path.join(base_dir, safe_model_name, generator_name, paradigm, f"run_{timestamp}")
     return path

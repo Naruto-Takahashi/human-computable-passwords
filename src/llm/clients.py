@@ -143,10 +143,15 @@ class GeminiClient(BaseLLMClient):
         max_retries = 10
         base_delay = 5.0
 
+        # モデル名に 'models/' プレフィックスがない場合は付加する
+        qualified_model_name = self.model_name
+        if not qualified_model_name.startswith("models/"):
+            qualified_model_name = f"models/{qualified_model_name}"
+
         for attempt in range(max_retries):
             try:
                 response = self.client.models.generate_content(
-                    model    = self.model_name,
+                    model    = qualified_model_name,
                     contents = prompt,
                     config   = self._generation_config,
                 )
