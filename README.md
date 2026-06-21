@@ -20,33 +20,36 @@
 
 ```text
 human-computable-passwords/
-├── code/                      # コアライブラリ（再利用可能なロジック）
-│   ├── hcp/                  # HCP生成・モデル・ユーティリティ
+├── code/                      # システムのソースコード
+│   ├── core/                  # HCPコアモジュール
 │   │   ├── generator.py      # HCPデータおよびチャレンジ生成器
 │   │   ├── models.py         # 従来の機械学習モデル（MLP, LSTM, CNN）の定義
 │   │   └── utils.py          # データ分割，乱数シード固定，可視化ユーティリティ
-│   └── llm/                  # LLM推論用モジュール
-│       ├── clients.py        # Gemini / Ollama (ローカルLLM) クライアント
-│       ├── prompt.py         # Few-shot プロンプト構築ロジック
-│       ├── evaluator.py      # 推論結果の評価・パース・記録
-│       └── data_generator.py # LLM評価用データセット生成器
-├── code/scripts/              # 実行用スクリプト（実験の入り口）
-│   ├── training/             # 従来の機械学習モデルの学習実験
-│   │   ├── train.py          # 個別学習実行スクリプト
-│   │   ├── batch_run.py      # 複数条件のバッチ学習
-│   │   └── summarize.py      # 学習結果の自動集計
-│   └── benchmarks/           # LLMベンチマーク評価実験
-│       ├── runner.py         # LLM推論実行スクリプト
-│       ├── batch_benchmark.py # 全アルゴリズムの一括評価
-│       └── summarize.py      # LLM評価結果の自動集計
-├── docs/                 # 研究資料およびドキュメント
-│   ├── previous-works/       # 既存研究の論文PDFおよび卒論スライド等
-│   └── log/                  # 研究計画書 (plan.md) および研究ログ (log.md)
-├── results/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
-│   ├── training/             # 学習実験のログ・グラフ・メタデータ
-│   ├── benchmarks/           # LLMベンチマークの結果（モデル/手法/アルゴリズム/実行日時の階層構造）
-│   ├── summary.md            # 学習実験結果の自動集計表
-│   └── summary_llm.md        # LLMベンチマーク結果の自動集計表
+│   ├── llm_agent/             # LLM推論用モジュール
+│   │   ├── clients.py        # Gemini / Ollama / Mock クライアント
+│   │   ├── prompt.py         # Few-shot プロンプト構築ロジック
+│   │   ├── evaluator.py      # 推論結果の評価・パース・記録
+│   │   ├── code_executor.py  # PoT方式用の Python コード実行器
+│   │   └── data_generator.py # LLM評価用データセット生成器
+│   └── scripts/               # 実験用の実行エントリースクリプト群
+│       ├── run_benchmark.py   # LLMベンチマーク実行スクリプト
+│       ├── batch_eval.py      # 全アルゴリズムの一括評価実行
+│       ├── summarize_llm.py   # LLM評価結果の自動集計
+│       ├── train_baseline.py  # 従来の機械学習モデルの個別学習
+│       ├── batch_train.py     # 複数条件のバッチ学習
+│       └── summarize_baseline.py # 学習結果の自動集計
+├── docs/                      # 計画書・ログ・実行手順書
+│   ├── plan.md                # 研究計画書
+│   ├── log.md                 # 研究開発ログ
+│   ├── benchmark_guide.md     # 実験手順ガイド
+│   └── ultimate_showdown_prompt.md # プロンプト検証用メモ
+├── literature/                # 先行研究の文献（論文PDFやスライド等）
+│   └── Towards Human Computable Passwords.pdf
+├── results/                   # 実験結果の出力先（Git管理対象外，summaryのみコミット対象）
+│   ├── benchmarks/            # LLMベンチマーク結果データ（モデル/手法/アルゴリズム/実行日時の階層）
+│   ├── baselines/             # 学習実験のログ・グラフ・メタデータ
+│   ├── summary.md             # 機械学習実験結果の自動集計表
+│   └── summary_llm.md         # LLMベンチマーク結果の自動集計表
 ├── flake.nix                 # Nix (Flakes) による再現可能なPython開発環境の定義
 ├── flake.lock                # Nix環境の依存パッケージのバージョンロックファイル
 ├── .envrc                    # direnv用設定ファイル
