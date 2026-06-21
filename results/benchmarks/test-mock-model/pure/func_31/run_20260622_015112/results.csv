@@ -1,0 +1,4 @@
+challenge,correct_ans,predicted,is_correct,raw_response
+"[6, 18, 21, 1, 9, 12, 24, 20, 5, 11, 11, 19, 10, 25]",5,5,True,"<think>\nThis is a mocked thinking process for testing.\nWe are analyzing the challenge to compute the correct password digit.\nExpected outcome roll is 0.3225, candidate answer is 5.\n</think>\nAnswer: 5\nTherefore, Z = 5."
+"[9, 3, 21, 17, 25, 11, 1, 9, 3, 13, 15, 14, 7, 13]",9,7,False,"<think>\nThis is a mocked thinking process for testing.\nWe are analyzing the challenge to compute the correct password digit.\nExpected outcome roll is 0.4871, candidate answer is 7.\n</think>\nAnswer: 7\nTherefore, Z = 7."
+"[7, 2, 2, 0, 4, 9, 6, 25, 8, 6, 8, 7, 11, 1]",9,5,False,"<think>\nThis is a mocked thinking process for testing.\nWe are analyzing the challenge to compute the correct password digit.\nExpected outcome roll is 0.8219, candidate answer is 4.\n</think>\nAnswer: 5\nTherefore, Z = 5."

@@ -1,0 +1,15 @@
+{
+  "provider": "ollama",
+  "generator_name": "func_31",
+  "n_shot": 1,
+  "n_test": 3,
+  "seed": 42,
+  "model_name": "qwen2.5:3b",
+  "sleep_sec": 0.0,
+  "prompt_mode": "text",
+  "output_dir": "/home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/outputs/llm_benchmark/run_20260608_181139_func_31_ollama_qwen2.5_3b",
+  "total_count": 3,
+  "correct_count": 0,
+  "parse_error_count": 0,
+  "accuracy": 0.0
+}

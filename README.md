@@ -20,7 +20,7 @@
 
 ```text
 human-computable-passwords/
-├── src/                      # コアライブラリ（再利用可能なロジック）
+├── code/                      # コアライブラリ（再利用可能なロジック）
 │   ├── hcp/                  # HCP生成・モデル・ユーティリティ
 │   │   ├── generator.py      # HCPデータおよびチャレンジ生成器
 │   │   ├── models.py         # 従来の機械学習モデル（MLP, LSTM, CNN）の定義
@@ -30,7 +30,7 @@ human-computable-passwords/
 │       ├── prompt.py         # Few-shot プロンプト構築ロジック
 │       ├── evaluator.py      # 推論結果の評価・パース・記録
 │       └── data_generator.py # LLM評価用データセット生成器
-├── experiments/              # 実行用スクリプト（実験の入り口）
+├── code/scripts/              # 実行用スクリプト（実験の入り口）
 │   ├── training/             # 従来の機械学習モデルの学習実験
 │   │   ├── train.py          # 個別学習実行スクリプト
 │   │   ├── batch_run.py      # 複数条件のバッチ学習
@@ -39,10 +39,10 @@ human-computable-passwords/
 │       ├── runner.py         # LLM推論実行スクリプト
 │       ├── batch_benchmark.py # 全アルゴリズムの一括評価
 │       └── summarize.py      # LLM評価結果の自動集計
-├── research/                 # 研究資料およびドキュメント
+├── docs/                 # 研究資料およびドキュメント
 │   ├── previous-works/       # 既存研究の論文PDFおよび卒論スライド等
 │   └── log/                  # 研究計画書 (plan.md) および研究ログ (log.md)
-├── outputs/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
+├── results/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
 │   ├── training/             # 学習実験のログ・グラフ・メタデータ
 │   ├── benchmarks/           # LLMベンチマークの結果（モデル/手法/アルゴリズム/実行日時の階層構造）
 │   ├── summary.md            # 学習実験結果の自動集計表
@@ -81,41 +81,41 @@ direnv allow
 
 ```bash
 # 個別モデルの学習
-python experiments/training/train.py
+python code/scripts/train_baseline.py
 
 # 学習結果の集計
-python experiments/training/summarize.py
+python code/scripts/summarize_baseline.py
 ```
 
 ### LLMベンチマーク評価
 
 ローカルLLM（Ollama），Gemini API，または検証用モックを用いた評価が可能です．
-詳細な実行手順やパラメータの仕様，トラブルシューティングについては，[LLM ベンチマーク実行ガイド](research/log/BENCHMARK_GUIDE.md) を参照してください．
+詳細な実行手順やパラメータの仕様，トラブルシューティングについては，[LLM ベンチマーク実行ガイド](docs/benchmark_guide.md) を参照してください．
 
 ```bash
 # 1. 単発手法の実行
-python experiments/benchmarks/runner.py --model gemma2:9b --generator simple_add --rationale --use_code
+python code/scripts/run_benchmark.py --model gemma2:9b --generator simple_add --rationale --use_code
 
 # 2. オフライン検証用（Mockプロバイダによるドライラン）
-python experiments/benchmarks/runner.py --provider mock --model test-mock-model --n_test 5
+python code/scripts/run_benchmark.py --provider mock --model test-mock-model --n_test 5
 
 # 3. 全4パラダイム（手法）の自動比較
-python experiments/benchmarks/run_paradigms.py --model gemma2:9b --generator simple_add
+python code/scripts/benchmarks/run_paradigms.py --model gemma2:9b --generator simple_add
 
 # 評価結果の集計（ summary_llm.md の生成）
-python experiments/benchmarks/summarize.py
+python code/scripts/summarize_llm.py
 ```
 
 - **実験パラダイム**: `pure` (ゼロショット)，`rationale` (ヒントあり)，`pot` (コード実行)，`rationale_pot` (最強構成) の4段階で評価可能．
 - **PoT (Program-of-Thought)**: `--use_code` を有効にすると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
-- **出力構造**: `outputs/benchmarks/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
+- **出力構造**: `results/benchmarks/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
 
 ---
 
 ## ドキュメント・実行結果へのリンク
 
-- [LLM ベンチマーク実行ガイド (`BENCHMARK_GUIDE.md`)](research/log/BENCHMARK_GUIDE.md)
-- [研究計画書 (`plan.md`)](research/log/plan.md)
-- [研究ログ (`log.md`)](research/log/log.md)
-- [学習実験結果のサマリー (`summary.md`)](outputs/summary.md)
-- [LLMベンチマーク結果のサマリー (`summary_llm.md`)](outputs/summary_llm.md)
+- [LLM ベンチマーク実行ガイド (`BENCHMARK_GUIDE.md`)](docs/benchmark_guide.md)
+- [研究計画書 (`plan.md`)](docs/plan.md)
+- [研究ログ (`log.md`)](docs/log.md)
+- [学習実験結果のサマリー (`summary.md`)](results/summary.md)
+- [LLMベンチマーク結果のサマリー (`summary_llm.md`)](results/summary_llm.md)

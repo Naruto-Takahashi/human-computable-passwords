@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-このファイルは `experiments/benchmarks/summarize.py` によって自動生成されました。
-最終更新: 2026-06-22 01:51:28
+このファイルは `code/scripts/summarize_llm.py` によって自動生成されました．
+最終更新: 2026-06-22 01:51:49
 
 ## 実験結果一覧
 

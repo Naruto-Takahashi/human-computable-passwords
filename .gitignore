@@ -6,5 +6,5 @@
 .DS_Store
 /.direnv/
 /.gemini/
-!/outputs/summary.md
+!/results/summary.md
 *Zone.Identifier
