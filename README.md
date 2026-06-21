@@ -44,7 +44,7 @@ human-computable-passwords/
 │   └── log/                  # 研究計画書 (plan.md) および研究ログ (log.md)
 ├── outputs/                  # 実験結果の出力先ディレクトリ（Git管理対象外）
 │   ├── training/             # 学習実験のログ・グラフ・メタデータ
-│   ├── benchmarks/           # LLMベンチマークの結果（モデル/アルゴリズム/実行日時の階層構造）
+│   ├── benchmarks/           # LLMベンチマークの結果（モデル/手法/アルゴリズム/実行日時の階層構造）
 │   ├── summary.md            # 学習実験結果の自動集計表
 │   └── summary_llm.md        # LLMベンチマーク結果の自動集計表
 ├── flake.nix                 # Nix (Flakes) による再現可能なPython開発環境の定義
@@ -89,22 +89,25 @@ python experiments/training/summarize.py
 
 ### LLMベンチマーク評価
 
-ローカルLLM（Ollama）または Gemini API を用いた評価が可能です．
+ローカルLLM（Ollama），Gemini API，または検証用モックを用いた評価が可能です．
 
 ```bash
 # 1. 単発手法の実行
 python experiments/benchmarks/runner.py --model gemma2:9b --generator simple_add --rationale --use_code
 
-# 2. 全4パラダイム（手法）の自動比較
+# 2. オフライン検証用（Mockプロバイダによるドライラン）
+python experiments/benchmarks/runner.py --provider mock --model test-mock-model --n_test 5
+
+# 3. 全4パラダイム（手法）の自動比較
 python experiments/benchmarks/run_paradigms.py --model gemma2:9b --generator simple_add
 
 # 評価結果の集計（ summary_llm.md の生成）
 python experiments/benchmarks/summarize.py
 ```
 
-- **実験パラダイム**: `pure` (ゼロショット), `rationale` (ヒントあり), `pot` (コード実行), `rationale_pot` (最強構成) の4段階で評価可能．
+- **実験パラダイム**: `pure` (ゼロショット)，`rationale` (ヒントあり)，`pot` (コード実行)，`rationale_pot` (最強構成) の4段階で評価可能．
 - **PoT (Program-of-Thought)**: `--use_code` を有効にすると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
-- **出力構造**: `outputs/benchmarks/<モデル>/<アルゴリズム>/<手法>/run_<日時>/` に自動整理されます．
+- **出力構造**: `outputs/benchmarks/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
 
 ---
 
