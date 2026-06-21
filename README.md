@@ -90,6 +90,7 @@ python experiments/training/summarize.py
 ### LLMベンチマーク評価
 
 ローカルLLM（Ollama），Gemini API，または検証用モックを用いた評価が可能です．
+詳細な実行手順やパラメータの仕様，トラブルシューティングについては，[LLM ベンチマーク実行ガイド](research/log/BENCHMARK_GUIDE.md) を参照してください．
 
 ```bash
 # 1. 単発手法の実行
@@ -113,6 +114,8 @@ python experiments/benchmarks/summarize.py
 
 ## ドキュメント・実行結果へのリンク
 
+- [LLM ベンチマーク実行ガイド (`BENCHMARK_GUIDE.md`)](research/log/BENCHMARK_GUIDE.md)
+- [研究計画書 (`plan.md`)](research/log/plan.md)
 - [研究ログ (`log.md`)](research/log/log.md)
 - [学習実験結果のサマリー (`summary.md`)](outputs/summary.md)
 - [LLMベンチマーク結果のサマリー (`summary_llm.md`)](outputs/summary_llm.md)
