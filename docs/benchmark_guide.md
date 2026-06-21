@@ -23,8 +23,8 @@
 ## 1. 基本的な実行手順
 
 ### 単発テスト実行（思考プロセスの観察用）
-特定のアルゴリズムに対し、少数のテストでLLMの挙動（Chain-of-Thought）を詳しく見たい場合に使用します。
-`--verbose` を付けると、各回答の終わりにパースされた結果と推論の断片が表示されます。
+特定のアルゴリズムに対し，少数のテストでLLMの挙動（Chain-of-Thought）を詳しく見たい場合に使用します．
+`--verbose` を付けると，各回答の終わりにパースされた結果と推論の断片が表示されます．
 
 ```bash
 python code/scripts/run_benchmark.py \
@@ -37,7 +37,7 @@ python code/scripts/run_benchmark.py \
 ```
 
 ### 一括評価実行（統計データの取得用）
-全てのアルゴリズム（simple_add, func_13, func_31, func_pow）に対して一気に精度を測定したい場合に使用します。
+全てのアルゴリズム（simple_add，func_13，func_31，func_pow）に対して一気に精度を測定したい場合に使用します．
 
 ```bash
 python code/scripts/batch_eval.py \
@@ -48,7 +48,7 @@ python code/scripts/batch_eval.py \
 ```
 
 ### 結果の集計
-実験完了後、以下のコマンドを叩くと `results/summary_llm.md` が更新され、表形式で結果を確認できます。
+実験完了後，以下のコマンドを叩くと `results/summary_llm.md` が更新され，表形式で結果を確認できます．
 
 ```bash
 python code/scripts/summarize_llm.py
@@ -62,11 +62,11 @@ python code/scripts/summarize_llm.py
 | :--- | :--- | :--- |
 | `--provider` | LLMの実行基盤 | ローカルなら `ollama`，APIなら `gemini`，検証用なら `mock` |
 | `--model` | 使用するモデル名 | `ollama list` で表示される名前を指定 |
-| `--generator` | HCPアルゴリズム | `simple_add`, `func_13`, `func_31`, `func_pow` |
+| `--generator` | HCPアルゴリズム | `simple_add`，`func_13`，`func_31`，`func_pow` |
 | `--n_shot` | ヒント（例題）の数 | デフォルト `10`．圧縮形式により多く指定可能 |
 | `--parallel` | 並列実行数 | 7B/9Bモデルなら `2~3`，推論モデルは `1` |
 | `--rationale` | 手法：ヒントあり | 例題に計算過程の解説を付加する |
-| `--use_code` | 手法：PoT (Code) | 言葉ではなく Python コードで計算させる |
+| `--use_code` | 手法：PoT (Code) | 言磨ではなく Python コードで計算させる |
 | `--verbose` | 詳細ログ出力 | 思考プロセスを見たい場合は必ず付ける |
 
 ---
@@ -75,14 +75,14 @@ python code/scripts/summarize_llm.py
 
 研究目的に応じて，以下のフラグを組み合わせて実行してください．結果はディレクトリに自動分類されます．
 
-1. **Pure Few-shot** (`フラグなし`)
-   - AIが自力でルールを発見できるかをテストする．
-2. **Rationalized Few-shot** (`--rationale`)
-   - AIに計算手順を教えた状態で，論理的に振る舞えるかをテストする．
-3. **Program-of-Thought (PoT)** (`--use_code`)
-   - AIにコードを書かせ，算数ミスを排除した純粋なロジック力をテストする．
-4. **Rationalized PoT** (`--rationale --use_code`)
-   - 正解のロジックを教えた上で，それをコード化して実行できるか（最強構成）．
+1. **Pure Few-shot**（`フラグなし`）
+   - AIが具体例のみから背後のルールを「帰納（逆推定）」できるかをテストする．
+2. **Rationalized Few-shot**（`--rationale`）
+   - AIに解き方の手順を教えた状態で，それを正確に「演繹（実行）」できるかをテストする．
+3. **Program-of-Thought (PoT)**（`--use_code`）
+   - AIに計算ロジック（プログラム）を生成させ，計算機で実行することで，単純な算数ミスを排除した論理推論力をテストする．
+4. **Rationalized PoT**（`--rationale --use_code`）
+   - 教えられた解法アルゴリズムを正確に Python コードとして「演繹（実装・実行）」できるかをテストする（最強構成）．
 
 ---
 
@@ -93,7 +93,7 @@ python code/scripts/summarize_llm.py
 `results/benchmarks/{model_name}/{paradigm}/{generator_name}/run_{timestamp}/`
 
 ### 質的分析（思考ログの確認）
-各テストケースの **「生の思考プロセス」** が自動保存されます．
+各テストケースの**「生の思考プロセス」**が自動保存されます．
 `results/benchmarks/.../reasoning_logs/` を確認してください．
 * `001_CORRECT.md`: 正解したケースの論理展開
 * `002_WRONG.md`: 間違えたケースでの「迷い」や「誤解」
@@ -119,7 +119,7 @@ nix develop --command python3 code/scripts/run_benchmark.py \
 ## 6. 研究を進めるための Tips
 
 ### Q. モデルの「考え方」を知りたい
-**A.** `runner.py` に `--verbose` を付けて実行してください．
+**A.** `run_benchmark.py` に `--verbose` を付けて実行してください．
 画面に表示される `[Result Tail]` やファイル内のフルログを読むことで，モデルがルールをどう誤解しているか，どこで計算ミスをしたかが分かります．
 
 ### Q. GPUの使用率を上げたい（高速化したい）
@@ -134,5 +134,5 @@ nix develop --command python3 code/scripts/run_benchmark.py \
 ---
 
 ## 7. 実行ディレクトリの注意
-全てのコマンドはプロジェクトのルートディレクトリ（`README.md` がある場所）で実行することを想定しています．
+すべてのコマンドはプロジェクトのルートディレクトリ（`README.md` がある場所）で実行することを想定しています．
 環境が読み込まれていない場合は，先に `direnv allow` を実行してください．
