@@ -129,13 +129,13 @@ class Evaluator:
         log_dir = os.path.join(abs_output_dir, "reasoning_logs")
         os.makedirs(log_dir, exist_ok=True)
 
-        status = "correct" if record.is_correct else ("parse_error" if record.predicted is None else "wrong")
-        filename = f"case_{index:03d}_{status}.md"
+        status = "CORRECT" if record.is_correct else ("PARSE_ERROR" if record.predicted is None else "WRONG")
+        filename = f"{index:03d}_{status}.md"
         filepath = os.path.join(log_dir, filename)
 
         content = [
             f"# Test Case {index:03d}",
-            f"- **Result**: {status.upper()}",
+            f"- **Result**: {status}",
             f"- **Challenge**: `{record.challenge}`",
             f"- **Correct Answer**: `{record.correct_ans}`",
             f"- **Predicted**: `{record.predicted if record.predicted is not None else 'N/A'}`",
@@ -174,7 +174,7 @@ class Evaluator:
 
         Args:
             metadata : 実験設定や結果サマリーを含む辞書．
-                       正解率（accuracy）と件数は自動的に付加される．
+                       正解率（accuracy）と件数は自动的に付加される．
         """
         # ---- 正解率と統計情報をメタデータに追加 ----
         total       = len(self.records)
@@ -235,14 +235,14 @@ class Evaluator:
 
 def make_output_dir(base_dir: str, generator_name: str, model_name: str, paradigm: str = "pure") -> str:
     """
-    モデル名・ジェネレータ名・手法（paradigm）ごとに階層化された実験出力ディレクトリのパスを生成する．
+    モデル名・手法（paradigm）・ジェネレータ名ごとに階層化された実験出力ディレクトリのパスを生成する．
 
-    構造: {base_dir}/{model_name}/{generator_name}/{paradigm}/run_{timestamp}
+    構造: {base_dir}/{model_name}/{paradigm}/{generator_name}/run_{timestamp}
     """
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     # モデル名からファイルシステムに不適切な文字を除去
     safe_model_name = model_name.replace(":", "_").replace("/", "_")
     
     # 階層構造を構築
-    path = os.path.join(base_dir, safe_model_name, generator_name, paradigm, f"run_{timestamp}")
+    path = os.path.join(base_dir, safe_model_name, paradigm, generator_name, f"run_{timestamp}")
     return path

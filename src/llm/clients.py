@@ -232,3 +232,53 @@ class OllamaClient(BaseLLMClient):
                     time.sleep(1)
 
         return raw_response, parsed_digit
+
+
+class MockClient(BaseLLMClient):
+    """
+    検証用のモック LLM クライアント．
+    """
+    def __init__(self, model_name: str = "mock-model", sleep_sec: float = 0.1):
+        self.model_name = model_name
+        self.sleep_sec = sleep_sec
+        import random
+        self.random = random
+        logger.info(f"MockClient 初期化完了: model={self.model_name}")
+
+    def predict(self, prompt: str) -> tuple[str, Optional[int]]:
+        import time
+        time.sleep(self.sleep_sec)
+
+        # プロンプトから秘密の答えを推測することはせず、擬似的に正解または間違いを返す
+        # チャレンジの正解を prompt から正規表現等で抽出できればベスト
+        # チャレンジ行 " Z = ?" もしくは "答えの数字" をパースする
+        # とりあえず簡易的に、パースされるべき正解の値をランダムに設定するか、
+        # プロンプトに埋め込まれているテスト問題の解答部分から正解を推測します。
+        
+        # テストプロンプトの末尾から、最後の Challenge 部分を拾って擬似的に計算する
+        # （ここではモックなので適当な 0-9 の数字を正解候補とし、たまに誤答やパースエラーにする）
+        correct_candidate = self.random.randint(0, 9)
+        
+        # 80% 正解, 10% 誤答, 10% パースエラー
+        roll = self.random.random()
+        if roll < 0.8:
+            answer_str = f"Answer: {correct_candidate}"
+            predicted = correct_candidate
+        elif roll < 0.9:
+            wrong_candidate = (correct_candidate + 1) % 10
+            answer_str = f"Answer: {wrong_candidate}"
+            predicted = wrong_candidate
+        else:
+            answer_str = "I cannot determine the answer."
+            predicted = None
+
+        thinking = (
+            "<think>\n"
+            "This is a mocked thinking process for testing.\n"
+            "We are analyzing the challenge to compute the correct password digit.\n"
+            f"Expected outcome roll is {roll:.4f}, candidate answer is {correct_candidate}.\n"
+            "</think>\n"
+        )
+
+        raw_response = f"{thinking}{answer_str}\nTherefore, Z = {predicted if predicted is not None else 'unknown'}."
+        return raw_response, predicted

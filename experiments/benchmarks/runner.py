@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
 # llm パッケージからインポート
 from llm import (
     generate_dataset, extract_challenge_and_response, list_available_generators,
-    get_prompt_builder, GeminiClient, OllamaClient, BenchmarkRecord, Evaluator, make_output_dir, CodeExecutor
+    get_prompt_builder, GeminiClient, OllamaClient, MockClient, BenchmarkRecord, Evaluator, make_output_dir, CodeExecutor
 )
 
 
@@ -82,7 +82,7 @@ def parse_args():
         "--provider",
         type    = str,
         default = "gemini",
-        choices = ["gemini", "ollama"],
+        choices = ["gemini", "ollama", "mock"],
         help    = "LLM プロバイダ",
     )
     parser.add_argument(
@@ -205,6 +205,11 @@ def run_benchmark(args):
         client = OllamaClient(
             model_name = args.model,
             api_url    = args.ollama_url,
+        )
+    elif args.provider == "mock":
+        client = MockClient(
+            model_name = args.model,
+            sleep_sec  = 0.05,
         )
 
     prompt_builder = get_prompt_builder(mode=args.prompt_mode)
