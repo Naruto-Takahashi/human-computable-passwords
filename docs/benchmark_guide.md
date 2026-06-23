@@ -29,8 +29,10 @@
 ```bash
 python code/scripts/run_benchmark.py \
   --provider ollama \
-  --model deepseek-r1:7b \
+  --model qwen2.5:7b \
   --generator func_31 \
+  --stage 0 \
+  --paradigm pure \
   --n_test 3 \
   --parallel 1 \
   --verbose
@@ -41,10 +43,12 @@ python code/scripts/run_benchmark.py \
 
 ```bash
 python code/scripts/batch_eval.py \
-  --model deepseek-r1:7b \
+  --model qwen2.5:7b \
   --parallel 1 \
   --n_shot 10 \
-  --n_test 20
+  --n_test 20 \
+  --stage 1 \
+  --paradigm rationale_pot
 ```
 
 ### 結果の集計
@@ -65,23 +69,24 @@ python code/scripts/summarize_llm.py
 | `--generator` | HCPアルゴリズム | `simple_add`，`func_13`，`func_31`，`func_pow` |
 | `--n_shot` | ヒント（例題）の数 | デフォルト `10`．圧縮形式により多く指定可能 |
 | `--parallel` | 並列実行数 | 7B/9Bモデルなら `2~3`，推論モデルは `1` |
-| `--rationale` | 手法：ヒントあり | 例題に計算過程の解説を付加する |
-| `--use_code` | 手法：PoT (Code) | 言磨ではなく Python コードで計算させる |
+| `--stage` | 開示情報ステージ | `0` (鍵・ルール無), `1` (鍵有・ルール無), `2` (鍵無・ルール有), `3` (鍵部分公開・ルール有) |
+| `--k_disclosed` | 鍵の部分公開数 | Stage 3 で公開する秘密鍵の要素数 $K$。デフォルト `5` |
+| `--paradigm` | 実験手法（パラダイム） | `pure` (ゼロショット), `rationale` (計算解説あり), `pot` (Pythonコード実行), `rationale_pot` (解説+コード実行) |
 | `--verbose` | 詳細ログ出力 | 思考プロセスを見たい場合は必ず付ける |
 
 ---
 
 ## 3. 実験パラダイム（手法）の選び方
 
-研究目的に応じて，以下のフラグを組み合わせて実行してください．結果はディレクトリに自動分類されます．
+研究目的に応じて，`--paradigm` に以下のいずれかを指定して実行してください．結果はディレクトリに自動分類されます（`stage{stage}_{paradigm}`）．
 
-1. **Pure Few-shot**（`フラグなし`）
+1. **Pure Few-shot** (`pure`)
    - AIが具体例のみから背後のルールを「帰納（逆推定）」できるかをテストする．
-2. **Rationalized Few-shot**（`--rationale`）
+2. **Rationalized Few-shot** (`rationale`)
    - AIに解き方の手順を教えた状態で，それを正確に「演繹（実行）」できるかをテストする．
-3. **Program-of-Thought (PoT)**（`--use_code`）
+3. **Program-of-Thought (PoT)** (`pot`)
    - AIに計算ロジック（プログラム）を生成させ，計算機で実行することで，単純な算数ミスを排除した論理推論力をテストする．
-4. **Rationalized PoT**（`--rationale --use_code`）
+4. **Rationalized PoT** (`rationale_pot`)
    - 教えられた解法アルゴリズムを正確に Python コードとして「演繹（実装・実行）」できるかをテストする（最強構成）．
 
 ---

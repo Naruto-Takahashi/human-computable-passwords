@@ -116,14 +116,24 @@ def parse_args():
         help    = "並列リクエスト数（Ollama/ローカル実行時のみ推奨。デフォルト: 32）",
     )
     parser.add_argument(
-        "--rationale",
-        action  = "store_true",
-        help    = "Few-shot例題に計算過程の解説を含める（精度向上用）",
+        "--stage",
+        type    = int,
+        default = 1,
+        choices = [0, 1, 2, 3],
+        help    = "実験の開示段階（Stage 0: 鍵・ルール無し, Stage 1: 鍵あり・ルール無し, Stage 2: 鍵無し・ルールあり, Stage 3: 鍵部分公開・ルールあり）",
     )
     parser.add_argument(
-        "--use_code",
-        action  = "store_true",
-        help    = "LLMにPythonコードを書かせ，それを実行して回答を得る (PoT方式)",
+        "--k_disclosed",
+        type    = int,
+        default = 5,
+        help    = "Stage 3 で公開する秘密鍵の要素数 K",
+    )
+    parser.add_argument(
+        "--paradigm",
+        type    = str,
+        default = "pure",
+        choices = ["pure", "rationale", "pot", "rationale_pot"],
+        help    = "実験手法の選択（pure, rationale, pot, rationale_pot）",
     )
 
 
@@ -163,6 +173,10 @@ def run_benchmark(args):
     """
     ベンチマーク実験を一通り実行し，結果を保存する．
     """
+    # paradigm 設定から rationale と use_code の真偽値を決定する
+    rationale = args.paradigm in ["rationale", "rationale_pot"]
+    use_code = args.paradigm in ["pot", "rationale_pot"]
+
     print("=" * 60)
     print("【ベンチマーク設定】")
     print(f"  プロバイダ   : {args.provider}")
@@ -172,7 +186,10 @@ def run_benchmark(args):
     print(f"  テスト件数   : {args.n_test} 件")
     print(f"  API 待機時間 : {args.sleep_sec} 秒 / リクエスト")
     print(f"  乱数シード   : {args.seed}")
-    print(f"  PoT方式      : {'ON' if args.use_code else 'OFF'}")
+    print(f"  PoT方式      : {'ON' if use_code else 'OFF'}")
+    print(f"  実験ステージ : Stage {args.stage}")
+    if args.stage == 3:
+        print(f"  鍵公開数 (K) : {args.k_disclosed}")
     print("=" * 60)
 
     # =========================================================================
@@ -213,16 +230,9 @@ def run_benchmark(args):
         )
 
     prompt_builder = get_prompt_builder(mode=args.prompt_mode)
-
-    # 実験手法（paradigm）の判定
-    if args.rationale and args.use_code:
-        paradigm = "rationale_pot"
-    elif args.rationale:
-        paradigm = "rationale"
-    elif args.use_code:
-        paradigm = "pot"
-    else:
-        paradigm = "pure"
+    
+    # paradigm フォルダ名にステージ情報を付加して管理する
+    paradigm = f"stage{args.stage}_{args.paradigm}"
 
     output_dir = make_output_dir(
         base_dir       = args.output_base_dir,
@@ -250,15 +260,17 @@ def run_benchmark(args):
             shot_df           = shot_df,
             test_challenge    = challenge,
             generator_name    = args.generator,
-            include_rationale = args.rationale,
-            use_code          = args.use_code,
-            sgm               = sgm
+            include_rationale = rationale,
+            use_code          = use_code,
+            sgm               = sgm,
+            stage             = args.stage,
+            k_disclosed       = args.k_disclosed
         )
 
         raw_response, predicted = client.predict(prompt)
 
         # コード実行が有効な場合，コードを抽出して実行
-        if args.use_code:
+        if use_code:
             code_match = re.search(r"```python\s+(.*?)\s+```", raw_response, re.DOTALL)
             if code_match:
                 code_str = code_match.group(1)
@@ -306,8 +318,11 @@ def run_benchmark(args):
         "model_name"     : args.model,
         "sleep_sec"      : args.sleep_sec,
         "prompt_mode"    : args.prompt_mode,
-        "rationale"      : args.rationale,
-        "use_code"       : args.use_code,
+        "rationale"      : rationale,
+        "use_code"       : use_code,
+        "paradigm"       : args.paradigm,
+        "stage"          : args.stage,
+        "k_disclosed"    : args.k_disclosed,
         "output_dir"     : output_dir,
     }
 

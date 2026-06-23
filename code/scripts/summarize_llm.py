@@ -77,8 +77,8 @@ def summarize_llm_results():
             parts = os.path.relpath(os.path.dirname(filepath), output_dir).split(os.sep)
             if len(parts) >= 4:
                 model_name = parts[0]
-                gen_name = parts[1]
-                paradigm = parts[2]
+                paradigm = parts[1]
+                gen_name = parts[2]
                 run_dir = parts[3]
                 timestamp = run_dir.replace("run_", "")
             else:

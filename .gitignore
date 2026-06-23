@@ -7,4 +7,5 @@
 /.direnv/
 /.gemini/
 !/results/summary.md
+/results/benchmarks/
 *Zone.Identifier

@@ -95,7 +95,9 @@ class TextPromptBuilder(PromptBuilder):
         generator_name : str = "unknown",
         include_rationale: bool = False,
         use_code       : bool = False,
-        sgm            : list[int] = None
+        sgm            : list[int] = None,
+        stage          : int = 1,
+        k_disclosed    : int = 0
     ) -> str:
         """
         Few-shot 例題とテスト問題を組み合わせたテキストプロンプトを構築する．
@@ -105,24 +107,59 @@ class TextPromptBuilder(PromptBuilder):
         # ---- (1) タスク説明 ----
         prompt = self._SYSTEM_INSTRUCTION
         
-        # 秘密の鍵テーブル（sgm）が存在する場合は公開する
+        # アルゴリズムルールの説明 (Stage 2, Stage 3)
+        if stage in [2, 3]:
+            prompt += "【アルゴリズムの計算ルール】\n"
+            if generator_name == "simple_add":
+                prompt += "ルール：Z = (X0 + X1 + X2) mod 10\n"
+                prompt += "（入力リスト X の最初の3つの要素を合計し、10で割った余りを求めます）\n\n"
+            elif generator_name == "func_13":
+                prompt += "ルール：\n"
+                prompt += "1. 入力リストの各値 X[i] (0 <= i <= 13) は、SGM_TABLE のインデックスに対応する値です（X[i] = SGM_TABLE[入力のi番目の値]）。\n"
+                prompt += "2. j = X[10] mod 10 を計算します。\n"
+                prompt += "3. Z = (X[j] + X[11] + X[12] + X[13]) mod 10 を計算します。\n\n"
+            elif generator_name == "func_31":
+                prompt += "ルール：\n"
+                prompt += "1. 入力リストの各値 X[i] (0 <= i <= 13) は、SGM_TABLE のインデックスに対応する値です（X[i] = SGM_TABLE[入力のi番目の値]）。\n"
+                prompt += "2. j = (X[10] + X[11] + X[12]) mod 10 を計算します。\n"
+                prompt += "3. Z = (X[j] + X[13]) mod 10 を計算します。\n\n"
+            elif generator_name == "func_pow":
+                prompt += "ルール：\n"
+                prompt += "1. 入力リストの各値 X[i] (0 <= i <= 13) は、SGM_TABLE のインデックスに対応する値です（X[i] = SGM_TABLE[入力のi番目の値]）。\n"
+                prompt += "2. Z = (1 * X[10]^4 + 2 * X[11]^3 + 3 * X[12]^2 + 4 * X[13]^1) mod 10 を計算します。\n\n"
+            else:
+                prompt += "（このアルゴリズムのルール説明は定義されていません）\n\n"
+
+        # 秘密の鍵テーブル（sgm）の公開制御
         if sgm is not None:
-            prompt += "【秘密の鍵テーブル】\n"
-            prompt += f"SGM_TABLE = {sgm}\n"
-            prompt += "このテーブルは，入力の各値（インデックス）を実際の計算用数値に変換するために使用されます．\n"
-            prompt += "例: 入力が 5 の場合，実際の計算には SGM_TABLE[5] の値を使用してください．\n\n"
+            if stage == 1:
+                # Stage 1: 完全公開
+                prompt += "【秘密の鍵テーブル】\n"
+                prompt += f"SGM_TABLE = {sgm}\n"
+                prompt += "このテーブルは，入力の各値（インデックス）を実際の計算用数値に変換するために使用されます．\n"
+                prompt += "例: 入力が 5 の場合，実際の計算には SGM_TABLE[5] の値を使用してください．\n\n"
+            elif stage == 3:
+                # Stage 3: 部分公開
+                disclosed = sgm[:k_disclosed]
+                masked = disclosed + ["?"] * (len(sgm) - k_disclosed)
+                prompt += "【秘密の鍵テーブル（部分公開）】\n"
+                prompt += f"SGM_TABLE = {masked}\n"
+                prompt += f"テーブルの最初の {k_disclosed} 要素のみが公開されています。残りの要素は \"?\" で表されており、未知です。\n"
+                prompt += "公開されているインデックスに対しては SGM_TABLE[idx] の値を使用して計算できますが、未知のインデックスについては入出力関係から逆推定する必要があります。\n\n"
+            # Stage 0, 2 の場合は秘密鍵テーブルをプロンプトに含めない
 
         # ---- (2) 観察データ（Few-shot 例題）の列挙 ----
         prompt += self._EXAMPLES_HEADER
         for _, row in shot_df.iterrows():
             challenge_vals = [int(row[f"X{i}"]) for i in range(14)]
             response_val   = int(row["Z"])
-            # 少し構造的な形式で記述
             prompt += f"Input: {challenge_vals} | Output: Z = {response_val}\n"
             
             if include_rationale and generator_name != "unknown":
-                rationale = ComputablePasswordGenerator.explain_logic(generator_name, row, sgm=sgm)
-                prompt += f"Reasoning:\n{rationale}\n\n"
+                visible_sgm = sgm if stage in [1, 3] else None
+                if generator_name == "simple_add" or visible_sgm is not None:
+                    rationale = ComputablePasswordGenerator.explain_logic(generator_name, row, sgm=visible_sgm)
+                    prompt += f"Reasoning:\n{rationale}\n\n"
 
         # ---- (3) テスト問題 ----
         prompt += self._QUESTION_HEADER
