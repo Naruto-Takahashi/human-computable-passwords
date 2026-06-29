@@ -60,11 +60,12 @@ def main():
     # Prepare Output Directories
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_name_safe = args.model.replace("/", "_")
+    # org 名（例: "Qwen/"）を除いた短い小文字のモデル名を使用
+    model_name_safe = args.model.split("/")[-1].lower()
     output_dir = os.path.join(
         base_dir,
         "results",
-        "finetuning",
+        "models",
         model_name_safe,
         f"stage{args.stage}",
         args.generator,

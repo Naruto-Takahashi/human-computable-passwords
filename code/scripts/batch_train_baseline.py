@@ -68,6 +68,11 @@ for model in Models.list_models():
             os.makedirs(plot_dir, exist_ok=True)
             Utils.plot_history(history, plot_dir)
 
+            # 学習済みモデルの保存
+            model_save_path = os.path.join(plot_dir, "model.keras")
+            model.model.save(model_save_path)
+            print(f"Saved trained model to {model_save_path}")
+
         except Exception as e:
             print("Error: generator: {}, model: {}".format(generator.name, model.name))
             print(e)

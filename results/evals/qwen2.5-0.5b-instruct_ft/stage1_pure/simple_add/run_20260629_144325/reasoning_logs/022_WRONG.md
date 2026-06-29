@@ -1,0 +1,13 @@
+# Test Case 022
+- **Result**: WRONG
+- **Challenge**: `[8, 4, 2, 2, 0, 7, 1, 2, 7, 7, 3, 3, 4, 5]`
+- **Correct Answer**: `4`
+- **Predicted**: `5`
+
+---
+
+## Raw LLM Response
+
+{
+  "answer": 5
+}

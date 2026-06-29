@@ -1,0 +1,20 @@
+{
+  "provider": "lora",
+  "generator_name": "simple_add",
+  "n_shot": 10,
+  "n_test": 100,
+  "seed": 42,
+  "model_name": "results/finetuning/Qwen_Qwen2.5-0.5B-Instruct/stage0/simple_add/run_20260629_144502",
+  "sleep_sec": 4.0,
+  "prompt_mode": "text",
+  "rationale": false,
+  "use_code": false,
+  "paradigm": "pure",
+  "stage": 0,
+  "k_disclosed": 5,
+  "output_dir": "/home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/prompting/Qwen_Qwen2.5-0.5B-Instruct_finetuned/stage0_pure/simple_add/run_20260629_145218",
+  "total_count": 100,
+  "correct_count": 4,
+  "parse_error_count": 0,
+  "accuracy": 0.04
+}

@@ -70,6 +70,11 @@ for model in Models.list_models():
             # 学習完了後，エポックごとの履歴辞書を渡してグラフ保存
             Utils.plot_history(model.model.history.history, output_dir)
 
+            # 学習済みモデルの保存
+            model_save_path = os.path.join(output_dir, "model.keras")
+            model.model.save(model_save_path)
+            print(f"Saved trained model to {model_save_path}")
+
             # 実験メタデータ（設定や最終精度）を整理してJSON保存
             final_epoch_metrics = {
                 metric: values[-1]

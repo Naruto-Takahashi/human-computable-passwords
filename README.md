@@ -125,7 +125,7 @@ python code/scripts/summarize_prompting.py
 
 - **実験パラダイム**: `pure`（ゼロショット），`rationale`（ヒントあり），`pot`（コード実行），`rationale_pot`（最強構成）の4段階で評価可能．
 - **PoT (Program-of-Thought)**: `--use_code` を有効にすると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
-- **出力構造**: `results/prompting/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
+- **出力構造**: `results/evals/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
 
 ---
 
@@ -144,9 +144,9 @@ python code/scripts/summarize_prompting.py
 QLoRA (4-bit量子化LoRA) を用いてローカル環境で軽量LLMの微調整学習を行い、共通のベンチマーク実行スクリプトを用いて評価を行います。
 
 ```bash
-# 1. ファインチューニングの実行
+# 1. ファインチューニングの実行（学習済みアダプターは results/models/ に保存）
 python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-1.5B-Instruct --generator func_31 --stage 1 --epochs 3 --batch_size 2
 
 # 2. 共通スクリプトを用いたファインチューニングモデルの評価 (provider に lora を指定)
-python code/scripts/run_prompting.py --provider lora --model results/finetuning/Qwen_Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX --generator func_31 --stage 1 --paradigm pure --n_test 100
+python code/scripts/run_prompting.py --provider lora --model results/models/qwen2.5-1.5b-instruct/stage1/func_31/run_XXXXXXXX_XXXXXX --generator func_31 --stage 1 --paradigm pure --n_test 100
 ```

@@ -152,7 +152,7 @@ def parse_args():
         type    = str,
         default = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-            "results", "prompting"
+            "results", "evals"
         ),
         help    = "結果ファイルを保存するベースディレクトリ",
     )
@@ -237,14 +237,19 @@ def run_benchmark(args):
     # paradigm フォルダ名にステージ情報を付加して管理する
     paradigm = f"stage{args.stage}_{args.paradigm}"
 
-    # lora プロバイダの場合はモデル名をパスから安全に抽出
+    # lora プロバイダの場合は train_metadata.json からベースモデル名を読み取り、
+    # org 名を除いた小文字の短い名前 + _ft サフィックスを使用
     model_dir_name = args.model
     if args.provider == "lora":
-        parts = [p for p in args.model.split(os.sep) if p]
-        if len(parts) >= 4:
-            model_dir_name = parts[-4] + "_finetuned"
+        import json
+        meta_path = os.path.join(args.model, "train_metadata.json")
+        if os.path.exists(meta_path):
+            with open(meta_path, "r", encoding="utf-8") as _f:
+                _meta = json.load(_f)
+            base_model = _meta["args"]["model"]  # e.g. "Qwen/Qwen2.5-0.5B-Instruct"
+            model_dir_name = base_model.split("/")[-1].lower() + "_ft"
         else:
-            model_dir_name = os.path.basename(args.model.rstrip(os.sep)) + "_finetuned"
+            model_dir_name = os.path.basename(args.model.rstrip(os.sep)).lower() + "_ft"
 
     output_dir = make_output_dir(
         base_dir       = args.output_base_dir,
