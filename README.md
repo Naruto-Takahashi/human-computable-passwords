@@ -40,6 +40,8 @@ human-computable-passwords/
 │       ├── run_paradigms.py   # 複数パラダイム（手法）の自動比較実行スクリプト
 │       ├── batch_eval.py      # 全アルゴリズムの一括評価実行
 │       ├── summarize_llm.py   # LLM評価結果の自動集計
+│       ├── train_lora.py      # [NEW] LLMのQLoRAファインチューニング実行
+│       ├── eval_lora.py       # [NEW] ファインチューニング済みLLMの評価実行
 │       ├── train_baseline.py  # 従来の機械学習モデルの個別学習
 │       ├── batch_train.py     # 複数条件のバッチ学習
 │       └── summarize_baseline.py # 学習結果の自動集計
@@ -54,11 +56,12 @@ human-computable-passwords/
 │   ├── R6_池田.pdf
 │   └── ...
 ├── results/                   # 実験結果の出力先（Git管理対象外，summaryのみコミット対象）
-│   ├── benchmarks/            # LLMベンチマーク結果データ（モデル/手法/アルゴリズム/実行日時の階層）
+│   ├── benchmarks/            # LLMベンチマーク結果データ
+│   ├── finetuning/            # [NEW] LLMファインチューニング結果（モデル/ステージ/アルゴリズムの階層）
 │   ├── baselines/             # 機械学習モデルの学習ログ・グラフ・メタデータ
 │   ├── summary.md             # 機械学習実験結果の自動集計表
 │   └── summary_llm.md         # LLMベンチマーク結果の自動集計表
-├── flake.nix                  # Nix (Flakes) による再現可能なPython開発環境の定義
+├── flake.nix                  # Nix (Flakes) による再現可能なPythonシステム・CUDA環境の定義
 ├── flake.lock                 # Nix環境の依存パッケージのバージョンロックファイル
 ├── .envrc                     # direnv用設定ファイル
 ├── requirements.txt           # Pythonパッケージの依存関係リスト

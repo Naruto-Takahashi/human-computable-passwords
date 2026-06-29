@@ -1,4 +1,5 @@
 /venv/
+/.venv/
 /.idea/
 /.vscode/
 **/__pycache__/
@@ -7,5 +8,8 @@
 /.direnv/
 /.gemini/
 !/results/summary.md
+!/results/summary_llm.md
 /results/benchmarks/
+/results/finetuning/
+/results/baselines/
 *Zone.Identifier

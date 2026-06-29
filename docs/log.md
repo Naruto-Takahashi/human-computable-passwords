@@ -16,6 +16,23 @@
 
 ## 2. 活動記録
 
+### 2026/06/29: LLMファインチューニング環境（Nix+pip）の確立、QLoRA学習・評価パイプラインの構築
+
+- **実施したこと**:
+  - **環境管理方式の整理（Nix & pip）**: NixOS環境で PyTorch 等の大規模パッケージをソースコンパイルすると発生するOSフリーズの問題に対処するため、Nixで動的ライブラリ（CUDAドライバパス、libstdc++、zlib）のパスを解決しつつ、Pythonパッケージは仮想環境内の pip 経由でプリコンパイル済みバイナリ（Wheels）を直接取得する「Nixシステム管理＋Pipライブラリ管理」のハイブリッド環境を確立。`requirements.txt` に PyTorch、transformers、peft、bitsandbytes、trl、accelerate、datasets を明確に列挙。
+  - **遅延インポート導入によるCUDA競合回避**: `core/__init__.py` において、TensorFlowを依存に持つ `Models` および `Utils` モジュールをPythonの `__getattr__` で遅延ロード（Lazy Import）するようにリファクタリング。これにより、LLMの学習を実行する際に TensorFlow のCUDAコンテキストの初期化が完全にバイパスされ、PyTorchによるGPU（RTX 2080 SUPER）での学習が競合・クラッシュすることなく安全に行えるようになった。
+  - **ファインチューニングスクリプト (`train_lora.py`) の実装**: QLoRA (4-bit量子化LoRA) を用い、指定したアルゴリズム・開示ステージに応じて SFTTrainer (TRL v1.7.0準拠) でLLMを微調整する学習スクリプトを作成。
+  - **結果フォルダ構成のベンチマーク統一**: ファインチューニングの結果もプロンプティング（ベンチマーク）と同様に整理されるよう、`results/finetuning/{model}/stage{stage}/{generator}/run_{timestamp}` の階層構造に出力先を再編成。
+  - **評価スクリプト (`eval_lora.py`) の実装**: 学習時に使用された秘密鍵テーブル（`sgm`）や Few-shot の条件を同一のまま再現し、テストデータに対する正答率を検証・集計して `eval_report.json` に出力する評価器を作成。
+  - **0.5Bモデルによる動作検証（ドライラン）の完走**: `Qwen/Qwen2.5-0.5B-Instruct` モデルを用い、HCPの `simple_add`（Stage 1）データで学習＆評価を実行し、正常にトレーニングの終了および評価レポートの生成が10秒台で完了することを確認。
+
+- **得られた知見**:
+  - NixOS上でのディープラーニング環境構築において、`nix-ld` と `shellHook` で `stdenv.cc.cc.lib` のパスを通すことで、pipのバイナリパッケージをそのまま安定して稼働させられる。
+  - 同一Pythonプロセス内で TensorFlow と PyTorch の両方を読み込むと、CUDAドライバのロック競合（Error 302: Error loading CUDA libraries）が発生する。インポート順序の制御や、モジュールの遅延読み込み（Lazy Loading）が競合防止に非常に有効である。
+
+- **次にやること（Next Actions）**:
+  - 軽量LLM（Qwen2.5-1.5B 等）を実際に `n_train = 500`〜`1000` 程度のデータサイズ、数エポックでファインチューニングし、プロンプティング単体（インコンテキスト推論）と比較した際、どの程度ルールや秘密鍵の構造を重みに焼き付けて暗記・演算できるようになるかを検証する。
+
 ### 2026/06/23: CUDA実行環境の構築、実験ステージ(Stage 0〜3)の完全サポート、引数オプションの一本化
 
 - **実施したこと**:

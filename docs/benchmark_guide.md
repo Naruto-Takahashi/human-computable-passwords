@@ -141,3 +141,56 @@ nix develop --command python3 code/scripts/run_benchmark.py \
 ## 7. 実行ディレクトリの注意
 すべてのコマンドはプロジェクトのルートディレクトリ（`README.md` がある場所）で実行することを想定しています．
 環境が読み込まれていない場合は，先に `direnv allow` を実行してください．
+
+---
+
+## 8. LLM Fine-tuning (ファインチューニング) の実行手順
+
+### 環境のセットアップ
+ファインチューニングを行うには、Nix環境内で Python 仮想環境を作成し、PyTorchおよび Hugging Face パッケージをインストールします。
+
+```bash
+# 1. Nix環境の自動ロード
+direnv allow   # または nix develop
+
+# 2. 仮想環境の作成とパッケージインストール
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### ファインチューニングの学習実行 (`train_lora.py`)
+QLoRA (4-bit量子化LoRA) を用い、指定したアルゴリズム・開示ステージに対してローカル環境で軽量モデルの微調整学習を実行します。
+
+```bash
+python code/scripts/train_lora.py \
+  --model Qwen/Qwen2.5-1.5B-Instruct \
+  --generator func_31 \
+  --stage 1 \
+  --n_train 500 \
+  --n_val 100 \
+  --epochs 3 \
+  --batch_size 2
+```
+
+**主なオプション**:
+* `--model`: 使用するHugging Faceモデル識別子 (例: `Qwen/Qwen2.5-1.5B-Instruct`, `meta-llama/Llama-3.2-1B-Instruct`)
+* `--generator`: HCPアルゴリズムの名前
+* `--stage`: 実験ステージ (0〜3)
+* `--epochs`: エポック数 (デフォルト: 3)
+* `--batch_size`: バッチサイズ (デフォルト: 2)
+* `--include_rationale`: 微調整の学習ターゲットに出力までの思考プロセス（解説）を含める場合はこのフラグを有効にします。
+
+### ファインチューニング済みモデルの評価 (`eval_lora.py`)
+学習が完了すると、結果は以下の形式で保存されます：
+`results/finetuning/{model}/stage{stage}/{generator}/run_{timestamp}/`
+
+このディレクトリパス（`adapter` や `train_metadata.json` が含まれるフォルダ）を引数に渡し、テストセットでの予測精度（Zの正答率）を評価します。
+
+```bash
+python code/scripts/eval_lora.py \
+  --run_dir results/finetuning/Qwen_Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
+  --n_test 100
+```
+結果は指定されたディレクトリ配下に `eval_report.json` として出力されます。
+
