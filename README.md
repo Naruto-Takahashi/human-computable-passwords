@@ -55,7 +55,7 @@ human-computable-passwords/
 │   ├── R6_池田.pdf
 │   └── ...
 ├── results/                   # 実験結果の出力先（Git管理対象外，summaryのみコミット対象）
-│   ├── benchmarks/            # LLMベンチマーク結果データ
+│   ├── prompting/             # LLMプロンプティング評価結果データ
 │   ├── finetuning/            # [NEW] LLMファインチューニング結果（モデル/ステージ/アルゴリズムの階層）
 │   ├── baselines/             # 機械学習モデルの学習ログ・グラフ・メタデータ
 │   ├── summary.md             # 機械学習実験結果の自動集計表
@@ -125,7 +125,7 @@ python code/scripts/summarize_llm.py
 
 - **実験パラダイム**: `pure`（ゼロショット），`rationale`（ヒントあり），`pot`（コード実行），`rationale_pot`（最強構成）の4段階で評価可能．
 - **PoT (Program-of-Thought)**: `--use_code` を有効にすると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
-- **出力構造**: `results/benchmarks/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
+- **出力構造**: `results/prompting/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
 
 ---
 

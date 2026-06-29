@@ -95,11 +95,11 @@ python code/scripts/summarize_llm.py
 
 ### 実験結果の保存先ディレクトリ構造
 実験結果はモデル・手法ごとに以下のツリー構造に自動整理されて保存されます．
-`results/benchmarks/{model_name}/{paradigm}/{generator_name}/run_{timestamp}/`
+`results/prompting/{model_name}/{paradigm}/{generator_name}/run_{timestamp}/`
 
 ### 質的分析（思考ログの確認）
 各テストケースの**「生の思考プロセス」**が自動保存されます．
-`results/benchmarks/.../reasoning_logs/` を確認してください．
+`results/prompting/.../reasoning_logs/` を確認してください．
 * `001_CORRECT.md`: 正解したケースの論理展開
 * `002_WRONG.md`: 間違えたケースでの「迷い」や「誤解」
 * `003_PARSE_ERROR.md`: 回答フォーマットが崩れた原因の特定
@@ -196,6 +196,6 @@ python code/scripts/run_benchmark.py \
   --paradigm pure \
   --n_test 100
 ```
-実行すると、通常のベンチマークと同様に `results/benchmarks/...` 配下に結果CSV、詳細思考ログ（`reasoning_logs/`）、メタデータJSONが整理されて保存されます。
+実行すると、通常のベンチマークと同様に `results/prompting/...` 配下に結果CSV、詳細思考ログ（`reasoning_logs/`）、メタデータJSONが整理されて保存されます。
 
 

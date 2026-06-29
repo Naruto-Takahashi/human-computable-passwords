@@ -152,7 +152,7 @@ def parse_args():
         type    = str,
         default = os.path.join(
             os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-            "results", "benchmarks"
+            "results", "prompting"
         ),
         help    = "結果ファイルを保存するベースディレクトリ",
     )

@@ -80,7 +80,7 @@ class Evaluator:
     ベンチマーク結果の収集・評価・保存を担当するクラス．
 
     使い方:
-        evaluator = Evaluator(output_dir="results/benchmarks/run_xxx")
+        evaluator = Evaluator(output_dir="results/prompting/run_xxx")
         evaluator.add_record(BenchmarkRecord(...))
         ...
         evaluator.save_results(metadata={...})

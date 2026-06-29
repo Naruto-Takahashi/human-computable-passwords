@@ -9,7 +9,7 @@
 /.gemini/
 !/results/summary.md
 !/results/summary_llm.md
-/results/benchmarks/
+/results/prompting/
 /results/finetuning/
 /results/baselines/
 *Zone.Identifier
