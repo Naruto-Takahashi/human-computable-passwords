@@ -95,11 +95,11 @@ python code/scripts/summarize_prompting.py
 
 ### 実験結果の保存先ディレクトリ構造
 実験結果はモデル・手法ごとに以下のツリー構造に自動整理されて保存されます．
-`results/prompting/{model_name}/{paradigm}/{generator_name}/run_{timestamp}/`
+`results/evals/{model_name}/{paradigm}/{generator_name}/run_{timestamp}/`
 
 ### 質的分析（思考ログの確認）
 各テストケースの**「生の思考プロセス」**が自動保存されます．
-`results/prompting/.../reasoning_logs/` を確認してください．
+`results/evals/.../reasoning_logs/` を確認してください．
 * `001_CORRECT.md`: 正解したケースの論理展開
 * `002_WRONG.md`: 間違えたケースでの「迷い」や「誤解」
 * `003_PARSE_ERROR.md`: 回答フォーマットが崩れた原因の特定
@@ -182,20 +182,18 @@ python code/scripts/train_finetuning.py \
 * `--include_rationale`: 微調整の学習ターゲットに出力までの思考プロセス（解説）を含める場合はこのフラグを有効にします。
 
 ### ファインチューニング済みモデルの評価 (`run_prompting.py`)
-学習が完了すると、結果は以下の形式で保存されます：
-`results/finetuning/{model}/stage{stage}/{generator}/run_{timestamp}/`
+学習が完了すると、アダプターは以下の形式で保存されます：
+`results/models/{model}/stage{stage}/{generator}/run_{timestamp}/`
 
 共通のベンチマーク実行スクリプトである `run_prompting.py` を用いて、`--provider lora` を指定し、`--model` に上記の保存先ディレクトリパス（`adapter` が含まれるフォルダ）を渡すことで、テストセットに対する精度を評価します。
 
 ```bash
 python code/scripts/run_prompting.py \
   --provider lora \
-  --model results/finetuning/Qwen/Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
+  --model results/models/qwen2.5-1.5b-instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
   --generator func_31 \
   --stage 1 \
   --paradigm pure \
   --n_test 100
 ```
-実行すると、通常のベンチマークと同様に `results/prompting/...` 配下に結果CSV、詳細思考ログ（`reasoning_logs/`）、メタデータJSONが整理されて保存されます。
-
-
+実行すると、通常のベンチマークと同様に `results/evals/...` 配下に結果CSV、詳細思考ログ（`reasoning_logs/`）、メタデータJSONが整理されて保存されます。
