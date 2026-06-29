@@ -24,7 +24,7 @@ def run_all_paradigms():
     # 4つのパラダイム設定
     paradigms = ["pure", "rationale", "pot", "rationale_pot"]
 
-    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "run_benchmark.py")
+    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "run_prompting.py")
 
     print(f"=== Paradigm Comparison Start ===")
     print(f"Provider: {args.provider}")

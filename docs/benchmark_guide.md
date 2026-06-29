@@ -27,7 +27,7 @@
 `--verbose` を付けると，各回答の終わりにパースされた結果と推論の断片が表示されます．
 
 ```bash
-python code/scripts/run_benchmark.py \
+python code/scripts/run_prompting.py \
   --provider ollama \
   --model qwen2.5:7b \
   --generator func_31 \
@@ -42,7 +42,7 @@ python code/scripts/run_benchmark.py \
 全てのアルゴリズム（simple_add，func_13，func_31，func_pow）に対して一気に精度を測定したい場合に使用します．
 
 ```bash
-python code/scripts/batch_eval.py \
+python code/scripts/batch_prompting.py \
   --model qwen2.5:7b \
   --parallel 1 \
   --n_shot 10 \
@@ -55,7 +55,7 @@ python code/scripts/batch_eval.py \
 実験完了後，以下のコマンドを叩くと `results/summary_llm.md` が更新され，表形式で結果を確認できます．
 
 ```bash
-python code/scripts/summarize_llm.py
+python code/scripts/summarize_prompting.py
 ```
 
 ---
@@ -105,7 +105,7 @@ python code/scripts/summarize_llm.py
 * `003_PARSE_ERROR.md`: 回答フォーマットが崩れた原因の特定
 
 ### 定量的分析（統計データの集計）
-複数の実験が終わったら，`python code/scripts/summarize_llm.py` を実行して，モデル間や難易度ごとの正解率を比較します．
+複数の実験が終わったら，`python code/scripts/summarize_prompting.py` を実行して，モデル間や難易度ごとの正解率を比較します．
 
 ---
 
@@ -113,7 +113,7 @@ python code/scripts/summarize_llm.py
 ローカルLLMやAPIキーのない環境において，実行パイプラインやディレクトリ生成が正常に動作するかを確認するために，`mock` プロバイダが利用可能です．このモードでは実際のAPIリクエストは発生しません．
 
 ```bash
-nix develop --command python3 code/scripts/run_benchmark.py \
+nix develop --command python3 code/scripts/run_prompting.py \
   --provider mock \
   --model test-mock-model \
   --n_test 5
@@ -124,7 +124,7 @@ nix develop --command python3 code/scripts/run_benchmark.py \
 ## 6. 研究を進めるための Tips
 
 ### Q. モデルの「考え方」を知りたい
-**A.** `run_benchmark.py` に `--verbose` を付けて実行してください．
+**A.** `run_prompting.py` に `--verbose` を付けて実行してください．
 画面に表示される `[Result Tail]` やファイル内のフルログを読むことで，モデルがルールをどう誤解しているか，どこで計算ミスをしたかが分かります．
 
 ### Q. GPUの使用率を上げたい（高速化したい）
@@ -159,11 +159,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### ファインチューニングの学習実行 (`train_lora.py`)
+### ファインチューニングの学習実行 (`train_finetuning.py`)
 QLoRA (4-bit量子化LoRA) を用い、指定したアルゴリズム・開示ステージに対してローカル環境で軽量モデルの微調整学習を実行します。
 
 ```bash
-python code/scripts/train_lora.py \
+python code/scripts/train_finetuning.py \
   --model Qwen/Qwen2.5-1.5B-Instruct \
   --generator func_31 \
   --stage 1 \
@@ -181,16 +181,16 @@ python code/scripts/train_lora.py \
 * `--batch_size`: バッチサイズ (デフォルト: 2)
 * `--include_rationale`: 微調整の学習ターゲットに出力までの思考プロセス（解説）を含める場合はこのフラグを有効にします。
 
-### ファインチューニング済みモデルの評価 (`run_benchmark.py`)
+### ファインチューニング済みモデルの評価 (`run_prompting.py`)
 学習が完了すると、結果は以下の形式で保存されます：
 `results/finetuning/{model}/stage{stage}/{generator}/run_{timestamp}/`
 
-共通のベンチマーク実行スクリプトである `run_benchmark.py` を用いて、`--provider lora` を指定し、`--model` に上記の保存先ディレクトリパス（`adapter` が含まれるフォルダ）を渡すことで、テストセットに対する精度を評価します。
+共通のベンチマーク実行スクリプトである `run_prompting.py` を用いて、`--provider lora` を指定し、`--model` に上記の保存先ディレクトリパス（`adapter` が含まれるフォルダ）を渡すことで、テストセットに対する精度を評価します。
 
 ```bash
-python code/scripts/run_benchmark.py \
+python code/scripts/run_prompting.py \
   --provider lora \
-  --model results/finetuning/Qwen_Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
+  --model results/finetuning/Qwen/Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
   --generator func_31 \
   --stage 1 \
   --paradigm pure \

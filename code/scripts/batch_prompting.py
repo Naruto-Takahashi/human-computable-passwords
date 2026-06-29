@@ -28,7 +28,7 @@ def run_batch():
     args = parser.parse_args()
 
     generators = list_available_generators()
-    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "run_benchmark.py")
+    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "run_prompting.py")
 
     print(f"=== Batch Evaluation Start ===")
     print(f"Provider: {args.provider}")

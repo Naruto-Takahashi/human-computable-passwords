@@ -21,9 +21,9 @@
 - **実施したこと**:
   - **環境管理方式の整理（Nix & pip）**: NixOS環境で PyTorch 等の大規模パッケージをソースコンパイルすると発生するOSフリーズの問題に対処するため、Nixで動的ライブラリ（CUDAドライバパス、libstdc++、zlib）のパスを解決しつつ、Pythonパッケージは仮想環境内の pip 経由でプリコンパイル済みバイナリ（Wheels）を直接取得する「Nixシステム管理＋Pipライブラリ管理」のハイブリッド環境を確立。`requirements.txt` に PyTorch、transformers、peft、bitsandbytes、trl、accelerate、datasets を明確に列挙。
   - **遅延インポート導入によるCUDA競合回避**: `core/__init__.py` において、TensorFlowを依存に持つ `Models` および `Utils` モジュールをPythonの `__getattr__` で遅延ロード（Lazy Import）するようにリファクタリング。これにより、LLMの学習を実行する際に TensorFlow のCUDAコンテキストの初期化が完全にバイパスされ、PyTorchによるGPU（RTX 2080 SUPER）での学習が競合・クラッシュすることなく安全に行えるようになった。
-  - **ファインチューニングスクリプト (`train_lora.py`) の実装**: QLoRA (4-bit量子化LoRA) を用い、指定したアルゴリズム・開示ステージに応じて SFTTrainer (TRL v1.7.0準拠) でLLMを微調整する学習スクリプトを作成。
+  - **ファインチューニングスクリプト (`train_finetuning.py`) の実装**: QLoRA (4-bit量子化LoRA) を用い、指定したアルゴリズム・開示ステージに応じて SFTTrainer (TRL v1.7.0準拠) でLLMを微調整する学習スクリプトを作成。
   - **結果フォルダ構成のベンチマーク統一**: ファインチューニングの結果もプロンプティング（ベンチマーク）と同様に整理されるよう、`results/finetuning/{model}/stage{stage}/{generator}/run_{timestamp}` の階層構造に出力先を再編成。
-  - **評価スクリプトのベンチマーク統合**: 最初は単独の `eval_lora.py` として構築したが、ベンチマーク共通スクリプトである `run_benchmark.py` に `lora` プロバイダを追加する形で完全に評価ロジックを統合した。これにより、ファインチューニングモデルの評価時にも並列処理、結果CSV、連番思考プロセスログ出力（`reasoning_logs/`）などの強力な評価基盤がすべて共有されるようになり、不要となった `eval_lora.py` は削除した。
+  - **評価スクリプトのベンチマーク統合**: 最初は単独の `eval_lora.py` として構築したが、ベンチマーク共通スクリプトである `run_prompting.py` に `lora` プロバイダを追加する形で完全に評価ロジックを統合した。これにより、ファインチューニングモデルの評価時にも並列処理、結果CSV、連番思考プロセスログ出力（`reasoning_logs/`）などの強力な評価基盤がすべて共有されるようになり、不要となった `eval_lora.py` は削除した。
   - **0.5Bモデルによる動作検証（ドライラン）の完走**: `Qwen/Qwen2.5-0.5B-Instruct` モデルを用い、HCPの `simple_add`（Stage 1）データで学習＆統合後のベンチマーク評価を実行し、正常にトレーニングおよび評価が10秒台で完了することを確認。
 
 - **得られた知見**:
@@ -42,9 +42,9 @@
     - **Stage 1 (Key Known)**: 秘密鍵テーブル（SGM_TABLE）のみ公開（従来のデフォルト挙動）。
     - **Stage 2 (Rule Known)**: 秘密鍵は非公開にし、アルゴリズムの計算ルールのみを公開。
     - **Stage 3 (Rule & Key Partially Known)**: 計算ルールに加え、秘密鍵テーブルの最初の $K$ 要素を公開（残りは `?` マスク）。
-  - **引数オプションの一本化とコードクリーンアップ**: 個別の boolean フラグ（`--rationale`, `--use_code`）を廃止し、統一された `--paradigm {pure, rationale, pot, rationale_pot}` オプションに一本化。これに伴い、`run_benchmark.py`, `run_paradigms.py`, `batch_eval.py` の全スクリプトをリファクタリング。
+  - **引数オプションの一本化とコードクリーンアップ**: 個別の boolean フラグ（`--rationale`, `--use_code`）を廃止し、統一された `--paradigm {pure, rationale, pot, rationale_pot}` オプションに一本化。これに伴い、`run_prompting.py`, `compare_prompting.py`, `batch_prompting.py` の全スクリプトをリファクタリング。
   - **不要ディレクトリの削除**: 旧構成の残骸であった `outputs/` ディレクトリを Git 上およびローカルファイルシステムから完全に削除。すべての結果を `results/` に統一。
-  - **集計バグの修正**: `summarize_llm.py` 内でフォルダ構造をパースする際、ジェネレータ名とパラダイム名のカラムが逆転して集計されるバグを修正。
+  - **集計バグの修正**: `summarize_prompting.py` 内でフォルダ構造をパースする際、ジェネレータ名とパラダイム名のカラムが逆転して集計されるバグを修正。
 
 - **得られた知見**:
   - Qwen2.5:7bモデルを用い、Stage 0（完全ブラックボックス）の `func_31` において、秘密鍵テーブルが隠された状態ではLLMが自律的に規則を見つけ出せず、最大値のインデックス等の無関係な規則へハルシネーション（誤った帰納推論）を起こす挙動を確認。
