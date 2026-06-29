@@ -82,7 +82,7 @@ def parse_args():
         "--provider",
         type    = str,
         default = "gemini",
-        choices = ["gemini", "ollama", "mock"],
+        choices = ["gemini", "ollama", "mock", "lora"],
         help    = "LLM プロバイダ",
     )
     parser.add_argument(
@@ -228,16 +228,28 @@ def run_benchmark(args):
             model_name = args.model,
             sleep_sec  = 0.05,
         )
+    elif args.provider == "lora":
+        from llm_agent import LoraClient
+        client = LoraClient(run_dir=args.model)
 
     prompt_builder = get_prompt_builder(mode=args.prompt_mode)
     
     # paradigm フォルダ名にステージ情報を付加して管理する
     paradigm = f"stage{args.stage}_{args.paradigm}"
 
+    # lora プロバイダの場合はモデル名をパスから安全に抽出
+    model_dir_name = args.model
+    if args.provider == "lora":
+        parts = [p for p in args.model.split(os.sep) if p]
+        if len(parts) >= 4:
+            model_dir_name = parts[-4] + "_finetuned"
+        else:
+            model_dir_name = os.path.basename(args.model.rstrip(os.sep)) + "_finetuned"
+
     output_dir = make_output_dir(
         base_dir       = args.output_base_dir,
         generator_name = args.generator,
-        model_name     = args.model,
+        model_name     = model_dir_name,
         paradigm       = paradigm,
     )
     evaluator = Evaluator(output_dir=output_dir)

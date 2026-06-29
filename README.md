@@ -41,7 +41,6 @@ human-computable-passwords/
 │       ├── batch_eval.py      # 全アルゴリズムの一括評価実行
 │       ├── summarize_llm.py   # LLM評価結果の自動集計
 │       ├── train_lora.py      # [NEW] LLMのQLoRAファインチューニング実行
-│       ├── eval_lora.py       # [NEW] ファインチューニング済みLLMの評価実行
 │       ├── train_baseline.py  # 従来の機械学習モデルの個別学習
 │       ├── batch_train.py     # 複数条件のバッチ学習
 │       └── summarize_baseline.py # 学習結果の自動集計
@@ -137,3 +136,17 @@ python code/scripts/summarize_llm.py
 - [研究ログ (`log.md`)](docs/log.md)
 - [学習実験結果のサマリー (`summary.md`)](results/summary.md)
 - [LLMベンチマーク結果のサマリー (`summary_llm.md`)](results/summary_llm.md)
+
+---
+
+## LLMファインチューニング（学習・評価）
+
+QLoRA (4-bit量子化LoRA) を用いてローカル環境で軽量LLMの微調整学習を行い、共通のベンチマーク実行スクリプトを用いて評価を行います。
+
+```bash
+# 1. ファインチューニングの実行
+python code/scripts/train_lora.py --model Qwen/Qwen2.5-1.5B-Instruct --generator func_31 --stage 1 --epochs 3 --batch_size 2
+
+# 2. 共通スクリプトを用いたファインチューニングモデルの評価 (provider に lora を指定)
+python code/scripts/run_benchmark.py --provider lora --model results/finetuning/Qwen_Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX --generator func_31 --stage 1 --paradigm pure --n_test 100
+```

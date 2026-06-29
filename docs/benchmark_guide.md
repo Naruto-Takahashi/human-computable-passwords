@@ -181,16 +181,21 @@ python code/scripts/train_lora.py \
 * `--batch_size`: バッチサイズ (デフォルト: 2)
 * `--include_rationale`: 微調整の学習ターゲットに出力までの思考プロセス（解説）を含める場合はこのフラグを有効にします。
 
-### ファインチューニング済みモデルの評価 (`eval_lora.py`)
+### ファインチューニング済みモデルの評価 (`run_benchmark.py`)
 学習が完了すると、結果は以下の形式で保存されます：
 `results/finetuning/{model}/stage{stage}/{generator}/run_{timestamp}/`
 
-このディレクトリパス（`adapter` や `train_metadata.json` が含まれるフォルダ）を引数に渡し、テストセットでの予測精度（Zの正答率）を評価します。
+共通のベンチマーク実行スクリプトである `run_benchmark.py` を用いて、`--provider lora` を指定し、`--model` に上記の保存先ディレクトリパス（`adapter` が含まれるフォルダ）を渡すことで、テストセットに対する精度を評価します。
 
 ```bash
-python code/scripts/eval_lora.py \
-  --run_dir results/finetuning/Qwen_Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
+python code/scripts/run_benchmark.py \
+  --provider lora \
+  --model results/finetuning/Qwen_Qwen2.5-1.5B-Instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
+  --generator func_31 \
+  --stage 1 \
+  --paradigm pure \
   --n_test 100
 ```
-結果は指定されたディレクトリ配下に `eval_report.json` として出力されます。
+実行すると、通常のベンチマークと同様に `results/benchmarks/...` 配下に結果CSV、詳細思考ログ（`reasoning_logs/`）、メタデータJSONが整理されて保存されます。
+
 

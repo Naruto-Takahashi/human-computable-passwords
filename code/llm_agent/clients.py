@@ -282,3 +282,66 @@ class MockClient(BaseLLMClient):
 
         raw_response = f"{thinking}{answer_str}\nTherefore, Z = {predicted if predicted is not None else 'unknown'}."
         return raw_response, predicted
+
+class LoraClient(BaseLLMClient):
+    """
+    ローカルのファインチューニング済み LoRA モデル用クライアント．
+    """
+    def __init__(self, run_dir: str):
+        import torch
+        from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+        from peft import PeftModel
+        
+        self.run_dir = run_dir
+        meta_path = os.path.join(run_dir, "train_metadata.json")
+        if not os.path.exists(meta_path):
+            raise FileNotFoundError(f"Metadata file not found: {meta_path}")
+            
+        with open(meta_path, "r", encoding="utf-8") as f:
+            train_meta = json.load(f)
+            
+        train_args = train_meta["args"]
+        self.base_model_name = train_args["model"]
+        adapter_path = os.path.join(run_dir, "adapter")
+        
+        logger.info(f"LoraClient: Loading base model {self.base_model_name}")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        )
+        
+        self.tokenizer = AutoTokenizer.from_pretrained(adapter_path, trust_remote_code=True)
+        base_model = AutoModelForCausalLM.from_pretrained(
+            self.base_model_name,
+            quantization_config=bnb_config,
+            device_map="auto",
+            trust_remote_code=True
+        )
+        
+        logger.info(f"LoraClient: Loading LoRA adapter from {adapter_path}")
+        self.model = PeftModel.from_pretrained(base_model, adapter_path)
+        self.model.eval()
+
+    def predict(self, prompt: str) -> tuple[str, Optional[int]]:
+        import torch
+        messages = [{"role": "user", "content": prompt}]
+        formatted_chat = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        
+        inputs = self.tokenizer(formatted_chat, return_tensors="pt").to("cuda")
+        with torch.no_grad():
+            outputs = self.model.generate(
+                **inputs,
+                max_new_tokens=512,
+                do_sample=False,
+                pad_token_id=self.tokenizer.eos_token_id
+            )
+        
+        input_len = inputs.input_ids.shape[1]
+        generated_tokens = outputs[0][input_len:]
+        response_text = self.tokenizer.decode(generated_tokens, skip_special_tokens=True)
+        
+        parsed_digit = self._parse_digit_from_response(response_text)
+        return response_text, parsed_digit
+

@@ -1,4 +1,4 @@
-from .clients import GeminiClient, OllamaClient, MockClient
+from .clients import GeminiClient, OllamaClient, MockClient, LoraClient
 from .prompt import get_prompt_builder
 from .evaluator import BenchmarkRecord, Evaluator, make_output_dir
 from .data_generator import generate_dataset, extract_challenge_and_response, list_available_generators
