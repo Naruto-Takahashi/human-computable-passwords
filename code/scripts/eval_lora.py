@@ -100,11 +100,12 @@ def main():
     # Check simple exclusion
     test_df = test_raw_df.iloc[:args.n_test].reset_index(drop=True)
     
+    from llm_agent import BenchmarkRecord, Evaluator
+
     print(f"Test data size: {len(test_df)}")
     
     builder = TextPromptBuilder()
-    results = []
-    correct_count = 0
+    evaluator = Evaluator(output_dir=args.run_dir)
     
     # Evaluation loop
     with torch.no_grad():
@@ -142,24 +143,22 @@ def main():
             
             predicted_z = extract_json_answer(response_text)
             is_correct = (predicted_z == response)
-            if is_correct:
-                correct_count += 1
-                
-            results.append({
-                "index": i,
-                "challenge": challenge,
-                "true_z": response,
-                "predicted_z": predicted_z,
-                "is_correct": is_correct,
-                "response": response_text
-            })
+            
+            record = BenchmarkRecord(
+                challenge=challenge,
+                correct_ans=response,
+                predicted=predicted_z if predicted_z != -1 else None,
+                raw_response=response_text
+            )
+            evaluator.add_record(record)
             
             print(f"Sample {i+1}/{args.n_test} | True Z: {response} | Pred Z: {predicted_z} | Correct: {is_correct}")
             
-    accuracy = correct_count / args.n_test
+    accuracy = evaluator.accuracy()
+    correct_count = sum(1 for r in evaluator.records if r.is_correct)
     print(f"\nFinal Test Accuracy: {accuracy * 100:.2f}% ({correct_count}/{args.n_test})")
     
-    # Save evaluation report
+    # Save evaluation report via standard Evaluator
     eval_report = {
         "generator": train_args["generator"],
         "stage": train_args["stage"],
@@ -167,9 +166,11 @@ def main():
         "n_test": args.n_test,
         "accuracy": accuracy,
         "correct_count": correct_count,
-        "details": results
     }
+    evaluator.save_results(metadata=eval_report)
     
+    # Also save eval_report.json for compatibility
+    eval_report["details"] = [r.to_dict() for r in evaluator.records]
     output_path = os.path.join(args.run_dir, "eval_report.json")
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(eval_report, f, ensure_ascii=False, indent=2)
