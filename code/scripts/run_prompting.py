@@ -238,7 +238,8 @@ def run_benchmark(args):
     paradigm = f"stage{args.stage}_{args.paradigm}"
 
     # lora プロバイダの場合は train_metadata.json からベースモデル名を読み取り、
-    # org 名を除いた小文字の短い名前 + _ft サフィックスを使用
+    # -Instruct を除去してアンダースコア区切り・小文字 + _ft サフィックスを使用
+    # 例: Qwen/Qwen2.5-0.5B-Instruct -> qwen2.5_0.5b_ft
     model_dir_name = args.model
     if args.provider == "lora":
         import json
@@ -247,9 +248,15 @@ def run_benchmark(args):
             with open(meta_path, "r", encoding="utf-8") as _f:
                 _meta = json.load(_f)
             base_model = _meta["args"]["model"]  # e.g. "Qwen/Qwen2.5-0.5B-Instruct"
-            model_dir_name = base_model.split("/")[-1].lower() + "_ft"
+            _base = base_model.split("/")[-1]
+            _base = re.sub(r"-?instruct", "", _base, flags=re.IGNORECASE)
+            _base = _base.strip("-")
+            model_dir_name = _base.replace("-", "_").lower() + "_ft"
         else:
-            model_dir_name = os.path.basename(args.model.rstrip(os.sep)).lower() + "_ft"
+            _base = os.path.basename(args.model.rstrip(os.sep))
+            _base = re.sub(r"-?instruct", "", _base, flags=re.IGNORECASE)
+            _base = _base.strip("-")
+            model_dir_name = _base.replace("-", "_").lower() + "_ft"
 
     output_dir = make_output_dir(
         base_dir       = args.output_base_dir,

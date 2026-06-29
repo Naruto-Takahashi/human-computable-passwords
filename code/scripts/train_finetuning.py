@@ -6,6 +6,7 @@ if torch.cuda.is_available():
 
 import argparse
 import os
+import re
 import sys
 import time
 from datetime import datetime
@@ -60,8 +61,12 @@ def main():
     # Prepare Output Directories
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    # org 名（例: "Qwen/"）を除いた短い小文字のモデル名を使用
-    model_name_safe = args.model.split("/")[-1].lower()
+    # org 名（例: "Qwen/"）を除き、-Instruct を除去してアンダースコア区切り・小文字の短い名前を使用
+    # 例: Qwen/Qwen2.5-0.5B-Instruct -> qwen2.5_0.5b
+    _base = args.model.split("/")[-1]  # e.g. "Qwen2.5-0.5B-Instruct"
+    _base = re.sub(r"-?instruct", "", _base, flags=re.IGNORECASE)  # remove -Instruct
+    _base = _base.strip("-")  # strip trailing dash
+    model_name_safe = _base.replace("-", "_").lower()  # e.g. "qwen2.5_0.5b"
     output_dir = os.path.join(
         base_dir,
         "results",

@@ -190,7 +190,7 @@ python code/scripts/train_finetuning.py \
 ```bash
 python code/scripts/run_prompting.py \
   --provider lora \
-  --model results/models/qwen2.5-1.5b-instruct/stage1/func_31/run_XXXXXXXX_XXXXXX \
+  --model results/models/qwen2.5_1.5b/stage1/func_31/run_XXXXXXXX_XXXXXX \
   --generator func_31 \
   --stage 1 \
   --paradigm pure \
