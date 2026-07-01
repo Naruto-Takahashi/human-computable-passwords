@@ -1,8 +1,0 @@
-{
-  "generator": "simple_add",
-  "stage": 1,
-  "model": "Qwen/Qwen2.5-1.5B-Instruct",
-  "elapsed_time_seconds": 1834.5122601985931,
-  "epochs": 3,
-  "batch_size": 2
-}

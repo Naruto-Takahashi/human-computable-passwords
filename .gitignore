@@ -7,9 +7,5 @@
 .DS_Store
 /.direnv/
 /.gemini/
-!/results/summary.md
-!/results/summary_llm.md
-/results/prompting/
-/results/finetuning/
-/results/baselines/
+/results/
 *Zone.Identifier
