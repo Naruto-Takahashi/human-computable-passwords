@@ -42,6 +42,7 @@ def parse_args():
     parser.add_argument("--lora_alpha", type=int, default=32, help="LoRA Alpha")
     parser.add_argument("--include_rationale", action="store_true", help="Include reasoning chain in training completions")
     parser.add_argument("--include_fewshot_rationale", action="store_true", help="Include reasoning chain in few-shot prompts")
+    parser.add_argument("--use_code", action="store_true", help="Format targets as Python code blocks (PoT training)")
     
     return parser.parse_args()
 
@@ -121,6 +122,33 @@ def main():
     # Build HF Datasets
     builder = TextPromptBuilder()
     
+    def generate_target_code(generator_name: str, challenge: list[int], sgm: list[int] = None) -> str:
+        code = "```python\n"
+        code += "def predict_z(X):\n"
+        if generator_name == "simple_add":
+            code += "    return (X[0] + X[1] + X[2]) % 10\n"
+        elif generator_name == "func_13":
+            code += f"    sgm = {sgm}\n"
+            code += "    X_val = [sgm[i] for i in X]\n"
+            code += "    j = X_val[10] % 10\n"
+            code += "    return (X_val[j] + X_val[11] + X_val[12] + X_val[13]) % 10\n"
+        elif generator_name == "func_22":
+            code += f"    sgm = {sgm}\n"
+            code += "    X_val = [sgm[i] for i in X]\n"
+            code += "    j = (X_val[10] + X_val[11]) % 10\n"
+            code += "    return (X_val[j] + X_val[12] + X_val[13]) % 10\n"
+        elif generator_name == "func_31":
+            code += f"    sgm = {sgm}\n"
+            code += "    X_val = [sgm[i] for i in X]\n"
+            code += "    j = (X_val[10] + X_val[11] + X_val[12]) % 10\n"
+            code += "    return (X_val[j] + X_val[13]) % 10\n"
+        elif generator_name == "func_pow":
+            code += f"    sgm = {sgm}\n"
+            code += "    X_val = [sgm[i] for i in X]\n"
+            code += "    return (1 * pow(X_val[10], 4) + 2 * pow(X_val[11], 3) + 3 * pow(X_val[12], 2) + 4 * pow(X_val[13], 1)) % 10\n"
+        code += "```"
+        return code
+
     def process_df(df):
         records = []
         for _, row in df.iterrows():
@@ -130,13 +158,15 @@ def main():
                 test_challenge=challenge,
                 generator_name=args.generator,
                 include_rationale=args.include_fewshot_rationale,
-                use_code=False,
+                use_code=args.use_code,
                 sgm=sgm,
                 stage=args.stage,
                 k_disclosed=args.k_disclosed
             )
             
-            if args.include_rationale:
+            if args.use_code:
+                completion = generate_target_code(args.generator, challenge, sgm)
+            elif args.include_rationale:
                 visible_sgm = sgm if args.stage in [1, 3] else None
                 rationale = ComputablePasswordGenerator.explain_logic(args.generator, row, sgm=visible_sgm)
                 completion = f"思考過程：\n{rationale}\n\n{{\n  \"answer\": {response}\n}}"

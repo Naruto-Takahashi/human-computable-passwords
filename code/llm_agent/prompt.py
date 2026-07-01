@@ -123,6 +123,11 @@ class TextPromptBuilder(PromptBuilder):
                 prompt += "1. 入力リストの各値 X[i] (0 <= i <= 13) は、SGM_TABLE のインデックスに対応する値です（X[i] = SGM_TABLE[入力のi番目の値]）。\n"
                 prompt += "2. j = (X[10] + X[11] + X[12]) mod 10 を計算します。\n"
                 prompt += "3. Z = (X[j] + X[13]) mod 10 を計算します。\n\n"
+            elif generator_name == "func_22":
+                prompt += "ルール：\n"
+                prompt += "1. 入力リストの各値 X[i] (0 <= i <= 13) は、SGM_TABLE のインデックスに対応する値です（X[i] = SGM_TABLE[入力のi番目の値]）。\n"
+                prompt += "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
+                prompt += "3. Z = (X[j] + X[12] + X[13]) mod 10 を計算します。\n\n"
             elif generator_name == "func_pow":
                 prompt += "ルール：\n"
                 prompt += "1. 入力リストの各値 X[i] (0 <= i <= 13) は、SGM_TABLE のインデックスに対応する値です（X[i] = SGM_TABLE[入力のi番目の値]）。\n"
