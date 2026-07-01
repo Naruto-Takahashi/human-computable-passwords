@@ -345,7 +345,7 @@ def run_benchmark(args):
         "seed"           : args.seed,
         "model_name"     : args.model,
         "sleep_sec"      : args.sleep_sec,
-        "prompt_mode"    : args.prompt_mode,
+        "prompt_mode"    : "text",
         "rationale"      : rationale,
         "use_code"       : use_code,
         "paradigm"       : args.paradigm,
