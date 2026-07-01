@@ -24,8 +24,6 @@ def parse_args():
     parser = argparse.ArgumentParser(description="HCP LLM Fine-tuning via QLoRA")
     parser.add_argument("--model", type=str, default="Qwen/Qwen2.5-1.5B-Instruct", help="Hugging Face model identifier")
     parser.add_argument("--generator", type=str, default="func_31", choices=list_available_generators(), help="HCP algorithm generator name")
-    parser.add_argument("--stage", type=int, default=1, choices=[0, 1, 2, 3], help="Stage of data disclosure")
-    parser.add_argument("--k_disclosed", type=int, default=0, help="Number of disclosed elements in stage 3 (default: 0)")
     parser.add_argument("--n_shot", type=int, default=10, help="Number of few-shot examples embedded in each prompt (default: 10)")
     parser.add_argument("--n_train", type=int, default=500, help="Number of training samples")
     parser.add_argument("--n_val", type=int, default=-1, help="Number of validation samples (default: n_train // 5)")
@@ -80,7 +78,6 @@ def main():
         "results",
         "finetuned_models",
         model_name_safe,
-        f"stage{args.stage}",
         args.generator,
         f"run_{timestamp}"
     )
@@ -167,8 +164,8 @@ def main():
                 include_rationale=False,
                 use_code=(args.paradigm == "pot"),
                 sgm=sgm,
-                stage=args.stage,
-                k_disclosed=args.k_disclosed
+                stage=0,
+                k_disclosed=0
             )
 
             if args.paradigm == "pot":

@@ -238,8 +238,13 @@ def run_benchmark(args):
 
     prompt_builder = get_prompt_builder(mode="text")
     
-    # paradigm フォルダ名にステージ情報を付加して管理する
-    paradigm = f"stage{args.stage}_{args.paradigm}"
+    # paradigm フォルダ名にステージ情報を付加して管理する（loraはstage0固定のためプレフィックスなし）
+    if args.provider == "lora":
+        args.stage = 0
+        args.k_disclosed = 0
+        paradigm = args.paradigm
+    else:
+        paradigm = f"stage{args.stage}_{args.paradigm}"
 
     # lora プロバイダの場合は train_metadata.json からベースモデル名を読み取り、
     # -Instruct を除去してアンダースコア区切り・小文字 + _ft サフィックスを使用
