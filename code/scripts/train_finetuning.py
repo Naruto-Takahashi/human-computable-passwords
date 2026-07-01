@@ -17,7 +17,6 @@ import pandas as pd
 # Add code/ to path
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'code'))
 
-from core.generator import ComputablePasswordGenerator
 from llm_agent.data_generator import generate_dataset, extract_challenge_and_response, list_available_generators
 from llm_agent.prompt import TextPromptBuilder
 
@@ -26,12 +25,16 @@ def parse_args():
     parser.add_argument("--model", type=str, default="Qwen/Qwen2.5-1.5B-Instruct", help="Hugging Face model identifier")
     parser.add_argument("--generator", type=str, default="func_31", choices=list_available_generators(), help="HCP algorithm generator name")
     parser.add_argument("--stage", type=int, default=1, choices=[0, 1, 2, 3], help="Stage of data disclosure")
-    parser.add_argument("--k_disclosed", type=int, default=0, help="Number of disclosed elements in stage 3")
-    parser.add_argument("--n_shot", type=int, default=5, help="Number of few-shot examples embedded in each prompt")
+    parser.add_argument("--k_disclosed", type=int, default=0, help="Number of disclosed elements in stage 3 (default: 0)")
+    parser.add_argument("--n_shot", type=int, default=10, help="Number of few-shot examples embedded in each prompt (default: 10)")
     parser.add_argument("--n_train", type=int, default=500, help="Number of training samples")
-    parser.add_argument("--n_val", type=int, default=100, help="Number of validation samples")
+    parser.add_argument("--n_val", type=int, default=-1, help="Number of validation samples (default: n_train // 5)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
-    
+
+    # Paradigm: controls completion format (matches run_prompting.py --paradigm)
+    parser.add_argument("--paradigm", type=str, default="pot", choices=["pure", "pot"],
+                        help="Training target format: 'pure'=JSON answer only, 'pot'=Python code block (default: pot)")
+
     # Training Hyperparameters
     parser.add_argument("--epochs", type=int, default=3, help="Training epochs")
     parser.add_argument("--batch_size", type=int, default=2, help="Batch size per GPU")
@@ -40,11 +43,15 @@ def parse_args():
     parser.add_argument("--max_len", type=int, default=2048, help="Max sequence length")
     parser.add_argument("--lora_r", type=int, default=16, help="LoRA R")
     parser.add_argument("--lora_alpha", type=int, default=32, help="LoRA Alpha")
-    parser.add_argument("--include_rationale", action="store_true", help="Include reasoning chain in training completions")
-    parser.add_argument("--include_fewshot_rationale", action="store_true", help="Include reasoning chain in few-shot prompts")
-    parser.add_argument("--use_code", action="store_true", help="Format targets as Python code blocks (PoT training)")
-    
-    return parser.parse_args()
+
+    args = parser.parse_args()
+
+    # n_val のデフォルトは n_train // 5 に比例させる
+    if args.n_val == -1:
+        args.n_val = max(1, args.n_train // 5)
+        print(f"[INFO] --n_val が未指定のため n_train // 5 = {args.n_val} を使用します")
+
+    return args
 
 def main():
     args = parse_args()
@@ -157,27 +164,23 @@ def main():
                 shot_df=few_shot_df,
                 test_challenge=challenge,
                 generator_name=args.generator,
-                include_rationale=args.include_fewshot_rationale,
-                use_code=args.use_code,
+                include_rationale=False,
+                use_code=(args.paradigm == "pot"),
                 sgm=sgm,
                 stage=args.stage,
                 k_disclosed=args.k_disclosed
             )
-            
-            if args.use_code:
+
+            if args.paradigm == "pot":
                 completion = generate_target_code(args.generator, challenge, sgm)
-            elif args.include_rationale:
-                visible_sgm = sgm if args.stage in [1, 3] else None
-                rationale = ComputablePasswordGenerator.explain_logic(args.generator, row, sgm=visible_sgm)
-                completion = f"思考過程：\n{rationale}\n\n{{\n  \"answer\": {response}\n}}"
-            else:
+            else:  # pure: JSON answer only
                 completion = f"{{\n  \"answer\": {response}\n}}"
-                
+
             messages = [
                 {"role": "user", "content": prompt},
                 {"role": "assistant", "content": completion}
             ]
-            
+
             formatted_chat = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
             records.append({"text": formatted_chat})
         return Dataset.from_list(records)
@@ -239,6 +242,8 @@ def main():
         remove_unused_columns=False,
         dataset_text_field="text",
         max_length=args.max_len,
+        dataloader_num_workers=4,
+        dataloader_pin_memory=True,
     )
     
     trainer = SFTTrainer(

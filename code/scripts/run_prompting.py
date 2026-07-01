@@ -125,8 +125,8 @@ def parse_args():
     parser.add_argument(
         "--k_disclosed",
         type    = int,
-        default = 5,
-        help    = "Stage 3 で公開する秘密鍵の要素数 K",
+        default = 0,
+        help    = "Stage 3 で公開する秘密鍵の要素数 K（デフォルト: 0）",
     )
     parser.add_argument(
         "--paradigm",
@@ -137,14 +137,6 @@ def parse_args():
     )
 
 
-    # ---- プロンプト設定 ----
-    parser.add_argument(
-        "--prompt_mode",
-        type    = str,
-        default = "text",
-        choices = ["text"],
-        help    = "プロンプトの構成モード",
-    )
 
     # ---- 出力設定 ----
     parser.add_argument(
@@ -162,7 +154,19 @@ def parse_args():
         help    = "デバッグログと詳細な推論過程を表示する",
     )
 
-    return parser.parse_args()
+    args = parser.parse_args()
+
+    # ---- プロバイダに応じた自動補正 ----
+    # LoRA / Ollama はローカル実行のため API 待機は不要、並列数も安全な値に制限する
+    if args.provider in ("lora", "ollama", "mock"):
+        if args.sleep_sec != 0.0:
+            print(f"[INFO] provider={args.provider} のため sleep_sec を 0.0 秒に自動設定します（元の値: {args.sleep_sec}s）")
+            args.sleep_sec = 0.0
+    if args.provider == "lora" and args.parallel > 1:
+        print(f"[INFO] provider=lora のため parallel を 1 に自動制限します（元の値: {args.parallel}）")
+        args.parallel = 1
+
+    return args
 
 
 # =============================================================================
@@ -232,7 +236,7 @@ def run_benchmark(args):
         from llm_agent import LoraClient
         client = LoraClient(run_dir=args.model)
 
-    prompt_builder = get_prompt_builder(mode=args.prompt_mode)
+    prompt_builder = get_prompt_builder(mode="text")
     
     # paradigm フォルダ名にステージ情報を付加して管理する
     paradigm = f"stage{args.stage}_{args.paradigm}"
