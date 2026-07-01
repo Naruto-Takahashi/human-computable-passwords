@@ -132,8 +132,8 @@ def parse_args():
         "--paradigm",
         type    = str,
         default = "pure",
-        choices = ["pure", "rationale", "pot", "rationale_pot"],
-        help    = "実験手法の選択（pure, rationale, pot, rationale_pot）",
+        choices = ["pure", "pot"],
+        help    = "実験手法の選択（pure: JSONのみ, pot: Pythonコード実行）",
     )
 
 
@@ -178,8 +178,8 @@ def run_benchmark(args):
     ベンチマーク実験を一通り実行し，結果を保存する．
     """
     # paradigm 設定から rationale と use_code の真偽値を決定する
-    rationale = args.paradigm in ["rationale", "rationale_pot"]
-    use_code = args.paradigm in ["pot", "rationale_pot"]
+    rationale = False
+    use_code = args.paradigm == "pot"
 
     print("=" * 60)
     print("【ベンチマーク設定】")

@@ -23,8 +23,8 @@ def run_batch():
     parser.add_argument("--n_shot", type=int, default=10, help="Few-shot 例題数")
     parser.add_argument("--n_test", type=int, default=50, help="テスト問題数")
     parser.add_argument("--stage", type=int, default=1, choices=[0, 1, 2, 3], help="実験ステージ（0〜3）")
-    parser.add_argument("--k_disclosed", type=int, default=5, help="Stage 3 で公開する秘密鍵の要素数 K")
-    parser.add_argument("--paradigm", type=str, default="pure", choices=["pure", "rationale", "pot", "rationale_pot"], help="実験手法の選択")
+    parser.add_argument("--k_disclosed", type=int, default=0, help="Stage 3 で公開する秘密鍵の要素数 K (デフォルト: 0)")
+    parser.add_argument("--paradigm", type=str, default="pure", choices=["pure", "pot"], help="実験手法の選択 (pure or pot)")
     args = parser.parse_args()
 
     generators = list_available_generators()

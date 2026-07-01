@@ -120,7 +120,7 @@ python code/scripts/compare_prompting.py --model qwen2.5:7b --generator simple_a
 python code/scripts/summarize_prompting.py
 ```
 
-- **実験パラダイム**: `pure`（ゼロショット），`rationale`（ヒントあり），`pot`（コード実行），`rationale_pot`（最強構成）の4段階で評価可能．
+- **実験パラダイム**: `pure`（暗算直接出力）および `pot`（Pythonコード実行方式）の2段階で評価可能．
 - **PoT (Program-of-Thought)**: `--paradigm pot` を指定すると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
 - **出力構造**: `results/evals/<モデル>/<手法>/run_<日時>/` に自動整理されます．
 

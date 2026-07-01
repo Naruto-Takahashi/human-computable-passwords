@@ -100,7 +100,7 @@ nix develop --command python3 code/scripts/summarize_prompting.py
 | `--n_test` | int (`50`) | 評価を行うテスト問題の件数。 |
 | `--parallel` | int (`32`) | 並列推論リクエスト数（※ `lora` 指定時は VRAM 保護のため自動的に `1` に制限されます）。 |
 | `--sleep_sec` | float (`4.0`) | リクエスト間の待機時間（秒）。Gemini などの API レートリミット回避用（※ `lora`/`ollama`/`mock` 指定時は自動的に `0.0` に補正されます）。 |
-| `--paradigm` | str (`pure`) | 実験パラダイム。`pure` (JSONのみ), `rationale` (思考プロセス付与), `pot` (Pythonコード生成実行), `rationale_pot` (思考プロセス付きコード生成実行) のいずれか。 |
+| `--paradigm` | str (`pure`) | 実験パラダイム。`pure` (JSONのみ) または `pot` (Pythonコード生成実行) のいずれか。 |
 
 ### ファインチューニング固有のパラメータ
 `train_finetuning.py` で使用される、学習および QLoRA 調整のためのパラメータです。
@@ -130,13 +130,10 @@ nix develop --command python3 code/scripts/summarize_prompting.py
 研究目的に応じて，`--paradigm` に以下のいずれかを指定して実行してください．結果はディレクトリに自動分類されます（`stage{stage}_{paradigm}`）．
 
 1. **Pure Few-shot** (`pure`)
-   - AIが具体例のみから背後のルールを「帰納（逆推定）」できるかをテストする．
-2. **Rationalized Few-shot** (`rationale`)
-   - AIに解き方の手順を教えた状態で，それを正確に「演繹（実行）」できるかをテストする．
-3. **Program-of-Thought (PoT)** (`pot`)
-   - AIに計算ロジック（プログラム）を生成させ，計算機で実行することで，単純な算数ミスを排除した論理推論力をテストする．
-4. **Rationalized PoT** (`rationale_pot`)
-   - 教えられた解法アルゴリズムを正確に Python コードとして「演繹（実装・実行）」できるかをテストする（最強構成）．
+   - AIが入出力ペアの具体例のみから背後のルールや鍵を「暗算（直接出力）」で予測する方式。
+2. **Program-of-Thought (PoT)** (`pot`)
+   - AIに計算ロジック（プログラム）を生成させ，それを Python インタプリタで実行して答えを得ることで、単純な計算ミスを排除した論理推論力を検証する方式。
+
 
 ---
 

@@ -18,11 +18,11 @@ def run_all_paradigms():
     parser.add_argument("--parallel", type=int, default=1, help="並列度")
     parser.add_argument("--n_shot", type=int, default=10, help="Few-shot数")
     parser.add_argument("--stage", type=int, default=1, choices=[0, 1, 2, 3], help="実験ステージ（0〜3）")
-    parser.add_argument("--k_disclosed", type=int, default=5, help="Stage 3 で公開する秘密鍵の要素数 K")
+    parser.add_argument("--k_disclosed", type=int, default=0, help="Stage 3 で公開する秘密鍵の要素数 K (デフォルト: 0)")
     args = parser.parse_args()
 
-    # 4つのパラダイム設定
-    paradigms = ["pure", "rationale", "pot", "rationale_pot"]
+    # 2つのパラダイム設定
+    paradigms = ["pure", "pot"]
 
     script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "run_prompting.py")
 
