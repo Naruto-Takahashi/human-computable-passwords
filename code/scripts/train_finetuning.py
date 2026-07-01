@@ -243,5 +243,23 @@ def main():
     with open(os.path.join(output_dir, "summary.json"), "w", encoding="utf-8") as f:
         json.dump(ft_summary, f, ensure_ascii=False, indent=2)
 
+    # Google Drive 同期をバックグラウンドで開始
+    import subprocess
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    results_dir = os.path.join(base_dir, "results")
+    if os.path.exists(results_dir):
+        try:
+            rclone_path = "/home/nalt/.nix-profile/bin/rclone"
+            if not os.path.exists(rclone_path):
+                rclone_path = "rclone"
+            subprocess.Popen(
+                [rclone_path, "sync", results_dir, "gdrive:human-computable-passwords-results"],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            print("Google Drive 同期タスクをバックグラウンドで開始しました。")
+        except Exception as e:
+            print(f"Google Drive 同期のトリガーに失敗しました: {e}")
+
 if __name__ == "__main__":
     main()
