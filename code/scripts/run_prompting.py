@@ -297,8 +297,9 @@ def run_benchmark(args):
 
         raw_response, predicted = client.predict(prompt)
 
-        # コード実行が有効な場合，コードを抽出して実行
+        # コード実行が有効な場合，コードを抽出して実行（テキストパースのフォールバックは無効化）
         if use_code:
+            predicted = None
             code_match = re.search(r"```python\s+(.*?)\s+```", raw_response, re.DOTALL)
             if code_match:
                 code_str = code_match.group(1)
