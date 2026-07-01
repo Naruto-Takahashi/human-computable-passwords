@@ -46,8 +46,8 @@ human-computable-passwords/
 │       └── summarize_baseline.py # 学習結果の自動集計
 ├── docs/                      # 計画書・ログ・実行手順書
 │   ├── plan.md                # 研究計画書
+│   ├── experiment_guide.md    # 実験実行ガイド
 │   ├── log.md                 # 研究開発ログ
-│   ├── benchmark_guide.md     # 実験手順ガイド
 │   └── ultimate_showdown_prompt.md # プロンプト検証用メモ
 ├── literature/                # 先行研究の文献（論文PDF，卒論スライド，学会スライド等）
 │   ├── Towards Human Computable Passwords.pdf
@@ -104,34 +104,31 @@ python code/scripts/train_baseline.py
 python code/scripts/summarize_baseline.py
 ```
 
-### LLMベンチマーク評価
-
-ローカルLLM（Ollama），Gemini API，または検証用モックを用いた評価が可能です．
-詳細な実行手順やパラメータの仕様，トラブルシューティングについては，[LLM ベンチマーク実行ガイド](docs/benchmark_guide.md) を参照してください．
+詳細な実行手順やパラメータの仕様，トラブルシューティングについては，[HCP LLM 実験実行ガイド](docs/experiment_guide.md) を参照してください．
 
 ```bash
 # 1. 単発手法の実行
-python code/scripts/run_prompting.py --model gemma2:9b --generator simple_add --rationale --use_code
+python code/scripts/run_prompting.py --model qwen2.5:7b --generator simple_add --paradigm pot
 
 # 2. オフライン検証用（Mockプロバイダによるドライラン）
 python code/scripts/run_prompting.py --provider mock --model test-mock-model --n_test 5
 
 # 3. 全4パラダイム（手法）の自動比較
-python code/scripts/compare_prompting.py --model gemma2:9b --generator simple_add
+python code/scripts/compare_prompting.py --model qwen2.5:7b --generator simple_add
 
 # 評価結果の集計（ summary_llm.md の生成）
 python code/scripts/summarize_prompting.py
 ```
 
 - **実験パラダイム**: `pure`（ゼロショット），`rationale`（ヒントあり），`pot`（コード実行），`rationale_pot`（最強構成）の4段階で評価可能．
-- **PoT (Program-of-Thought)**: `--use_code` を有効にすると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
-- **出力構造**: `results/evals/<モデル>/<手法>/<アルゴリズム>/run_<日時>/` に自動整理されます．
+- **PoT (Program-of-Thought)**: `--paradigm pot` を指定すると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
+- **出力構造**: `results/evals/<モデル>/<手法>/run_<日時>/` に自動整理されます．
 
 ---
 
 ## ドキュメント・実行結果へのリンク
 
-- [LLM ベンチマーク実行ガイド (`benchmark_guide.md`)](docs/benchmark_guide.md)
+- [HCP LLM 実験実行ガイド (`experiment_guide.md`)](docs/experiment_guide.md)
 - [研究計画書 (`plan.md`)](docs/plan.md)
 - [研究ログ (`log.md`)](docs/log.md)
 - [学習実験結果のサマリー (`summary.md`)](results/summary.md)
@@ -139,14 +136,12 @@ python code/scripts/summarize_prompting.py
 
 ---
 
-## LLMファインチューニング（学習・評価）
-
 QLoRA (4-bit量子化LoRA) を用いてローカル環境で軽量LLMの微調整学習を行い、共通のベンチマーク実行スクリプトを用いて評価を行います。
 
 ```bash
 # 1. ファインチューニングの実行（学習済みアダプターは results/finetuned_models/ に保存）
-python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-1.5B-Instruct --generator func_31 --stage 1 --epochs 3 --batch_size 2
+python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct --generator func_22 --stage 0 --paradigm pot --n_train 800
 
 # 2. 共通スクリプトを用いたファインチューニングモデルの評価 (provider に lora を指定)
-python code/scripts/run_prompting.py --provider lora --model results/finetuned_models/qwen2.5_1.5b/stage1/func_31/run_XXXXXXXX_XXXXXX --generator func_31 --stage 1 --paradigm pure --n_test 100
+python code/scripts/run_prompting.py --provider lora --model results/finetuned_models/qwen2.5_3b/stage0/func_22/run_XXXXXXXX_XXXXXX --generator func_22 --stage 0 --paradigm pot --n_test 100
 ```
