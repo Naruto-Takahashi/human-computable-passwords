@@ -8,4 +8,6 @@
 /.direnv/
 /.gemini/
 /results/
+!/results/summary.md
+!/results/summary_llm.md
 *Zone.Identifier

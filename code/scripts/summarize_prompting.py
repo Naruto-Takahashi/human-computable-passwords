@@ -48,7 +48,7 @@ def summarize_llm_results():
     # experiments/benchmarks/summarize.py から見たプロジェクトルート
     current_dir = os.path.dirname(os.path.abspath(__file__))
     base_dir = os.path.dirname(os.path.dirname(current_dir))
-    output_dir = os.path.join(base_dir, "results", "prompting")
+    output_dir = os.path.join(base_dir, "results", "evals")
     # 階層化されたディレクトリから全ての metadata.json を再帰的に検索
     metadata_files = glob.glob(os.path.join(output_dir, "**", "metadata.json"), recursive=True)
 
