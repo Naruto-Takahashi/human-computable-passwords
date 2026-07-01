@@ -28,6 +28,7 @@ from core.generator import ComputablePasswordGenerator
 AVAILABLE_GENERATORS: dict = {
     "simple_add": ComputablePasswordGenerator.password_simple_add,
     "func_13": ComputablePasswordGenerator.func_13,
+    "func_22": ComputablePasswordGenerator.func_22,
     "func_31": ComputablePasswordGenerator.func_31,
     "func_pow": ComputablePasswordGenerator.func_pow,
 }

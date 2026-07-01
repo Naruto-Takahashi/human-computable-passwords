@@ -64,6 +64,23 @@ class ComputablePasswordGenerator:
         return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS), sgm
 
     @staticmethod
+    def func_22(datasize: int) -> tuple[pd.DataFrame, list[int]]:
+        N_user_memory = 26
+        result = []
+        sgm = ComputablePasswordGenerator.Utils.sgm(N_user_memory).tolist()
+        for row in range(datasize):
+            challenge_idx = np.random.randint(0, N_user_memory, 14)
+            X = np.zeros(14, dtype=int)
+            for k in range(14):
+                X[k] = sgm[challenge_idx[k]]
+            j = (X[10] + X[11]) % 10
+            Z = (X[int(j)] + X[12] + X[13]) % 10
+            row = np.append(challenge_idx, Z)
+            result.append(row)
+        table_array = np.array(result)
+        return pd.DataFrame(table_array, columns=ComputablePasswordGenerator.COLUMNS), sgm
+
+    @staticmethod
     def func_pow(datasize: int) -> tuple[pd.DataFrame, list[int]]:
         N_user_memory = 26
         result = []
@@ -123,6 +140,16 @@ class ComputablePasswordGenerator:
                 f"2. ポインタ j = (X10 + X11 + X12) mod 10 = ({X[10]} + {X[11]} + {X[12]}) mod 10 = {j} を計算\n"
                 f"3. インデックス {j} の値を参照: X{j}=sgm[{idx[j]}]={X[j]}\n"
                 f"4. Z = (X{j} + X13) mod 10 = ({X[j]} + {X[13]}) mod 10 = {Z}"
+            )
+
+        elif generator_name == "func_22":
+            X = [sgm[i] for i in idx]
+            j = (X[10] + X[11]) % 10
+            return (
+                f"1. テーブル値を参照: X10=sgm[{idx[10]}]={X[10]}, X11=sgm[{idx[11]}]={X[11]}\n"
+                f"2. ポインタ j = (X10 + X11) mod 10 = ({X[10]} + {X[11]}) mod 10 = {j} を計算\n"
+                f"3. インデックス {j} の値を参照: X{j}=sgm[{idx[j]}]={X[j]}\n"
+                f"4. Z = (X{j} + X12 + X13) mod 10 = ({X[j]} + {X[12]} + {X[13]}) mod 10 = {Z}"
             )
 
         elif generator_name == "func_pow":
