@@ -183,14 +183,14 @@ python code/scripts/train_finetuning.py \
 
 ### ファインチューニング済みモデルの評価 (`run_prompting.py`)
 学習が完了すると、アダプターは以下の形式で保存されます：
-`results/models/{model}/stage{stage}/{generator}/run_{timestamp}/`
+`results/finetuned_models/{model}/stage{stage}/{generator}/run_{timestamp}/`
 
 共通のベンチマーク実行スクリプトである `run_prompting.py` を用いて、`--provider lora` を指定し、`--model` に上記の保存先ディレクトリパス（`adapter` が含まれるフォルダ）を渡すことで、テストセットに対する精度を評価します。
 
 ```bash
 python code/scripts/run_prompting.py \
   --provider lora \
-  --model results/models/qwen2.5_1.5b/stage1/func_31/run_XXXXXXXX_XXXXXX \
+  --model results/finetuned_models/qwen2.5_1.5b/stage1/func_31/run_XXXXXXXX_XXXXXX \
   --generator func_31 \
   --stage 1 \
   --paradigm pure \

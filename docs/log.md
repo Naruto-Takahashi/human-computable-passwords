@@ -22,7 +22,7 @@
   - **環境管理方式の整理（Nix & pip）**: NixOS環境で PyTorch 等の大規模パッケージをソースコンパイルすると発生するOSフリーズの問題に対処するため、Nixで動的ライブラリ（CUDAドライバパス、libstdc++、zlib）のパスを解決しつつ、Pythonパッケージは仮想環境内の pip 経由でプリコンパイル済みバイナリ（Wheels）を直接取得する「Nixシステム管理＋Pipライブラリ管理」のハイブリッド環境を確立。`requirements.txt` に PyTorch、transformers、peft、bitsandbytes、trl、accelerate、datasets を明確に列挙。
   - **遅延インポート導入によるCUDA競合回避**: `core/__init__.py` において、TensorFlowを依存に持つ `Models` および `Utils` モジュールをPythonの `__getattr__` で遅延ロード（Lazy Import）するようにリファクタリング。これにより、LLMの学習を実行する際に TensorFlow のCUDAコンテキストの初期化が完全にバイパスされ、PyTorchによるGPU（RTX 2080 SUPER）での学習が競合・クラッシュすることなく安全に行えるようになった。
   - **ファインチューニングスクリプト (`train_finetuning.py`) の実装**: QLoRA (4-bit量子化LoRA) を用い、指定したアルゴリズム・開示ステージに応じて SFTTrainer (TRL v1.7.0準拠) でLLMを微調整する学習スクリプトを作成。
-  - **学習済みモデルの保存先整理**: ファインチューニングの結果もプロンプティングと同様に整理されるように、`results/models/{model}/stage{stage}/{generator}/run_{timestamp}` の階層構造に出力先を再編成。学習済み LoRA アダプターが復元可能な形で保存される。
+  - **学習済みモデルの保存先整理**: ファインチューニングの結果もプロンプティングと同様に整理されるように、`results/finetuned_models/{model}/stage{stage}/{generator}/run_{timestamp}` の階層構造に出力先を再編成。学習済み LoRA アダプターが復元可能な形で保存される。
   - **評価スクリプトのベンチマーク統合**: 最初は単独の `eval_lora.py` として構築したが、ベンチマーク共通スクリプトである `run_prompting.py` に `lora` プロバイダを追加する形で完全に評価ロジックを統合した。これにより、ファインチューニングモデルの評価時にも並列処理、結果CSV、連番思考プロセスログ出力（`reasoning_logs/`）などの強力な評価基盤がすべて共有されるようになり、不要となった `eval_lora.py` は削除した。評価結果は `results/evals/` 配下に歴代モデルとともに整理される。
   - **0.5Bモデルによる動作検証（ドライラン）の完走**: `Qwen/Qwen2.5-0.5B-Instruct` モデルを用い、HCPの `simple_add`（Stage 1）データで学習＆統合後のベンチマーク評価を実行し、正常にトレーニングおよび評価が10秒台で完了することを確認。
 

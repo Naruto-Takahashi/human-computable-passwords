@@ -70,7 +70,7 @@ def main():
     output_dir = os.path.join(
         base_dir,
         "results",
-        "models",
+        "finetuned_models",
         model_name_safe,
         f"stage{args.stage}",
         args.generator,
