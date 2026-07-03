@@ -178,15 +178,14 @@ def main():
                 {"role": "assistant", "content": completion}
             ]
 
-            formatted_chat = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
-            records.append({"text": formatted_chat})
+            records.append({"messages": messages})
         return Dataset.from_list(records)
-        
+
     train_dataset = process_df(train_df)
     val_dataset = process_df(val_df) if len(val_df) > 0 else None
-    
-    print("Formatting complete. Example training text:")
-    print(train_dataset[0]["text"][:1000] + "\n...")
+
+    print("Formatting complete. Example training messages:")
+    print(train_dataset[0]["messages"])
     
     # QLoRA configuration
     bnb_config = BitsAndBytesConfig(
@@ -237,7 +236,7 @@ def main():
         optim="adamw_8bit",
         report_to="none",
         remove_unused_columns=False,
-        dataset_text_field="text",
+        assistant_only_loss=True,
         max_length=args.max_len,
         dataloader_num_workers=4,
         dataloader_pin_memory=True,
@@ -266,7 +265,6 @@ def main():
     # Log fine-tuning metadata
     ft_summary = {
         "generator": args.generator,
-        "stage": args.stage,
         "model": args.model,
         "elapsed_time_seconds": elapsed_time,
         "epochs": args.epochs,
