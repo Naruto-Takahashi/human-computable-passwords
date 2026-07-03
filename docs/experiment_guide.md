@@ -4,7 +4,12 @@
 
 > [!IMPORTANT]
 > すべてのコマンドはプロジェクトのルートディレクトリで実行することを想定しています．
-> コマンド実行前に必ず `direnv allow` または `nix develop` を実行し，必要なPython環境を読み込んでください．
+> 現状，`nix develop`（`flake.nix` の `pythonEnv`）には `torch`／`transformers`／`peft`／`trl`／`bitsandbytes` 等の
+> ファインチューニング関連パッケージが含まれていないため，学習・評価スクリプト（`train_finetuning.py`，
+> `run_prompting.py`，`run_finetuning_pipeline.py`）の実行には，これらを pip install 済みの `.venv/bin/python`
+> を直接使用してください．`.venv` が未作成の場合は `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt`
+> で作成できます．
+> （nixpkgs 側にも同等パッケージは存在するため，将来的に `flake.nix` へ統合して `nix develop` に一本化することも可能です．）
 
 ## 目次
 - [1. 基本的な実行手順](#1-基本的な実行手順)
@@ -29,7 +34,7 @@
 `--verbose` を付けると，各回答の終わりにパースされた結果と推論の断片が表示されます．
 
 ```bash
-nix develop --command python3 code/scripts/run_prompting.py \
+.venv/bin/python code/scripts/run_prompting.py \
   --provider ollama \
   --model qwen2.5:7b \
   --generator func_31 \
@@ -42,7 +47,7 @@ nix develop --command python3 code/scripts/run_prompting.py \
 QLoRA (4-bit量子化LoRA) を用い、指定したアルゴリズム・開示ステージに対してローカル環境で軽量モデルの微調整学習を実行します。
 
 ```bash
-nix develop --command python3 code/scripts/train_finetuning.py \
+.venv/bin/python code/scripts/train_finetuning.py \
   --model Qwen/Qwen2.5-3B-Instruct \
   --generator func_22 \
   --paradigm pot \
@@ -55,7 +60,7 @@ nix develop --command python3 code/scripts/train_finetuning.py \
 学習完了後、保存されたアダプター（`run_XXXXXXXX_XXXXXX` フォルダ）のパスを `--model` に指定し、`--provider lora` で実行して評価を行います。
 
 ```bash
-nix develop --command python3 code/scripts/run_prompting.py \
+.venv/bin/python code/scripts/run_prompting.py \
   --provider lora \
   --model results/finetuned_models/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX \
   --generator func_22 \
@@ -68,7 +73,7 @@ nix develop --command python3 code/scripts/run_prompting.py \
 学習 → 評価テスト を1コマンドで連続実行したい場合は `run_finetuning_pipeline.py` を使用します（Google Drive 同期は学習・評価それぞれのスクリプト内で自動的にバックグラウンド実行されます）。
 
 ```bash
-nix develop --command python3 code/scripts/run_finetuning_pipeline.py \
+.venv/bin/python code/scripts/run_finetuning_pipeline.py \
   --model Qwen/Qwen2.5-3B-Instruct \
   --generator func_22 \
   --paradigm pot \
@@ -82,7 +87,7 @@ nix develop --command python3 code/scripts/run_finetuning_pipeline.py \
 学習をスキップしてすでに保存済みのアダプターに対して評価のみ実行したい場合は `--skip_train <run ディレクトリ>` を指定してください。
 
 ```bash
-nix develop --command python3 code/scripts/run_finetuning_pipeline.py \
+.venv/bin/python code/scripts/run_finetuning_pipeline.py \
   --skip_train results/finetuned_models/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX \
   --generator func_22 --paradigm pot --stage 0 --n_test 100
 ```
@@ -91,7 +96,7 @@ nix develop --command python3 code/scripts/run_finetuning_pipeline.py \
 実験完了後，以下のコマンドを実行すると `results/summary_llm.md` が更新され，表形式で結果を確認できます．
 
 ```bash
-nix develop --command python3 code/scripts/summarize_prompting.py
+.venv/bin/python code/scripts/summarize_prompting.py
 ```
 
 ---
@@ -177,7 +182,7 @@ nix develop --command python3 code/scripts/summarize_prompting.py
 ローカルLLMやAPIキーのない環境において，実行パイプラインやディレクトリ生成が正常に動作するかを確認するために，`mock` プロバイダが利用可能です．このモードでは実際のAPIリクエストは発生しません．
 
 ```bash
-nix develop --command python3 code/scripts/run_prompting.py \
+.venv/bin/python code/scripts/run_prompting.py \
   --provider mock \
   --model test-mock-model \
   --n_test 5
