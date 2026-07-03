@@ -64,6 +64,29 @@ nix develop --command python3 code/scripts/run_prompting.py \
 ```
 *(※ `lora` および `ollama` プロバイダ指定時は、APIレートリミット用ウェイトが不要なため自動で `--sleep_sec 0.0` に設定され、さらに `lora` では VRAM 溢れ防止のため自動で `--parallel 1` に制限され高速かつ安定して動作します。)*
 
+### ファインチューニング＋評価の一括実行（ラッパー）
+学習 → 評価テスト を1コマンドで連続実行したい場合は `run_finetuning_pipeline.py` を使用します（Google Drive 同期は学習・評価それぞれのスクリプト内で自動的にバックグラウンド実行されます）。
+
+```bash
+nix develop --command python3 code/scripts/run_finetuning_pipeline.py \
+  --model Qwen/Qwen2.5-3B-Instruct \
+  --generator func_22 \
+  --paradigm pot \
+  --stage 0 \
+  --n_train 800 \
+  --epochs 3 \
+  --batch_size 2 \
+  --n_test 100
+```
+
+学習をスキップしてすでに保存済みのアダプターに対して評価のみ実行したい場合は `--skip_train <run ディレクトリ>` を指定してください。
+
+```bash
+nix develop --command python3 code/scripts/run_finetuning_pipeline.py \
+  --skip_train results/finetuned_models/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX \
+  --generator func_22 --paradigm pot --stage 0 --n_test 100
+```
+
 ### 結果の集計
 実験完了後，以下のコマンドを実行すると `results/summary_llm.md` が更新され，表形式で結果を確認できます．
 
