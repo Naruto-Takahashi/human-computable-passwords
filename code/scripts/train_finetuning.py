@@ -28,10 +28,15 @@ def parse_args():
     parser.add_argument("--n_train", type=int, default=500, help="Number of training samples")
     parser.add_argument("--n_val", type=int, default=-1, help="Number of validation samples (default: n_train // 5)")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument("--stage", type=int, default=0, choices=[0, 1, 2, 3],
+                        help="Disclosure stage for the training prompt. 0=no rule/no key (default), "
+                             "1=key disclosed, 2=rule disclosed/key hidden, 3=rule disclosed/key partially disclosed")
+    parser.add_argument("--k_disclosed", type=int, default=0, help="Number of secret key elements to disclose for stage=3")
 
     # Paradigm: controls completion format (matches run_prompting.py --paradigm)
-    parser.add_argument("--paradigm", type=str, default="pot", choices=["pure", "pot"],
-                        help="Training target format: 'pure'=JSON answer only, 'pot'=Python code block (default: pot)")
+    parser.add_argument("--paradigm", type=str, default="pot", choices=["pure", "pot", "rationale"],
+                        help="Training target format: 'pure'=JSON answer only, 'pot'=Python code block, "
+                             "'rationale'=structure-only reasoning (no secret key values) + JSON answer (default: pot)")
 
     # Training Hyperparameters
     parser.add_argument("--epochs", type=int, default=3, help="Training epochs")
@@ -41,6 +46,7 @@ def parse_args():
     parser.add_argument("--max_len", type=int, default=2048, help="Max sequence length")
     parser.add_argument("--lora_r", type=int, default=16, help="LoRA R")
     parser.add_argument("--lora_alpha", type=int, default=32, help="LoRA Alpha")
+    parser.add_argument("--quant", type=str, default="4bit", choices=["4bit", "8bit"], help="Base model quantization (量子化ノイズの影響を検証するための切替)")
 
     args = parser.parse_args()
 
@@ -153,6 +159,51 @@ def main():
         code += "```"
         return code
 
+    def generate_rationale(generator_name: str, response: int) -> str:
+        """
+        秘密鍵の値には一切触れず，計算の「構造」だけを自然言語で説明した思考過程を生成する．
+        （Stage 0 / PoT の前提：アルゴリズム構造は既知，鍵の値のみ非公開）
+        中間の推論トークンにも損失をかけることで，勾配信号を増やす狙い．
+        """
+        if generator_name == "simple_add":
+            reasoning = (
+                "考え方:\n"
+                "1. 入力 X の X[0], X[1], X[2] を合計する．\n"
+                "2. その合計を 10 で割った余りが答えです．\n"
+            )
+        elif generator_name == "func_13":
+            reasoning = (
+                "考え方:\n"
+                "1. 入力 X の各値は秘密の鍵テーブルのインデックスに対応しており，鍵テーブルを介して実際の計算用の値に変換される．\n"
+                "2. 変換後の位置10の値を10で割った余りを j とする．\n"
+                "3. 変換後の位置 j, 11, 12, 13 の値を合計し，10で割った余りが答えです．\n"
+            )
+        elif generator_name == "func_22":
+            reasoning = (
+                "考え方:\n"
+                "1. 入力 X の各値は秘密の鍵テーブルのインデックスに対応しており，鍵テーブルを介して実際の計算用の値に変換される．\n"
+                "2. 変換後の位置10と位置11の値の和を10で割った余りを j とする．\n"
+                "3. 変換後の位置 j, 12, 13 の値を合計し，10で割った余りが答えです．\n"
+            )
+        elif generator_name == "func_31":
+            reasoning = (
+                "考え方:\n"
+                "1. 入力 X の各値は秘密の鍵テーブルのインデックスに対応しており，鍵テーブルを介して実際の計算用の値に変換される．\n"
+                "2. 変換後の位置10, 11, 12の値の和を10で割った余りを j とする．\n"
+                "3. 変換後の位置 j, 13 の値を合計し，10で割った余りが答えです．\n"
+            )
+        elif generator_name == "func_pow":
+            reasoning = (
+                "考え方:\n"
+                "1. 入力 X の各値は秘密の鍵テーブルのインデックスに対応しており，鍵テーブルを介して実際の計算用の値に変換される．\n"
+                "2. 変換後の位置10, 11, 12, 13の値をそれぞれ4乗, 3乗, 2乗, 1乗し，係数1, 2, 3, 4を掛けて合計する．\n"
+                "3. その合計を10で割った余りが答えです．\n"
+            )
+        else:
+            reasoning = "考え方:\n1. 与えられた入出力データの法則性から答えを推定する．\n"
+
+        return f"{reasoning}\n{{\n  \"answer\": {response}\n}}"
+
     def process_df(df):
         records = []
         for _, row in df.iterrows():
@@ -164,12 +215,14 @@ def main():
                 include_rationale=False,
                 use_code=(args.paradigm == "pot"),
                 sgm=sgm,
-                stage=0,
-                k_disclosed=0
+                stage=args.stage,
+                k_disclosed=args.k_disclosed
             )
 
             if args.paradigm == "pot":
                 completion = generate_target_code(args.generator, challenge, sgm)
+            elif args.paradigm == "rationale":
+                completion = generate_rationale(args.generator, response)
             else:  # pure: JSON answer only
                 completion = f"{{\n  \"answer\": {response}\n}}"
 
@@ -188,14 +241,17 @@ def main():
     print(train_dataset[0]["messages"])
     
     # QLoRA configuration
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
-    )
-    
-    print("Loading base model in 4-bit...")
+    if args.quant == "8bit":
+        bnb_config = BitsAndBytesConfig(load_in_8bit=True)
+    else:
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        )
+
+    print(f"Loading base model in {args.quant}...")
     model = AutoModelForCausalLM.from_pretrained(
         args.model,
         quantization_config=bnb_config,

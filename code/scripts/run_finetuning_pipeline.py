@@ -28,7 +28,7 @@ def parse_args():
     # ---- 学習・評価で共有する実験条件 ----
     parser.add_argument("--model", type=str, default="Qwen/Qwen2.5-3B-Instruct", help="Hugging Face モデル識別子")
     parser.add_argument("--generator", type=str, default="func_31", help="HCP アルゴリズム名")
-    parser.add_argument("--paradigm", type=str, default="pot", choices=["pure", "pot"], help="学習・評価の出力形式")
+    parser.add_argument("--paradigm", type=str, default="pot", choices=["pure", "pot", "rationale"], help="学習の出力形式（評価時は rationale も pure として評価される）")
     parser.add_argument("--stage", type=int, default=0, choices=[0, 1, 2, 3], help="評価時の情報開示ステージ（学習は常に stage=0 を想定）")
     parser.add_argument("--k_disclosed", type=int, default=0, help="Stage 3 で事前開示する秘密鍵の要素数")
     parser.add_argument("--n_shot", type=int, default=10, help="Few-shot 例題数")
@@ -44,6 +44,7 @@ def parse_args():
     parser.add_argument("--max_len", type=int, default=2048, help="最大シーケンス長")
     parser.add_argument("--lora_r", type=int, default=16, help="LoRA ランク")
     parser.add_argument("--lora_alpha", type=int, default=32, help="LoRA アルファ")
+    parser.add_argument("--quant", type=str, default="4bit", choices=["4bit", "8bit"], help="ベースモデルの量子化方式")
 
     # ---- 評価固有のパラメータ ----
     parser.add_argument("--n_test", type=int, default=50, help="評価テスト問題数")
@@ -99,6 +100,8 @@ def main():
             "--n_train", str(args.n_train),
             "--n_val", str(args.n_val),
             "--seed", str(args.seed),
+            "--stage", str(args.stage),
+            "--k_disclosed", str(args.k_disclosed),
             "--epochs", str(args.epochs),
             "--batch_size", str(args.batch_size),
             "--grad_accum", str(args.grad_accum),
@@ -106,17 +109,22 @@ def main():
             "--max_len", str(args.max_len),
             "--lora_r", str(args.lora_r),
             "--lora_alpha", str(args.lora_alpha),
+            "--quant", args.quant,
         ]
         train_output = run_streamed(train_cmd)
         run_dir = find_run_dir(train_output)
         print(f"[pipeline] 学習完了．アダプター保存先: {run_dir}")
+
+    # run_prompting.py は "rationale" パラダイムを持たない（JSON抽出パーサーが
+    # 前置きの思考テキストを無視して {"answer": ...} を拾えるため，pure として評価する）
+    eval_paradigm = "pure" if args.paradigm == "rationale" else args.paradigm
 
     eval_cmd = [
         args.python, EVAL_SCRIPT,
         "--provider", "lora",
         "--model", run_dir,
         "--generator", args.generator,
-        "--paradigm", args.paradigm,
+        "--paradigm", eval_paradigm,
         "--stage", str(args.stage),
         "--k_disclosed", str(args.k_disclosed),
         "--n_shot", str(args.n_shot),
