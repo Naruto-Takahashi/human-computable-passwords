@@ -1,5 +1,9 @@
 # HCP LLM 実験実行ガイド (HCP LLM Experiment Execution Guide)
 
+> [!WARNING]
+> **このガイドは 2026-07-12 のリファクタリング以前の旧スクリプト（`run_prompting.py` 等，現在は `code/legacy/`）を対象としており，非推奨です．**
+> 現行の実行手順は [README.md](../README.md) と [refactor_notes.md](refactor_notes.md) を参照してください．
+
 このドキュメントは，人間計算可能なパスワード（HCP）のLLM評価実験（プロンプティングおよびファインチューニング）を行うための手順，パラメータ仕様，および最適化に関する解説です．
 
 > [!IMPORTANT]

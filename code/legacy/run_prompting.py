@@ -238,11 +238,9 @@ def run_benchmark(args):
 
     prompt_builder = get_prompt_builder(mode="text")
     
-    # paradigm フォルダ名にステージ情報を付加して管理する（loraはstage0固定のためプレフィックスなし）
+    # paradigm フォルダ名にステージ情報を付加して管理する
     if args.provider == "lora":
-        args.stage = 0
-        args.k_disclosed = 0
-        paradigm = args.paradigm
+        paradigm = f"stage{args.stage}_{args.paradigm}" if args.stage != 0 else args.paradigm
     else:
         paradigm = f"stage{args.stage}_{args.paradigm}"
 

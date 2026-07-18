@@ -24,47 +24,44 @@
 
 ```text
 human-computable-passwords/
-├── code/                      # システムのソースコード
-│   ├── core/                  # HCPコアモジュール
-│   │   ├── generator.py       # HCPデータおよびチャレンジ生成器
-│   │   ├── models.py          # 従来の機械学習モデル（MLP，LSTM，CNN）の定義
-│   │   └── utils.py           # データ分割，乱数シード固定，可視化ユーティリティ
-│   ├── llm_agent/             # LLM推論用モジュール
-│   │   ├── clients.py         # Gemini / Ollama / Mock クライアント
-│   │   ├── prompt.py          # Few-shot プロンプト構築ロジック
-│   │   ├── evaluator.py       # 推論結果の評価・パース・記録（連番ステータスログの生成等）
-│   │   ├── code_executor.py   # PoT方式用の Python コード実行器
-│   │   └── data_generator.py  # LLM評価用データセット生成器
-│   └── scripts/               # 実験用の実行エントリースクリプト群
-│       ├── run_prompting.py   # LLMプロンプティング評価実行スクリプト
-│       ├── compare_prompting.py # 複数プロンプト手法の自動比較実行スクリプト
-│       ├── batch_prompting.py # 全アルゴリズムの一括プロンプティング評価実行
-│       ├── summarize_prompting.py # プロンプティング評価結果の自動集計
-│       ├── train_finetuning.py # LLMのQLoRAファインチューニング（微調整学習）実行
-│       ├── train_baseline.py  # 従来の機械学習モデルの個別学習
-│       ├── batch_train_baseline.py # 従来の機械学習モデルのバッチ学習
-│       └── summarize_baseline.py # 学習結果の自動集計
-├── docs/                      # 計画書・ログ・実行手順書
-│   ├── plan.md                # 研究計画書
-│   ├── experiment_guide.md    # 実験実行ガイド
-│   ├── log.md                 # 研究開発ログ
-│   └── ultimate_showdown_prompt.md # プロンプト検証用メモ
-├── literature/                # 先行研究の文献（論文PDF，卒論スライド，学会スライド等）
-│   ├── Towards Human Computable Passwords.pdf
-│   ├── R7_小川.pdf
-│   ├── R6_池田.pdf
-│   └── ...
-├── results/                   # 実験結果の出力先（Git管理対象外，summaryのみコミット対象）
-│   ├── prompting/             # LLMプロンプティング評価結果データ
-│   ├── finetuning/            # [NEW] LLMファインチューニング結果（モデル/ステージ/アルゴリズムの階層）
-│   ├── baselines/             # 機械学習モデルの学習ログ・グラフ・メタデータ
-│   ├── summary.md             # 機械学習実験結果の自動集計表
-│   └── summary_llm.md         # LLMベンチマーク結果の自動集計表
-├── flake.nix                  # Nix (Flakes) による再現可能なPythonシステム・CUDA環境の定義
-├── flake.lock                 # Nix環境の依存パッケージのバージョンロックファイル
-├── .envrc                     # direnv用設定ファイル
-├── requirements.txt           # Pythonパッケージの依存関係リスト
-└── README.md                  # 本ドキュメント
+├── code/
+│   ├── hcp/                   # 中核パッケージ（アルゴリズム定義の単一情報源）
+│   │   ├── algorithms.py      # HCPアルゴリズム定義（計算・ルール文・参照コード・解説）+ 自己検証
+│   │   ├── dataset.py         # 鍵シード/データシード分離のデータセット生成
+│   │   ├── prompts.py         # Stage 0〜3 × タスク（predict / recover_key）のプロンプト構築
+│   │   ├── clients.py         # Gemini / Ollama / Mock / LoRA クライアント
+│   │   ├── executor.py        # LLM出力のパース・鍵テーブル抽出・生成コード実行
+│   │   ├── evaluation.py      # 実験実行・採点・記録（応答精度・鍵復元率）
+│   │   └── solver.py          # 厳密ソルバー（整合鍵の数え上げ=情報限界，鍵復元=計算可解性）
+│   ├── core/                  # 従来ML（CNN等）ベースライン用モジュール
+│   ├── scripts/
+│   │   ├── run_eval.py        # 統一評価ランナー（predict / recover_key）
+│   │   ├── sweep.py           # N×K×アルゴリズム×シードのスイープ（レジューム対応）
+│   │   ├── info_limit.py      # 情報理論的限界 N*_info の測定
+│   │   ├── summarize.py       # 評価結果の自動集計（summary_llm.{md,csv}）
+│   │   ├── train_finetuning.py # QLoRAファインチューニング
+│   │   └── train_baseline.py 等 # 従来MLベースライン
+│   └── legacy/                # 旧実装（参照用，動作保証なし）
+├── docs/                      # 計画書・ログ・リファクタリングノート
+│   ├── plan.md / plan_v2_draft.md
+│   ├── refactor_notes.md      # 2026-07 監査とリファクタリングの記録
+│   ├── reports/               # 週次進捗報告
+│   └── experiment_guide.md, log.md
+├── ops/                       # 運用スクリプト（研究コードとは分離）
+│   ├── sync_results.sh        # results/ の Google Drive 同期
+│   └── run_stage3*.sh         # 実験バッチ（デタッチ実行用）
+├── Makefile                   # test / smoke / summarize / sync 等の運用タスク
+├── literature/                # 先行研究の文献
+├── results/                   # 実験結果
+│   ├── evals/                 # LLM評価（モデル/アルゴリズム/タスク/条件/シードの階層）
+│   ├── finetuned_models/      # FT学習の成果物（メタデータ・学習曲線）
+│   ├── baselines/             # 従来MLベースライン
+│   ├── theory/                # 情報限界 N*_info（ソルバー出力, Git管理）
+│   ├── figures/               # 報告用の図（Git管理）
+│   ├── logs/                  # 実験バッチの実行ログ
+│   └── summary_llm.{md,csv}   # 自動集計（Git管理）
+├── flake.nix / flake.lock     # Nix (Flakes) 環境定義
+└── requirements.txt
 ```
 
 ---
@@ -94,35 +91,44 @@ direnv allow
 
 以降，ディレクトリに入るだけで必要なライブラリが自動的に読み込まれます．
 
+### 動作確認
+
+```bash
+make test    # アルゴリズム自己検証 + ソルバー健全性チェック
+make smoke   # mock プロバイダによる E2E ドライラン（predict / recover_key）
+```
+
+### LLM 評価実験
+
+```bash
+# 応答予測タスク（paradigm: pure = JSON回答 / pot = Pythonコード実行）
+python code/scripts/run_eval.py --task predict --provider ollama --model qwen2.5:7b \
+    --algorithm func_22 --stage 2 --n_shot 30 --n_test 50 --key_seeds 0-4
+
+# 鍵復元タスク（観察データから鍵テーブルを丸ごと逆推定させ，鍵復元率を直接測定）
+python code/scripts/run_eval.py --task recover_key --provider ollama --model qwen2.5:7b \
+    --algorithm func_22 --stage 2 --n_shot 30 --key_seeds 0-4
+
+# 相転移スイープ（N×K×シードの直積を一括実行．中断しても再実行で続きから走る）
+python code/scripts/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
+    --algorithms func_22 --stage 2 --n_shots 10,20,30,40,50,75,100 --key_seeds 0-4
+
+# 情報理論的限界 N*_info の基準線（厳密ソルバーによる整合鍵数の数え上げ）
+python code/scripts/info_limit.py --algorithm func_22 --n_shots 5,10,20,26,30,40,50 --key_seeds 0-4
+
+# 評価結果の集計（summary_llm.md / summary_llm.csv の生成）
+make summarize
+```
+
+- **出力構造**: `results/evals/<モデル>/<アルゴリズム>/<タスク>/n<N>_stage<S>_k<K>/ks<鍵シード>_ds<データシード>/` に自動整理され，プロンプト実物・生レスポンス・`metrics.json` が保存されます．
+- 設計変更の経緯と監査結果は [docs/refactor_notes.md](docs/refactor_notes.md) を参照してください．
+
 ### 従来の機械学習モデルの学習
 
 ```bash
-# 個別モデルの学習
-python code/scripts/train_baseline.py
-
-# 学習結果の集計
-python code/scripts/summarize_baseline.py
+python code/scripts/train_baseline.py       # 個別モデルの学習
+python code/scripts/summarize_baseline.py   # 学習結果の集計
 ```
-
-詳細な実行手順やパラメータの仕様，トラブルシューティングについては，[HCP LLM 実験実行ガイド](docs/experiment_guide.md) を参照してください．
-
-```bash
-# 1. 単発手法の実行
-python code/scripts/run_prompting.py --model qwen2.5:7b --generator simple_add --paradigm pot
-
-# 2. オフライン検証用（Mockプロバイダによるドライラン）
-python code/scripts/run_prompting.py --provider mock --model test-mock-model --n_test 5
-
-# 3. 全4パラダイム（手法）の自動比較
-python code/scripts/compare_prompting.py --model qwen2.5:7b --generator simple_add
-
-# 評価結果の集計（ summary_llm.md の生成）
-python code/scripts/summarize_prompting.py
-```
-
-- **実験パラダイム**: `pure`（暗算直接出力）および `pot`（Pythonコード実行方式）の2段階で評価可能．
-- **PoT (Program-of-Thought)**: `--paradigm pot` を指定すると，AIに Python コードを書かせ，それをローカルで実行して答えを得ることで算数ミスを排除します．
-- **出力構造**: `results/evals/<モデル>/<手法>/run_<日時>/` に自動整理されます．
 
 ---
 
@@ -136,12 +142,17 @@ python code/scripts/summarize_prompting.py
 
 ---
 
-QLoRA (4-bit量子化LoRA) を用いてローカル環境で軽量LLMの微調整学習を行い、共通のベンチマーク実行スクリプトを用いて評価を行います。
+### ファインチューニング（QLoRA）
+
+torch 系依存は nix develop に含まれないため `.venv/bin/python` を使用します。paradigm `pot` は教師データに秘密鍵がリークするため廃止されました（`docs/refactor_notes.md` 参照）。
 
 ```bash
 # 1. ファインチューニングの実行（学習済みアダプターは results/finetuned_models/ に保存）
-python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct --generator func_22 --paradigm pot --n_train 800
+.venv/bin/python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
+    --algorithm func_22 --paradigm rationale --stage 2 --n_train 200
 
-# 2. 共通スクリプトを用いたファインチューニングモデルの評価 (provider に lora を指定)
-python code/scripts/run_prompting.py --provider lora --model results/finetuned_models/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX --generator func_22 --paradigm pot --n_test 100
+# 2. 共通スクリプトによる評価（学習時と同じ key_seed / stage を指定すること）
+.venv/bin/python code/scripts/run_eval.py --provider lora \
+    --model results/finetuned_models/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX \
+    --algorithm func_22 --stage 2 --key_seeds 0 --n_test 100
 ```
