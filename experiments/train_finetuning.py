@@ -14,10 +14,10 @@
 #   3. アルゴリズム定義・プロンプト・rationale は hcp パッケージ（単一情報源）から取得．
 #
 # 実行には torch 系依存が必要（nix develop には無いため .venv/bin/python を使用）:
-#   .venv/bin/python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
+#   .venv/bin/python experiments/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
 #       --algorithm func_22 --paradigm rationale --stage 2 --n_train 200
 # 評価:
-#   python code/scripts/run_eval.py --provider lora --model results/finetuned_models/... \
+#   python experiments/run_eval.py --provider lora --model results/llm_finetune/... \
 #       --algorithm func_22 --stage 2 --key_seeds 0
 # =============================================================================
 
@@ -35,7 +35,7 @@ import sys
 import time
 from datetime import datetime
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 from hcp import algorithm_names, get_algorithm
 from hcp.dataset import extract_challenge_and_response, generate_dataset
@@ -91,13 +91,13 @@ def main():
         print(f"VRAM Total: {vram:.2f} GB")
 
     # ---- 出力先 ----
-    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     _base = args.model.split("/")[-1]
     _base = re.sub(r"-?instruct", "", _base, flags=re.IGNORECASE).strip("-")
     model_name_safe = _base.replace("-", "_").lower()
     output_dir = os.path.join(
-        base_dir, "results", "finetuned_models", model_name_safe,
+        base_dir, "results", "llm_finetune", model_name_safe,
         args.algorithm, f"run_{timestamp}",
     )
     os.makedirs(output_dir, exist_ok=True)
@@ -267,7 +267,7 @@ def main():
             },
             f, ensure_ascii=False, indent=2,
         )
-    print("完了。評価: python code/scripts/run_eval.py --provider lora "
+    print("完了。評価: python experiments/run_eval.py --provider lora "
           f"--model {output_dir} --algorithm {args.algorithm} --stage {args.stage} "
           f"--key_seeds {args.key_seed} --data_seeds {args.data_seed}")
 

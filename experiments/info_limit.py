@@ -15,8 +15,8 @@
 #     純粋な「推論の欠損」として解釈できる
 #
 # 例:
-#   python code/scripts/info_limit.py --algorithm func_22 --n_shots 5,10,15,20,26,30,40,50 --key_seeds 0-9
-#   python code/scripts/info_limit.py --algorithm func_22 --stage 3 --n_shots 10 --k_values 0,6,13,20 --key_seeds 0-9
+#   python experiments/info_limit.py --algorithm func_22 --n_shots 5,10,15,20,26,30,40,50 --key_seeds 0-9
+#   python experiments/info_limit.py --algorithm func_22 --stage 3 --n_shots 10 --k_values 0,6,13,20 --key_seeds 0-9
 # =============================================================================
 
 import argparse
@@ -27,15 +27,15 @@ import statistics
 import sys
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 from hcp import generate_dataset, get_algorithm
 from hcp.dataset import observations_from_df
 from hcp.solver import count_consistent_keys
 from run_eval import parse_seed_list
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFAULT_OUTPUT = os.path.join(REPO_ROOT, "results", "theory")
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_OUTPUT = os.path.join(REPO_ROOT, "results", "solver")
 
 
 def main():

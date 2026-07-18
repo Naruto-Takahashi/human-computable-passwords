@@ -6,14 +6,14 @@ import traceback
 from tensorflow.keras.callbacks import EarlyStopping, TensorBoard
 
 # src/ をパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'code'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
-from core import Models, Utils
-from core.generator import ComputablePasswordGenerator
+from baseline_ml import Models, Utils
+from baseline_ml.generator import ComputablePasswordGenerator
 
 iter = 0
-base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-base_output_dir = os.path.join(base_dir, "results", "baselines", str(iter))
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+base_output_dir = os.path.join(base_dir, "results", "ml_baseline", str(iter))
 base_log_dir = os.path.join(base_output_dir, "logs")  # TensorBoardのログ保存先ベースディレクトリ
 
 # 出力用ディレクトリの作成

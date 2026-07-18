@@ -8,11 +8,11 @@
 #
 # 例:
 #   # Stage 2・N=30 で鍵復元を鍵5個分（シード0〜4）測定
-#   python code/scripts/run_eval.py --task recover_key --provider ollama --model qwen2.5:7b \
+#   python experiments/run_eval.py --task recover_key --provider ollama --model qwen2.5:7b \
 #       --algorithm func_22 --stage 2 --n_shot 30 --key_seeds 0-4
 #
 #   # mock によるドライラン
-#   python code/scripts/run_eval.py --provider mock --model test --n_test 5
+#   python experiments/run_eval.py --provider mock --model test --n_test 5
 # =============================================================================
 
 import argparse
@@ -20,14 +20,14 @@ import logging
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 from hcp import algorithm_names, generate_dataset, get_algorithm
 from hcp.clients import create_client
 from hcp.evaluation import is_run_completed, make_run_dir, run_predict, run_recover_key
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-DEFAULT_OUTPUT = os.path.join(REPO_ROOT, "results", "evals")
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEFAULT_OUTPUT = os.path.join(REPO_ROOT, "results", "llm_eval")
 
 
 def parse_seed_list(spec: str) -> list[int]:
@@ -161,7 +161,7 @@ def main():
             print(f"\n>>> key_seed={key_seed}, data_seed={data_seed}")
             run_one(client, args, key_seed, data_seed)
 
-    print("\n完了しました．集計は: python code/scripts/summarize.py")
+    print("\n完了しました．集計は: python experiments/summarize.py")
 
 
 if __name__ == "__main__":

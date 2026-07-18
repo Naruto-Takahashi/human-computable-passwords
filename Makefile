@@ -16,31 +16,31 @@ help:
 	@echo "make clean-pycache  # __pycache__ を削除"
 
 test:
-	$(PY) code/hcp/algorithms.py
-	$(PY) code/scripts/info_limit.py --algorithm func_pow --n_shots 60 --key_seeds 0 \
+	$(PY) src/hcp/algorithms.py
+	$(PY) experiments/info_limit.py --algorithm func_pow --n_shots 60 --key_seeds 0 \
 		--output_dir /tmp/hcp_test_theory
 
 smoke:
-	$(PY) code/scripts/run_eval.py --provider mock --model smoke --task predict --paradigm pure \
+	$(PY) experiments/run_eval.py --provider mock --model smoke --task predict --paradigm pure \
 		--algorithm func_22 --stage 2 --n_shot 10 --n_test 5 --overwrite \
 		--output_base_dir /tmp/hcp_smoke
-	$(PY) code/scripts/run_eval.py --provider mock --model smoke --task predict --paradigm pot \
+	$(PY) experiments/run_eval.py --provider mock --model smoke --task predict --paradigm pot \
 		--algorithm func_22 --stage 2 --n_shot 10 --n_test 5 --overwrite \
 		--output_base_dir /tmp/hcp_smoke
-	$(PY) code/scripts/run_eval.py --provider mock --model smoke --task recover_key \
+	$(PY) experiments/run_eval.py --provider mock --model smoke --task recover_key \
 		--algorithm func_22 --stage 2 --n_shot 10 --n_test 20 --overwrite \
 		--output_base_dir /tmp/hcp_smoke
 	@echo "smoke OK（出力: /tmp/hcp_smoke）"
 
 info-limit:
-	$(PY) code/scripts/info_limit.py --algorithm func_22 \
+	$(PY) experiments/info_limit.py --algorithm func_22 \
 		--n_shots 5,10,15,20,26,30,40,50 --key_seeds 0-4
 
 summarize:
-	$(PY) code/scripts/summarize.py
+	$(PY) experiments/summarize.py
 
 sync:
-	bash ops/sync_results.sh
+	bash tools/sync_results.sh
 
 clean-pycache:
-	find code -type d -name __pycache__ -exec rm -rf {} +
+	find src experiments legacy -type d -name __pycache__ -exec rm -rf {} +

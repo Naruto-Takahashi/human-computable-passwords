@@ -1,6 +1,6 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`code/scripts/summarize.py` により自動生成（2026-07-18 13:30:00）．
+`code/scripts/summarize.py` により自動生成（2026-07-18 13:36:33）．
 一次データ: `results/summary_llm.csv`（37 実験）
 
 | モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |

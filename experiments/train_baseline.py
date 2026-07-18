@@ -5,10 +5,10 @@ import sys
 from datetime import datetime
 
 # src/ をパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'code'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
-from core import Models, Utils, LossHistory
-from core.generator import ComputablePasswordGenerator
+from baseline_ml import Models, Utils, LossHistory
+from baseline_ml.generator import ComputablePasswordGenerator
 
 # 実験の再現性のためのシード値固定
 SEED = 42
@@ -31,8 +31,8 @@ for model in Models.list_models():
             run_name = f"run_{timestamp}_{generator.name}_{model.name}"
             
             # プロジェクトルートの results/baselines/ に保存
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            output_dir = os.path.join(base_dir, "results", "baselines", run_name)
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            output_dir = os.path.join(base_dir, "results", "ml_baseline", run_name)
             os.makedirs(output_dir, exist_ok=True)
 
             # 指定されたサイズで模擬パスワードデータを生成

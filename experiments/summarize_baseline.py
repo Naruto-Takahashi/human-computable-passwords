@@ -39,8 +39,8 @@ def generate_markdown_table(headers, rows):
 def summarize_results():
     # experiments/training/summarize.py から見たプロジェクトルート
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    base_dir = os.path.dirname(os.path.dirname(current_dir))
-    output_dir = os.path.join(base_dir, "results", "baselines")
+    base_dir = os.path.dirname(current_dir)
+    output_dir = os.path.join(base_dir, "results", "ml_baseline")
     metadata_files = glob.glob(os.path.join(output_dir, "run_*", "metadata.json"))
 
     if not metadata_files:
@@ -96,7 +96,7 @@ def summarize_results():
 
     summary_content = f"""# 実験結果 自動集計表
 
-このファイルは，`code/scripts/summarize_baseline.py` によって自動生成された学習実験結果の集計ログです．
+このファイルは，`experiments/summarize_baseline.py` によって自動生成された学習実験結果の集計ログです．
 
 ## 実行結果一覧
 

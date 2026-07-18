@@ -8,15 +8,15 @@
 #
 # 例:
 #   # func_22 / Stage 2 の N スイープ（鍵5個で反復）— RQ1 の主実験
-#   python code/scripts/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
+#   python experiments/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
 #       --algorithms func_22 --stage 2 --n_shots 10,20,30,40,50,75,100 --key_seeds 0-4
 #
 #   # Stage 3 の K スイープ — RQ2 の主実験
-#   python code/scripts/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
+#   python experiments/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
 #       --algorithms func_22 --stage 3 --n_shots 30 --k_values 0,6,13,20,26 --key_seeds 0-4
 #
 #   # 実行計画の確認のみ（推論は行わない）
-#   python code/scripts/sweep.py ... --dry_run
+#   python experiments/sweep.py ... --dry_run
 # =============================================================================
 
 import argparse
@@ -25,7 +25,7 @@ import os
 import sys
 import traceback
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 from hcp import algorithm_names
 from hcp.clients import create_client
@@ -136,7 +136,7 @@ def main():
     print(f"スイープ完了．失敗: {len(failed)} 条件")
     for f in failed:
         print(f"  失敗: {f}")
-    print("集計は: python code/scripts/summarize.py")
+    print("集計は: python experiments/summarize.py")
 
 
 if __name__ == "__main__":

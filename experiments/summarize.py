@@ -15,8 +15,8 @@ import sys
 from collections import defaultdict
 from datetime import datetime
 
-REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-EVALS_DIR = os.path.join(REPO_ROOT, "results", "evals")
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+EVALS_DIR = os.path.join(REPO_ROOT, "results", "llm_eval")
 
 
 def load_new_format(path: str) -> dict | None:
@@ -138,7 +138,7 @@ def main():
     md = [
         "# LLM ベンチマーク実験結果 サマリー",
         "",
-        f"`code/scripts/summarize.py` により自動生成（{datetime.now():%Y-%m-%d %H:%M:%S}）．",
+        f"`experiments/summarize.py` により自動生成（{datetime.now():%Y-%m-%d %H:%M:%S}）．",
         f"一次データ: `results/summary_llm.csv`（{len(rows)} 実験）",
         "",
         "| モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |",

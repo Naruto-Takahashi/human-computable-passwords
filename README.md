@@ -24,39 +24,39 @@
 
 ```text
 human-computable-passwords/
-├── code/
-│   ├── hcp/                   # 中核パッケージ（アルゴリズム定義の単一情報源）
+├── src/                       # ソースコード（ライブラリ）
+│   ├── hcp/                   # 研究の中核パッケージ（アルゴリズム定義の単一情報源）
 │   │   ├── algorithms.py      # HCPアルゴリズム定義（計算・ルール文・参照コード・解説）+ 自己検証
 │   │   ├── dataset.py         # 鍵シード/データシード分離のデータセット生成
 │   │   ├── prompts.py         # Stage 0〜3 × タスク（predict / recover_key）のプロンプト構築
 │   │   ├── clients.py         # Gemini / Ollama / Mock / LoRA クライアント
 │   │   ├── executor.py        # LLM出力のパース・鍵テーブル抽出・生成コード実行
 │   │   ├── evaluation.py      # 実験実行・採点・記録（応答精度・鍵復元率）
-│   │   └── solver.py          # 厳密ソルバー（整合鍵の数え上げ=情報限界，鍵復元=計算可解性）
-│   ├── core/                  # 従来ML（CNN等）ベースライン用モジュール
-│   ├── scripts/
-│   │   ├── run_eval.py        # 統一評価ランナー（predict / recover_key）
-│   │   ├── sweep.py           # N×K×アルゴリズム×シードのスイープ（レジューム対応）
-│   │   ├── info_limit.py      # 情報理論的限界 N*_info の測定
-│   │   ├── summarize.py       # 評価結果の自動集計（summary_llm.{md,csv}）
-│   │   ├── train_finetuning.py # QLoRAファインチューニング
-│   │   └── train_baseline.py 等 # 従来MLベースライン
-│   └── legacy/                # 旧実装（参照用，動作保証なし）
+│   │   ├── solver.py          # 厳密ソルバー（整合鍵の数え上げ=情報限界，鍵復元=計算可解性）
+│   │   └── plotting.py        # 学習曲線などの可視化
+│   └── baseline_ml/           # 従来ML（CNN等）ベースライン用モジュール
+├── experiments/               # 実験の実行スクリプト
+│   ├── run_eval.py            # 統一評価ランナー（predict / recover_key）
+│   ├── sweep.py               # N×K×アルゴリズム×シードのスイープ（レジューム対応）
+│   ├── info_limit.py          # 情報理論的限界 N*_info の測定
+│   ├── summarize.py           # 評価結果の自動集計（summary_llm.{md,csv}）
+│   ├── train_finetuning.py    # QLoRAファインチューニング
+│   ├── train_baseline.py 等   # 従来MLベースライン
+│   └── batch/                 # 夜間バッチ（デタッチ実行用 .sh）
+├── tools/                     # 補助ツール（Google Drive 同期等）
+├── legacy/                    # 旧実装（参照用，動作保証なし）
 ├── docs/                      # 計画書・ログ・リファクタリングノート
 │   ├── plan.md / plan_v2_draft.md
 │   ├── refactor_notes.md      # 2026-07 監査とリファクタリングの記録
 │   ├── reports/               # 週次進捗報告
 │   └── experiment_guide.md, log.md
-├── ops/                       # 運用スクリプト（研究コードとは分離）
-│   ├── sync_results.sh        # results/ の Google Drive 同期
-│   └── run_stage3*.sh         # 実験バッチ（デタッチ実行用）
 ├── Makefile                   # test / smoke / summarize / sync 等の運用タスク
 ├── literature/                # 先行研究の文献
 ├── results/                   # 実験結果
-│   ├── evals/                 # LLM評価（モデル/アルゴリズム/タスク/条件/シードの階層）
-│   ├── finetuned_models/      # FT学習の成果物（メタデータ・学習曲線）
-│   ├── baselines/             # 従来MLベースライン
-│   ├── theory/                # 情報限界 N*_info（ソルバー出力, Git管理）
+│   ├── llm_eval/              # LLM評価（モデル/アルゴリズム/タスク/条件/シードの階層）
+│   ├── llm_finetune/          # FT学習の成果物（メタデータ・学習曲線）
+│   ├── ml_baseline/           # 従来MLベースラインの結果
+│   ├── solver/                # 情報限界 N*_info（ソルバー出力, Git管理）
 │   ├── figures/               # 報告用の図（Git管理）
 │   ├── logs/                  # 実験バッチの実行ログ
 │   └── summary_llm.{md,csv}   # 自動集計（Git管理）
@@ -102,32 +102,32 @@ make smoke   # mock プロバイダによる E2E ドライラン（predict / rec
 
 ```bash
 # 応答予測タスク（paradigm: pure = JSON回答 / pot = Pythonコード実行）
-python code/scripts/run_eval.py --task predict --provider ollama --model qwen2.5:7b \
+python experiments/run_eval.py --task predict --provider ollama --model qwen2.5:7b \
     --algorithm func_22 --stage 2 --n_shot 30 --n_test 50 --key_seeds 0-4
 
 # 鍵復元タスク（観察データから鍵テーブルを丸ごと逆推定させ，鍵復元率を直接測定）
-python code/scripts/run_eval.py --task recover_key --provider ollama --model qwen2.5:7b \
+python experiments/run_eval.py --task recover_key --provider ollama --model qwen2.5:7b \
     --algorithm func_22 --stage 2 --n_shot 30 --key_seeds 0-4
 
 # 相転移スイープ（N×K×シードの直積を一括実行．中断しても再実行で続きから走る）
-python code/scripts/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
+python experiments/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
     --algorithms func_22 --stage 2 --n_shots 10,20,30,40,50,75,100 --key_seeds 0-4
 
 # 情報理論的限界 N*_info の基準線（厳密ソルバーによる整合鍵数の数え上げ）
-python code/scripts/info_limit.py --algorithm func_22 --n_shots 5,10,20,26,30,40,50 --key_seeds 0-4
+python experiments/info_limit.py --algorithm func_22 --n_shots 5,10,20,26,30,40,50 --key_seeds 0-4
 
 # 評価結果の集計（summary_llm.md / summary_llm.csv の生成）
 make summarize
 ```
 
-- **出力構造**: `results/evals/<モデル>/<アルゴリズム>/<タスク>/n<N>_stage<S>_k<K>/ks<鍵シード>_ds<データシード>/` に自動整理され，プロンプト実物・生レスポンス・`metrics.json` が保存されます．
+- **出力構造**: `results/llm_eval/<モデル>/<アルゴリズム>/<タスク>/n<N>_stage<S>_k<K>/ks<鍵シード>_ds<データシード>/` に自動整理され，プロンプト実物・生レスポンス・`metrics.json` が保存されます．
 - 設計変更の経緯と監査結果は [docs/refactor_notes.md](docs/refactor_notes.md) を参照してください．
 
 ### 従来の機械学習モデルの学習
 
 ```bash
-python code/scripts/train_baseline.py       # 個別モデルの学習
-python code/scripts/summarize_baseline.py   # 学習結果の集計
+python experiments/train_baseline.py       # 個別モデルの学習
+python experiments/summarize_baseline.py   # 学習結果の集計
 ```
 
 ---
@@ -147,12 +147,12 @@ python code/scripts/summarize_baseline.py   # 学習結果の集計
 torch 系依存は nix develop に含まれないため `.venv/bin/python` を使用します。paradigm `pot` は教師データに秘密鍵がリークするため廃止されました（`docs/refactor_notes.md` 参照）。
 
 ```bash
-# 1. ファインチューニングの実行（学習済みアダプターは results/finetuned_models/ に保存）
-.venv/bin/python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
+# 1. ファインチューニングの実行（学習済みアダプターは results/llm_finetune/ に保存）
+.venv/bin/python experiments/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
     --algorithm func_22 --paradigm rationale --stage 2 --n_train 200
 
 # 2. 共通スクリプトによる評価（学習時と同じ key_seed / stage を指定すること）
-.venv/bin/python code/scripts/run_eval.py --provider lora \
-    --model results/finetuned_models/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX \
+.venv/bin/python experiments/run_eval.py --provider lora \
+    --model results/llm_finetune/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX \
     --algorithm func_22 --stage 2 --key_seeds 0 --n_test 100
 ```

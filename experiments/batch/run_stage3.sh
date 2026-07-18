@@ -12,7 +12,7 @@
 # =============================================================================
 set -uo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO"
 PY=.venv/bin/python
 LOGDIR=results/logs
@@ -27,7 +27,7 @@ run_one() {
     local tag="${algo}_stage${stage}"
     local log="$LOGDIR/${tag}.log"
     echo "=== [$(date +%H:%M:%S)] TRAIN $tag ==="
-    if ! $PY code/scripts/train_finetuning.py \
+    if ! $PY experiments/train_finetuning.py \
         --model "$MODEL" --algorithm "$algo" --paradigm pure \
         --stage "$stage" --n_shot 0 --n_train "$N_TRAIN" --epochs "$EPOCHS" \
         >"$log" 2>&1; then
@@ -41,7 +41,7 @@ run_one() {
         return 1
     fi
     echo "=== [$(date +%H:%M:%S)] EVAL  $tag → held-out 50件 ==="
-    if ! $PY code/scripts/run_eval.py \
+    if ! $PY experiments/run_eval.py \
         --provider lora --model "$run_dir" --algorithm "$algo" \
         --stage "$stage" --n_shot 0 --n_test 50 --key_seeds 0 --data_seeds 0 \
         >>"$log" 2>&1; then
@@ -63,9 +63,9 @@ done
 
 # ---- 3. CNN ベースライン（TensorFlow は nix 環境の python3 / CPUで実行） ----
 echo "=== [$(date +%H:%M:%S)] CNN baseline ==="
-CUDA_VISIBLE_DEVICES="" python3 code/scripts/train_baseline.py \
+CUDA_VISIBLE_DEVICES="" python3 experiments/train_baseline.py \
     >"$LOGDIR/cnn_baseline.log" 2>&1 || echo "!!! CNN baseline failed（ログ: $LOGDIR/cnn_baseline.log）"
 
 # ---- 4. 集計 ----
-python3 code/scripts/summarize.py >"$LOGDIR/summarize.log" 2>&1 || true
+python3 experiments/summarize.py >"$LOGDIR/summarize.log" 2>&1 || true
 echo "=== [$(date +%H:%M:%S)] 段階3 バッチ完了 ==="

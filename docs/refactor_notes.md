@@ -36,7 +36,7 @@
 
 7. **MockClient が「80%正解」を装っていた**：実際には正解を知らず，実質ランダム（≈10%）だった．→ 疎通確認専用と明記し，正直な仕様に変更．
 8. **旧 `core/generator.list_generators()` が空リストを返し，`train_baseline.py`（CNNベースライン）のループが一度も実行されない死にコードだった**．→ `hcp` に委譲するアダプタで修復．
-9. **rclone 同期が各実験スクリプト内にハードコード**（ユーザー固有パス込み）．→ `ops/sync_results.sh` + `make sync` に分離．
+9. **rclone 同期が各実験スクリプト内にハードコード**（ユーザー固有パス込み）．→ `tools/sync_results.sh` + `make sync` に分離．
 10. **Stage 3 + rationale の組合せで，開示していない鍵セルの値が解説文に混入し得た**．→ 値つき解説は Stage 1（鍵全開示）のみに制限．
 
 ### 旧実装の結果への含意
@@ -46,10 +46,10 @@
 
 ### 旧実験成果物の整理（2026-07-16）
 
-旧パイプラインで学習した FT モデルの重み（`results/finetuned_models/**/adapter/`, `checkpoints/`，計約3.2GB）は，鍵リーク・ホールドアウト不成立により再利用価値がないため削除した．以下は証拠として保全している（Google Drive `gdrive:human-computable-passwords-results` にも削除前の完全なバックアップあり）:
+旧パイプラインで学習した FT モデルの重み（`results/llm_finetune/**/adapter/`, `checkpoints/`，計約3.2GB）は，鍵リーク・ホールドアウト不成立により再利用価値がないため削除した．以下は証拠として保全している（Google Drive `gdrive:human-computable-passwords-results` にも削除前の完全なバックアップあり）:
 
-- `results/finetuned_models/**/train_metadata.json`, `summary.json`, `pipeline_*.log`（学習条件・損失曲線の一次資料）
-- `results/evals/`（旧評価の生ログ一式．PoT 見かけ100% とモード崩壊の証拠）
+- `results/llm_finetune/**/train_metadata.json`, `summary.json`, `pipeline_*.log`（学習条件・損失曲線の一次資料）
+- `results/llm_eval/`（旧評価の生ログ一式．PoT 見かけ100% とモード崩壊の証拠）
 
 ---
 
@@ -68,7 +68,7 @@ code/
 ├── scripts/
 │   ├── run_eval.py         # 統一評価ランナー（1条件×複数シード）
 │   ├── sweep.py            # N×K×アルゴリズム×シードのスイープ（レジューム対応，--dry_run）
-│   ├── info_limit.py       # 情報限界 N*_info の測定（results/theory/）
+│   ├── info_limit.py       # 情報限界 N*_info の測定（results/solver/）
 │   ├── summarize.py        # metrics.json（新）+ metadata.json（旧）の集計 → summary_llm.{md,csv}
 │   ├── train_finetuning.py # QLoRA FT（pot教師は鍵リークのため廃止，ホールドアウト修正）
 │   └── train_baseline.py 等 # 従来MLベースライン（既存のまま，generator アダプタ経由で復活）
@@ -78,7 +78,7 @@ code/
 ### 出力ディレクトリ（決定的・レジューム可能）
 
 ```
-results/evals/{model}/{algorithm}/{task}/n{N}_stage{S}_k{K}/ks{key_seed}_ds{data_seed}/
+results/llm_eval/{model}/{algorithm}/{task}/n{N}_stage{S}_k{K}/ks{key_seed}_ds{data_seed}/
 ├── metrics.json        # 設定・結果・gitコミット（これがあれば完了扱い＝スイープでスキップ）
 ├── prompt.txt          # recover_key のプロンプト実物（predict は prompt_example.txt）
 ├── results.csv         # predict の問題別結果
@@ -107,18 +107,18 @@ make summarize   # 集計（results/summary_llm.{md,csv}）
 make sync        # Google Drive 同期（実験スクリプトからは分離済み）
 
 # RQ1: Stage 2 の N スイープ（鍵復元，鍵5個で反復）
-python3 code/scripts/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
+python3 experiments/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
     --algorithms func_22 --stage 2 --n_shots 10,20,30,40,50,75,100 --key_seeds 0-4
 
 # RQ2: Stage 3 の K スイープ
-python3 code/scripts/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
+python3 experiments/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
     --algorithms func_22 --stage 3 --n_shots 30 --k_values 0,6,13,20,26 --key_seeds 0-4
 
 # 情報限界の基準線
-python3 code/scripts/info_limit.py --algorithm func_22 --n_shots 5,10,15,20,26,30,40,50 --key_seeds 0-4
+python3 experiments/info_limit.py --algorithm func_22 --n_shots 5,10,15,20,26,30,40,50 --key_seeds 0-4
 
 # FT（.venv が必要）
-.venv/bin/python code/scripts/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
+.venv/bin/python experiments/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
     --algorithm func_22 --paradigm rationale --stage 2 --n_train 200
 ```
 
