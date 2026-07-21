@@ -16,6 +16,17 @@
 
 ## 2. 活動記録
 
+### 2026/07/18（追記2）: 研究計画書 v2 への正式改訂，A/B 実験の実装と実行開始
+
+- **実施したこと**:
+  - **`plan.md` を v2 として全面改訂**（v1 は Git 履歴，`plan_v2_draft.md` は本体へ統合し削除）。経路A（in-context 相転移）と経路B（重み格納型学習）の2軸構成に再編し，経路Bの確定結果（難易度ラダー，露出回数境界，ポインタの本質的困難）を反映。スケジュールも実績ベースへ更新。
+  - **A: func_22 の統計固め**を実行開始。n_train=1000 / 5000 の両アダプタを n_test=200 で再評価し，「偶然水準（10%）と区別できない」ことを二項検定で主張できる件数を確保する。
+  - **B: ペア除外実験の実装と実行開始**。`train_finetuning.py` に `--exclude_pairs`（(X0,X1) の組を学習データから完全除外，除外リストは train_metadata.json に保存）を追加し，除外ペアのみで評価する `experiments/eval_excluded_pairs.py` を新設。table_add_k26 / n_train=5000 / 除外50組で学習を開始。
+    - 判定: 除外ペアで高精度 →「参照値の算術合成」を獲得 / 偶然水準 → n=5000 の 100% は全クラス暗記。
+  - リポジトリ構成を役割ベースへ再整理（`src/` `experiments/` `tools/` `legacy/`，results は llm_eval / llm_finetune / ml_baseline / solver）。
+- **実行状況**: A+B は `experiments/batch/run_ab_20260718.sh` でデタッチ実行中（ログ: `results/logs/ab_console.log`）。A は約30分，B は学習約7時間＋評価の見込み。
+- **次にやること**: A/B の結果を週次報告（7/21）へ反映 → 境界条件の複数鍵シード反復 → 8月から経路Aスイープ。
+
 ### 2026/07/17: 段階3（難易度ラダー × CNN同条件比較）完了 — 学習可能性の境界を特定
 
 - **実施したこと**: 夜間バッチ（`scripts/run_stage3.sh`）で9本のQLoRA学習+held-out評価とCNNベースライン（全11アルゴリズム）を実行。共通条件: Bパラダイム（n_shot=0）・n_train=1000・エポック5固定・key_seed=0。全ログは `results/stage3_logs/`，比較図は `results/figures/stage3_boundary.png`。

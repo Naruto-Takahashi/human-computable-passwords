@@ -46,7 +46,7 @@ human-computable-passwords/
 ├── tools/                     # 補助ツール（Google Drive 同期等）
 ├── legacy/                    # 旧実装（参照用，動作保証なし）
 ├── docs/                      # 計画書・ログ・リファクタリングノート
-│   ├── plan.md / plan_v2_draft.md
+│   ├── plan.md               # 研究計画書（v2, 2026-07-18改訂）
 │   ├── refactor_notes.md      # 2026-07 監査とリファクタリングの記録
 │   ├── reports/               # 週次進捗報告
 │   └── experiment_guide.md, log.md

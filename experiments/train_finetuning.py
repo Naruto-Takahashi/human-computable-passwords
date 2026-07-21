@@ -35,6 +35,8 @@ import sys
 import time
 from datetime import datetime
 
+import numpy as np
+
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 
 from hcp import algorithm_names, get_algorithm
@@ -72,6 +74,10 @@ def parse_args():
     parser.add_argument("--lora_r", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--quant", type=str, default="4bit", choices=["4bit", "8bit"])
+    parser.add_argument("--exclude_pairs", type=int, default=0,
+                        help="暗記/合成の切り分け実験用: (X0,X1) の組をこの個数だけ学習データから"
+                             "完全に除外する（table_add 系のみ）。除外リストは train_metadata.json に"
+                             "保存され，experiments/eval_excluded_pairs.py で除外ペアのみの評価ができる")
 
     args = parser.parse_args()
     if args.n_val == -1:
@@ -107,17 +113,37 @@ def main():
     # 鍵は key_seed から決定的に生成（評価時に同じ key_seed を指定すれば同じ鍵になる）．
     # Few-shot 例と学習/検証チャレンジは学習専用のシード空間から生成し，
     # 評価用（素の data_seed）のチャレンジと重複しないようにする．
+    excluded_pairs: list[list[int]] = []
+    if args.exclude_pairs > 0:
+        if not args.algorithm.startswith("table_add"):
+            raise SystemExit("--exclude_pairs は table_add 系アルゴリズム専用です")
+        domain = algorithm.challenge_domain()
+        pair_rng = np.random.default_rng([args.key_seed, 777])
+        all_pairs = [(a, b) for a in range(domain) for b in range(domain)]
+        idx = pair_rng.choice(len(all_pairs), size=args.exclude_pairs, replace=False)
+        excluded_pairs = [list(all_pairs[i]) for i in idx]
+        print(f"[exclude_pairs] {len(excluded_pairs)} 組の (X0,X1) を学習データから除外します")
+
+    # 除外でフィルタしても必要数が残るよう余裕を持って生成する
+    pool_size = (args.n_train + args.n_val) * (2 if excluded_pairs else 1)
     train_ds = generate_dataset(
         algorithm,
         n_shot=args.n_shot,
-        n_test=args.n_train + args.n_val,
+        n_test=pool_size,
         key_seed=args.key_seed,
         data_seed=args.data_seed + TRAIN_SEED_OFFSET,
     )
     key = train_ds.key
     few_shot_df = train_ds.shot_df
-    train_df = train_ds.test_df.iloc[: args.n_train].reset_index(drop=True)
-    val_df = train_ds.test_df.iloc[args.n_train :].reset_index(drop=True)
+    pool_df = train_ds.test_df
+    if excluded_pairs:
+        banned = {tuple(p) for p in excluded_pairs}
+        mask = pool_df.apply(lambda r: (int(r["X0"]), int(r["X1"])) not in banned, axis=1)
+        pool_df = pool_df[mask].reset_index(drop=True)
+        if len(pool_df) < args.n_train + args.n_val:
+            raise SystemExit("除外後の学習プールが不足しています。--exclude_pairs を減らしてください")
+    train_df = pool_df.iloc[: args.n_train].reset_index(drop=True)
+    val_df = pool_df.iloc[args.n_train : args.n_train + args.n_val].reset_index(drop=True)
     print(f"Datasets generated. Train: {len(train_df)}, Val: {len(val_df)}, Few-shot: {len(few_shot_df)}")
 
     metadata = {
@@ -125,6 +151,7 @@ def main():
         "sgm": key,
         "few_shot_data": few_shot_df.to_dict(orient="records"),
         "train_seed_offset": TRAIN_SEED_OFFSET,
+        "excluded_pairs": excluded_pairs,
     }
     with open(os.path.join(output_dir, "train_metadata.json"), "w", encoding="utf-8") as f:
         json.dump(metadata, f, ensure_ascii=False, indent=2)
