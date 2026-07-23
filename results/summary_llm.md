@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-07-18 14:04:45）．
-一次データ: `results/summary_llm.csv`（37 実験）
+`experiments/summarize.py` により自動生成（2026-07-22 00:36:49）．
+一次データ: `results/summary_llm.csv`（38 実験）
 
 | モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -17,6 +17,7 @@
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/finetuned_models/qwen2.5_3b/table_add_k20/run_20260717_164228 | table_add_k20 | predict(pure) | 2 | 0 | 0 | 1 | 24.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/finetuned_models/qwen2.5_3b/table_add_k26/run_20260716_192129 | table_add_k26 | predict(pure) | 2 | 0 | 0 | 1 | 8.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/finetuned_models/qwen2.5_3b/table_add_k26/run_20260717_182330 | table_add_k26 | predict(pure) | 2 | 0 | 0 | 1 | 100.00% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add_k26/run_20260721_161433 | table_add_k26 | predict(pure) | 2 | 0 | 0 | 1 | 100.00% | - | - | - |
 | qwen2.5:14b | func_13 | predict(rationale_pot) [旧] | 1 | 5 | 10 | 1 | 20.00% | - | - | - |
 | qwen2.5:14b | func_31 | predict(rationale_pot) [旧] | 1 | 5 | 10 | 1 | 60.00% | - | - | - |
 | qwen2.5:14b | func_pow | predict(rationale_pot) [旧] | 1 | 5 | 10 | 1 | 100.00% | - | - | - |
