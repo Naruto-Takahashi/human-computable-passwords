@@ -438,9 +438,59 @@ def _make_table_add(k: int) -> Algorithm:
     )
 
 
+def _make_pointer(k: int) -> Algorithm:
+    """
+    動的参照だけを単独で測る診断用アルゴリズム．
+    Z = X[j] （j = (X10+X11) mod 10）．func_22 から「+X12+X13」の合成を除いたもの．
+    table_add_k{k} と表サイズを揃えることで，「静的な2箇所参照+足し算」と
+    「動的な参照先決定+単純な読み出し」を，同じ表サイズ・同じデータ量で直接比較できる．
+    """
+
+    def fn(ch, key):
+        def x(i):
+            return key[ch[i]]
+        j = (x(10) + x(11)) % 10
+        return x(j) % 10
+
+    def explain(ch, key, z):
+        X10, X11 = key[ch[10]], key[ch[11]]
+        j = (X10 + X11) % 10
+        Xj = key[ch[j]]
+        return (
+            f"1. テーブル値を参照: X10=sgm[{ch[10]}]={X10}, X11=sgm[{ch[11]}]={X11}\n"
+            f"2. ポインタ j = (X10 + X11) mod 10 = ({X10} + {X11}) mod 10 = {j} を計算\n"
+            f"3. インデックス {j} の値を参照: X{j}=sgm[{ch[j]}]={Xj}\n"
+            f"4. Z = X{j} = {z}（加算はありません）"
+        )
+
+    return Algorithm(
+        name=f"pointer_k{k}",
+        level=2,
+        key_size=k,
+        fn=fn,
+        rule_text=(
+            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
+            "3. Z = X[j] とします（そのまま出力します。加算はありません）。\n"
+        ),
+        rationale_text=(
+            "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+            "2. 変換後の位置10と位置11の値の和を10で割った余りを j とする．\n"
+            "3. 変換後の位置 j の値がそのまま答えです．\n"
+        ),
+        code_body=(
+            _KEYED_CODE_PREFIX +
+            "    j = (X_val[10] + X_val[11]) % 10\n"
+            "    return X_val[j] % 10\n"
+        ),
+        explain=explain,
+    )
+
+
 _LADDER = [_make_lookup(4), _make_lookup(10), _make_lookup(26),
            _make_table_add(10), _make_table_add(13), _make_table_add(16),
-           _make_table_add(20), _make_table_add(26)]
+           _make_table_add(20), _make_table_add(26),
+           _make_pointer(10), _make_pointer(26)]
 
 
 # =============================================================================
