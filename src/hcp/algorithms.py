@@ -487,10 +487,52 @@ def _make_pointer(k: int) -> Algorithm:
     )
 
 
+def _make_table_add3(k: int) -> Algorithm:
+    """
+    統制実験用アルゴリズム（指導教員レビュー対応）．
+    Z = (X0 + X1 + X2) mod 10．pointer_k{k} と「中間結果を保持して次の計算に使う」
+    という多段階性・表サイズ・データ量は揃えつつ，中間結果を添字（動的参照）としては
+    使わない点だけが異なる．pointer_k{k} と対にして比較することで，失敗の原因が
+    「動的参照（間接参照）」なのか「多段階推論・中間結果の保持」なのかを切り分ける．
+    """
+
+    def fn(ch, key):
+        return (key[ch[0]] + key[ch[1]] + key[ch[2]]) % 10
+
+    def explain(ch, key, z):
+        a, b, c = key[ch[0]], key[ch[1]], key[ch[2]]
+        return (
+            f"1. テーブル値を参照: sgm[{ch[0]}]={a}, sgm[{ch[1]}]={b}, sgm[{ch[2]}]={c}\n"
+            f"2. Z = ({a} + {b} + {c}) mod 10 = {z}"
+        )
+
+    return Algorithm(
+        name=f"table_add3_k{k}",
+        level=1,
+        key_size=k,
+        fn=fn,
+        rule_text=(
+            f"ルール：Z = (SGM_TABLE[X0] + SGM_TABLE[X1] + SGM_TABLE[X2]) mod 10\n"
+            f"（X0, X1, X2 は 0〜{k - 1} の整数で、秘密のテーブル SGM_TABLE（長さ{k}、各要素0〜9）の"
+            "インデックスです。X3〜X13 は使用しません）\n"
+        ),
+        rationale_text=(
+            "考え方:\n1. X[0], X[1], X[2] をインデックスとして秘密のテーブルの値を3つ参照する．\n"
+            "2. その和を10で割った余りが答えです．\n"
+        ),
+        code_body=(
+            "    sgm = {key}\n"
+            "    return (sgm[X[0]] + sgm[X[1]] + sgm[X[2]]) % 10\n"
+        ),
+        explain=explain,
+    )
+
+
 _LADDER = [_make_lookup(4), _make_lookup(10), _make_lookup(26),
            _make_table_add(10), _make_table_add(13), _make_table_add(16),
            _make_table_add(20), _make_table_add(26),
-           _make_pointer(10), _make_pointer(26)]
+           _make_pointer(10), _make_pointer(26),
+           _make_table_add3(10), _make_table_add3(26)]
 
 
 # =============================================================================
