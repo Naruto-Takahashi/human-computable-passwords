@@ -51,7 +51,7 @@ human-computable-passwords/
 │   ├── reports/               # 週次進捗報告
 │   └── experiment_guide.md, log.md
 ├── Makefile                   # test / smoke / summarize / sync 等の運用タスク
-├── literature/                # 先行研究の文献
+├── literature/                # 先行研究の文献（実体はGoogle Drive管理，README.mdにリンク集）
 ├── results/                   # 実験結果
 │   ├── llm_eval/              # LLM評価（モデル/アルゴリズム/タスク/条件/シードの階層）
 │   ├── llm_finetune/          # FT学習の成果物（メタデータ・学習曲線）
