@@ -1,0 +1,9 @@
+algorithm,n_shot,k_disclosed,key_seed,data_seed,consistent_keys,capped,unique,solver_recovered_true_key,nodes_expanded,elapsed_sec
+func_13_k26,5,0,0,0,10000000000,True,False,False,12,0.0
+func_13_k26,5,0,1,0,100000000000,True,False,False,11,0.0
+func_13_k26,10,0,0,0,100000,True,False,False,1938,0.028
+func_13_k26,10,0,1,0,100000,True,False,False,123,0.002
+func_13_k26,20,0,0,0,91,True,False,False,2000001,255.927
+func_13_k26,20,0,1,0,1242,True,False,False,2000001,196.939
+func_13_k26,26,0,0,0,0,True,False,False,2000001,306.179
+func_13_k26,26,0,1,0,0,True,False,False,2000001,244.033
