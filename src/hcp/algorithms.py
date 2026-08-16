@@ -239,6 +239,34 @@ _FUNC_13 = Algorithm(
 )
 
 
+# key_size=26 版（RQ4: s(f) 軸の比較用）．
+# 原論文のデモ例に合わせた既定の func_13（key_size=100）は，func_22/func_31（ともに
+# key_size=26）と鍵サイズが揃っておらず，N*_info の差が s(f) 由来か鍵サイズ由来か
+# 分離できない．func_22/func_31 と鍵サイズを揃えた比較用にこちらを用いる．
+_FUNC_13_K26 = Algorithm(
+    name="func_13_k26",
+    level=2,
+    key_size=26,
+    fn=_fn_func_13,
+    rule_text=(
+        "ルール：\n" + _KEYED_RULE_PREFIX +
+        "2. j = X[10] mod 10 を計算します。\n"
+        "3. Z = (X[j] + X[11] + X[12] + X[13]) mod 10 を計算します。\n"
+    ),
+    rationale_text=(
+        "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+        "2. 変換後の位置10の値を10で割った余りを j とする。\n"
+        "3. 変換後の位置 j, 11, 12, 13 の値を合計し，10で割った余りが答えです。\n"
+    ),
+    code_body=(
+        _KEYED_CODE_PREFIX +
+        "    j = X_val[10] % 10\n"
+        "    return (X_val[j] + X_val[11] + X_val[12] + X_val[13]) % 10\n"
+    ),
+    explain=_explain_func_13,
+)
+
+
 def _fn_func_22(ch, key):
     def x(i):
         return key[ch[i]]
@@ -528,11 +556,224 @@ def _make_table_add3(k: int) -> Algorithm:
     )
 
 
+def _make_pointer_chain(k: int, depth: int) -> Algorithm:
+    """
+    動的参照の「深さ」を振る診断用アルゴリズム（指導教員指示: #pointer chasing）．
+    j = (X10+X11) mod 10 から出発し，(depth-1) 回 j = X[j] mod 10 を繰り返して
+    ポインタを追跡してから，最後に X[j] を返す．depth=1 は既存 pointer_k と一致する
+    （後方互換の健全性チェックに使える）．
+    表サイズ k を固定して depth のみを振ることで，「組み合わせ爆発」（k を増やす場合の
+    交絡，table_add 系で確認済み）と切り離して「参照の深さ」単体の効果を測る．
+    """
+
+    def fn(ch, key):
+        def x(i):
+            return key[ch[i]]
+        j = (x(10) + x(11)) % 10
+        for _ in range(depth - 1):
+            j = x(j) % 10
+        return x(j) % 10
+
+    def explain(ch, key, z):
+        def x(i):
+            return key[ch[i]]
+        X10, X11 = x(10), x(11)
+        j = (X10 + X11) % 10
+        lines = [
+            f"1. テーブル値を参照: X10=sgm[{ch[10]}]={X10}, X11=sgm[{ch[11]}]={X11}",
+            f"2. ポインタ j = (X10 + X11) mod 10 = ({X10} + {X11}) mod 10 = {j} を計算",
+        ]
+        step = 3
+        for _ in range(depth - 1):
+            xj = x(j)
+            new_j = xj % 10
+            lines.append(
+                f"{step}. 位置 {j} の値を参照して次のポインタにする: "
+                f"X{j}=sgm[{ch[j]}]={xj} → j = {xj} mod 10 = {new_j}"
+            )
+            j = new_j
+            step += 1
+        final = x(j)
+        lines.append(f"{step}. 最終的な位置 {j} の値を参照: X{j}=sgm[{ch[j]}]={final}")
+        lines.append(f"{step + 1}. Z = X{j} = {z}（加算はありません）")
+        return "\n".join(lines)
+
+    if depth == 1:
+        chase_rule = "3. Z = X[j] とします（そのまま出力します。加算はありません）。\n"
+        chase_rationale = "3. 変換後の位置 j の値がそのまま答えです．\n"
+        chase_code = ""
+    else:
+        chase_rule = (
+            f"3. 次の手順を {depth - 1} 回繰り返します： j = X[j] mod 10（参照した値を次の"
+            "ポインタにする）。\n"
+            "4. 最後に Z = X[j] とします（そのまま出力します。加算はありません）。\n"
+        )
+        chase_rationale = (
+            f"3. 参照して得た値を次のポインタとして使う操作を {depth - 1} 回繰り返します"
+            "（ポインタ追跡）．\n"
+            "4. 最終的に到達した位置の値がそのまま答えです．\n"
+        )
+        chase_code = f"    for _ in range({depth - 1}):\n        j = X_val[j] % 10\n"
+
+    return Algorithm(
+        name=f"pointer_chain_k{k}_d{depth}",
+        level=2,
+        key_size=k,
+        fn=fn,
+        rule_text=(
+            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
+            + chase_rule
+        ),
+        rationale_text=(
+            "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+            "2. 変換後の位置10と位置11の値の和を10で割った余りを j とする．\n"
+            + chase_rationale
+        ),
+        code_body=(
+            _KEYED_CODE_PREFIX +
+            "    j = (X_val[10] + X_val[11]) % 10\n"
+            + chase_code +
+            "    return X_val[j] % 10\n"
+        ),
+        explain=explain,
+    )
+
+
+def _make_dualptr(k: int) -> Algorithm:
+    """
+    独立な動的参照を2つ持つ診断用アルゴリズム（指導教員候補②）．
+    j1, j2 は互いに独立に計算され（依存関係がない），それぞれの参照結果を足す。
+    recptr（依存あり）との対比により，「参照の独立な多重化」と「参照の連鎖的依存」の
+    どちらがより深刻な壁になるかを切り分ける。
+    """
+
+    def fn(ch, key):
+        def x(i):
+            return key[ch[i]]
+        j1 = (x(10) + x(11)) % 10
+        j2 = (x(12) + x(13)) % 10
+        return (x(j1) + x(j2)) % 10
+
+    def explain(ch, key, z):
+        def x(i):
+            return key[ch[i]]
+        X10, X11, X12, X13 = x(10), x(11), x(12), x(13)
+        j1 = (X10 + X11) % 10
+        j2 = (X12 + X13) % 10
+        Xj1, Xj2 = x(j1), x(j2)
+        return (
+            f"1. テーブル値を参照: X10=sgm[{ch[10]}]={X10}, X11=sgm[{ch[11]}]={X11}, "
+            f"X12=sgm[{ch[12]}]={X12}, X13=sgm[{ch[13]}]={X13}\n"
+            f"2. ポインタ j1 = (X10+X11) mod 10 = {j1}, "
+            f"j2 = (X12+X13) mod 10 = {j2} を独立に計算\n"
+            f"3. それぞれの位置を参照: X{j1}=sgm[{ch[j1]}]={Xj1}, X{j2}=sgm[{ch[j2]}]={Xj2}\n"
+            f"4. Z = (X{j1} + X{j2}) mod 10 = ({Xj1} + {Xj2}) mod 10 = {z}"
+        )
+
+    return Algorithm(
+        name=f"dualptr_k{k}",
+        level=2,
+        key_size=k,
+        fn=fn,
+        rule_text=(
+            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "2. j1 = (X[10] + X[11]) mod 10 と j2 = (X[12] + X[13]) mod 10 を，"
+            "互いに独立に計算します。\n"
+            "3. Z = (X[j1] + X[j2]) mod 10 を計算します。\n"
+        ),
+        rationale_text=(
+            "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+            "2. 位置10・11の和からポインタ j1，位置12・13の和からポインタ j2 を，"
+            "互いに独立に求める．\n"
+            "3. 変換後の位置 j1, j2 の値を合計し，10で割った余りが答えです．\n"
+        ),
+        code_body=(
+            _KEYED_CODE_PREFIX +
+            "    j1 = (X_val[10] + X_val[11]) % 10\n"
+            "    j2 = (X_val[12] + X_val[13]) % 10\n"
+            "    return (X_val[j1] + X_val[j2]) % 10\n"
+        ),
+        explain=explain,
+    )
+
+
+def _make_recptr(k: int) -> Algorithm:
+    """
+    再帰的（依存あり）な二重動的参照（指導教員候補③，func_22 の依存強化版）．
+    j2 の計算に j1 の参照結果 X[j1] が使われる点が dualptr（j1, j2 が独立）との違い。
+    """
+
+    def fn(ch, key):
+        def x(i):
+            return key[ch[i]]
+        j1 = (x(10) + x(11)) % 10
+        j2 = (x(j1) + x(12)) % 10
+        return (x(j2) + x(13)) % 10
+
+    def explain(ch, key, z):
+        def x(i):
+            return key[ch[i]]
+        X10, X11, X12, X13 = x(10), x(11), x(12), x(13)
+        j1 = (X10 + X11) % 10
+        Xj1 = x(j1)
+        j2 = (Xj1 + X12) % 10
+        Xj2 = x(j2)
+        return (
+            f"1. テーブル値を参照: X10=sgm[{ch[10]}]={X10}, X11=sgm[{ch[11]}]={X11}\n"
+            f"2. ポインタ j1 = (X10+X11) mod 10 = {j1} を計算\n"
+            f"3. 位置 j1 を参照: X{j1}=sgm[{ch[j1]}]={Xj1}\n"
+            f"4. X12=sgm[{ch[12]}]={X12} を使い，j2 = (X{j1}+X12) mod 10 = {j2} を計算"
+            f"（★j1の参照結果がj2の計算に影響する＝依存あり）\n"
+            f"5. 位置 j2 を参照: X{j2}=sgm[{ch[j2]}]={Xj2}\n"
+            f"6. X13=sgm[{ch[13]}]={X13} を足す: Z = (X{j2} + X13) mod 10 = "
+            f"({Xj2} + {X13}) mod 10 = {z}"
+        )
+
+    return Algorithm(
+        name=f"recptr_k{k}",
+        level=2,
+        key_size=k,
+        fn=fn,
+        rule_text=(
+            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "2. j1 = (X[10] + X[11]) mod 10 を計算します。\n"
+            "3. j2 = (X[j1] + X[12]) mod 10 を計算します"
+            "（j1 の参照結果を使う点に注意）。\n"
+            "4. Z = (X[j2] + X[13]) mod 10 を計算します。\n"
+        ),
+        rationale_text=(
+            "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+            "2. 位置10・11の和からポインタ j1 を求める．\n"
+            "3. 位置 j1 の値と位置12の値の和から，さらにポインタ j2 を求める"
+            "（j1 の参照結果に依存する）．\n"
+            "4. 変換後の位置 j2 と位置13の値を合計し，10で割った余りが答えです．\n"
+        ),
+        code_body=(
+            _KEYED_CODE_PREFIX +
+            "    j1 = (X_val[10] + X_val[11]) % 10\n"
+            "    j2 = (X_val[j1] + X_val[12]) % 10\n"
+            "    return (X_val[j2] + X_val[13]) % 10\n"
+        ),
+        explain=explain,
+    )
+
+
 _LADDER = [_make_lookup(4), _make_lookup(10), _make_lookup(26),
            _make_table_add(10), _make_table_add(13), _make_table_add(16),
            _make_table_add(20), _make_table_add(26),
            _make_pointer(10), _make_pointer(26),
            _make_table_add3(10), _make_table_add3(26)]
+
+# 動的参照の「深さ」ラダー（2026-07: 教員指示 #pointer chasing）。
+# k=10 を主戦場とする（k=26 は table_add 系で組み合わせ爆発と交絡することが判明済み
+# のため参考条件に留める）。depth=1 は既存 pointer_k と等価（後方互換チェック用）。
+_DEPTH_LADDER = [
+    _make_pointer_chain(10, 1), _make_pointer_chain(10, 2), _make_pointer_chain(10, 3),
+    _make_pointer_chain(26, 1), _make_pointer_chain(26, 2), _make_pointer_chain(26, 3),
+    _make_dualptr(10), _make_dualptr(26),
+    _make_recptr(10), _make_recptr(26),
+]
 
 
 # =============================================================================
@@ -541,8 +782,8 @@ _LADDER = [_make_lookup(4), _make_lookup(10), _make_lookup(26),
 
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
-    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER,
-              _FUNC_13, _FUNC_22, _FUNC_31, _FUNC_POW]
+    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER,
+              _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_31, _FUNC_POW]
 }
 
 
