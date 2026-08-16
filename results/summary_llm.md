@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-07-29 14:25:05）．
-一次データ: `results/summary_llm.csv`（44 実験）
+`experiments/summarize.py` により自動生成（2026-08-16 18:23:28）．
+一次データ: `results/summary_llm.csv`（46 実験）
 
 | モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -17,6 +17,8 @@
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/finetuned_models/qwen2.5_3b/table_add_k20/run_20260717_164228 | table_add_k20 | predict(pure) | 2 | 0 | 0 | 1 | 24.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/finetuned_models/qwen2.5_3b/table_add_k26/run_20260716_192129 | table_add_k26 | predict(pure) | 2 | 0 | 0 | 1 | 8.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/finetuned_models/qwen2.5_3b/table_add_k26/run_20260717_182330 | table_add_k26 | predict(pure) | 2 | 0 | 0 | 1 | 100.00% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d1/run_20260816_143142 | pointer_chain_k10_d1 | predict(pure) | 2 | 0 | 0 | 1 | 36.00% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d2/run_20260816_161732 | pointer_chain_k10_d2 | predict(pure) | 2 | 0 | 0 | 1 | 46.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_k10/run_20260728_033104 | pointer_k10 | predict(pure) | 2 | 0 | 0 | 1 | 34.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_k26/run_20260728_051352 | pointer_k26 | predict(pure) | 2 | 0 | 0 | 1 | 14.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_k26/run_20260728_070545 | pointer_k26 | predict(pure) | 2 | 0 | 0 | 1 | 18.00% | - | - | - |
