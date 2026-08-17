@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-08-17 09:47:37）．
-一次データ: `results/summary_llm.csv`（50 実験）
+`experiments/summarize.py` により自動生成（2026-08-17 14:05:30）．
+一次データ: `results/summary_llm.csv`（52 実験）
 
 | モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -23,6 +23,8 @@
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d2/run_20260816_161732 | pointer_chain_k10_d2 | predict(pure) | 2 | 0 | 0 | 1 | 46.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d2/run_20260816_214500 | pointer_chain_k10_d2 | predict(pure) | 2 | 0 | 0 | 1 | 36.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d2/run_20260817_013649 | pointer_chain_k10_d2 | predict(pure) | 2 | 0 | 0 | 1 | 26.00% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d3/run_20260817_095544 | pointer_chain_k10_d3 | predict(pure) | 2 | 0 | 0 | 1 | 24.00% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d3/run_20260817_120042 | pointer_chain_k10_d3 | predict(pure) | 2 | 0 | 0 | 1 | 44.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_k10/run_20260728_033104 | pointer_k10 | predict(pure) | 2 | 0 | 0 | 1 | 34.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_k26/run_20260728_051352 | pointer_k26 | predict(pure) | 2 | 0 | 0 | 1 | 14.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_k26/run_20260728_070545 | pointer_k26 | predict(pure) | 2 | 0 | 0 | 1 | 18.00% | - | - | - |
