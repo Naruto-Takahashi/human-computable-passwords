@@ -16,3 +16,6 @@
 *Zone.Identifier
 /literature/*
 !/literature/README.md
+
+# 評価件数を変更した再評価の際に退避した旧結果（ローカル保管のみ）
+results/llm_eval_backup_*/
