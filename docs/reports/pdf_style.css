@@ -24,30 +24,40 @@ body {
   color: #111;
 }
 
+/* 冒頭のタイトル行（「週次研究報告」）。見出しではなく本文段落なので
+   最初の段落だけ大きく見せる。 */
+body > p:first-child {
+  font-size: 16pt;
+  font-family: "Noto Sans CJK JP", sans-serif;
+  font-weight: 700;
+  margin: 0 0 10px;
+  letter-spacing: 0.05em;
+}
+
+/* 節見出し。Word版に合わせ「1 タイトル」「1.1 タイトル」の採番は
+   本文側に直接書いてあるので、ここでは体裁のみ整える。 */
 h1 {
   font-family: "Noto Sans CJK JP", sans-serif;
-  font-size: 17pt;
-  border-bottom: 2.5px solid #333;
-  padding-bottom: 6px;
-  margin: 0 0 4px;
+  font-size: 14pt;
+  border-bottom: 1.5px solid #333;
+  padding-bottom: 4px;
+  margin: 22px 0 10px;
+  page-break-after: avoid;
 }
 
 h2 {
   font-family: "Noto Sans CJK JP", sans-serif;
-  font-size: 13.5pt;
-  margin: 20px 0 8px;
-  padding: 5px 10px;
-  background: #f0f0f0;
-  border-left: 5px solid #444;
+  font-size: 12pt;
+  margin: 16px 0 6px;
+  padding-left: 8px;
+  border-left: 4px solid #666;
   page-break-after: avoid;
 }
 
 h3 {
   font-family: "Noto Sans CJK JP", sans-serif;
-  font-size: 11.5pt;
-  margin: 16px 0 6px;
-  padding-bottom: 3px;
-  border-bottom: 1px dotted #999;
+  font-size: 11pt;
+  margin: 12px 0 5px;
   page-break-after: avoid;
 }
 
