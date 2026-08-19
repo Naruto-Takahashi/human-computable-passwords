@@ -121,3 +121,12 @@ hr {
 }
 
 a { color: #0645ad; text-decoration: none; }
+
+/* weasyprint は MathML を解釈せず、pandoc が埋める LaTeX ソース注釈
+   (<annotation encoding="application/x-tex">) まで本文として描画してしまい、
+   数式が二重に出る。本文では LaTeX ではなく Unicode の平文で数式を書く方針だが、
+   万一 $...$ が混入しても壊れないよう注釈を隠しておく。 */
+annotation, math annotation { display: none; }
+
+/* 数式ブロック（``` で囲んだ定義式）を本文と見分けやすくする */
+pre { font-family: "Noto Sans Mono CJK JP", monospace; }
