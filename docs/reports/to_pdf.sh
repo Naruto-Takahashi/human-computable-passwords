@@ -5,8 +5,16 @@
 # 使い方:
 #   docs/reports/to_pdf.sh weekly_report_20260818.md
 #   docs/reports/to_pdf.sh                            # 最新の週次報告を自動選択
+#   docs/reports/to_pdf.sh --send                     # 生成後 Taildrop で手元へ送る
+#   docs/reports/to_pdf.sh weekly_report_20260818.md --send
 #
 # 出力先: docs/reports/pdf/<同名>.pdf
+#
+# --send について:
+#   このマシン(研究室)へは自宅から Tailscale 経由でSSH接続しているため，
+#   生成したPDFはそのままでは手元に無い。Taildrop で直接送る。
+#   受信先は SEND_TO で変更可（既定 surface-pro）。
+#   初回のみ `sudo tailscale set --operator=$USER` が必要（設定済み）。
 #
 # 経路について:
 #   当初は pandoc + lualatex(ltjsarticle) を使っていたが，この環境の Noto CJK が
@@ -18,6 +26,17 @@
 set -euo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$REPO"
+
+SEND_TO="${SEND_TO:-surface-pro}"
+SEND=0
+ARGS=()
+for a in "$@"; do
+    case "$a" in
+        --send) SEND=1 ;;
+        *) ARGS+=("$a") ;;
+    esac
+done
+set -- "${ARGS[@]:-}"
 
 SRC="${1:-}"
 if [ -z "$SRC" ]; then
@@ -46,3 +65,15 @@ pandoc '$SRC' -f markdown -t html5 --standalone --mathml \
 weasyprint '$TMP_HTML' '$OUT' -s docs/reports/pdf_style.css
 "
 echo "[OK] 生成しました: $OUT"
+
+if [ "$SEND" -eq 1 ]; then
+    echo "[INFO] Taildrop で $SEND_TO へ送信中..."
+    if tailscale file cp "$OUT" "${SEND_TO}:"; then
+        echo "[OK] $SEND_TO のダウンロードフォルダに届きました"
+    else
+        echo "[ERROR] 送信に失敗しました。" >&2
+        echo "        初回は once: sudo tailscale set --operator=\$USER が必要です。" >&2
+        echo "        受信先を変えるには SEND_TO=<マシン名> を指定してください。" >&2
+        exit 1
+    fi
+fi
