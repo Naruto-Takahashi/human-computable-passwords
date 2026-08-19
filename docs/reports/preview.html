@@ -1,0 +1,85 @@
+<!doctype html>
+<!--
+  週次報告のライブプレビュー。
+  make report-serve でこのディレクトリを配信し，手元の端末のブラウザで開く。
+  latest.pdf の更新（Last-Modified）を監視して自動で表示を差し替える。
+-->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>週次報告プレビュー</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex; flex-direction: column;
+    font-family: "Noto Sans CJK JP", system-ui, sans-serif;
+    background: #f2f2f4;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 8px 14px; background: #22252b; color: #eceff4;
+    font-size: 13px; flex: none;
+  }
+  header .name { font-weight: 600; }
+  header .spacer { flex: 1; }
+  #status { font-variant-numeric: tabular-nums; color: #a8b1bd; }
+  #status.updated { color: #8fd18f; }
+  label { color: #a8b1bd; }
+  input[type=number] {
+    width: 4.5em; padding: 2px 5px; border-radius: 4px;
+    border: 1px solid #4a4f58; background: #2c3038; color: #eceff4;
+  }
+  iframe { flex: 1; width: 100%; border: 0; background: #525659; }
+</style>
+</head>
+<body>
+<header>
+  <span class="name">週次報告プレビュー</span>
+  <span id="file"></span>
+  <span class="spacer"></span>
+  <label>戻るページ <input type="number" id="page" min="1" value="1"></label>
+  <span id="status">監視中…</span>
+</header>
+<iframe id="view" title="report"></iframe>
+
+<script>
+const PDF = 'latest.pdf';
+const view = document.getElementById('view');
+const status = document.getElementById('status');
+const pageBox = document.getElementById('page');
+let lastStamp = null;
+
+pageBox.value = localStorage.getItem('previewPage') || '1';
+pageBox.addEventListener('change', () => localStorage.setItem('previewPage', pageBox.value));
+
+function render(stamp) {
+  const page = Math.max(1, parseInt(pageBox.value, 10) || 1);
+  // キャッシュ回避のためのクエリと，開くページの指定
+  view.src = `${PDF}?t=${encodeURIComponent(stamp)}#page=${page}&zoom=page-width`;
+  const now = new Date().toLocaleTimeString('ja-JP');
+  status.textContent = `更新 ${now}`;
+  status.classList.add('updated');
+  setTimeout(() => status.classList.remove('updated'), 1500);
+}
+
+async function poll() {
+  try {
+    const res = await fetch(PDF, { method: 'HEAD', cache: 'no-store' });
+    const stamp = res.headers.get('Last-Modified') || res.headers.get('ETag');
+    if (stamp && stamp !== lastStamp) {
+      lastStamp = stamp;
+      render(stamp);
+    }
+  } catch (e) {
+    status.textContent = 'サーバに接続できません';
+    status.classList.remove('updated');
+  }
+}
+
+poll();
+setInterval(poll, 1000);
+</script>
+</body>
+</html>
