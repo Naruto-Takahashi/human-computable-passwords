@@ -85,15 +85,25 @@ $$h(x_0,\dots,x_{13}) = (x_{10}^4 + 2x_{11}^3 + 3x_{12}^2 + 4x_{13}) \bmod 10$$
 
 → 経路Bは「小川ら(2025)の知見が，学習方式（教師ありNN vs 勾配微調整LLM）を変えても再現することを確認した，収束的証拠」として位置づける。
 
-### 6.2 経路A（in-context）は小川らが名指しで残した課題
+### 6.2 経路A（in-context）は小川らの枠組みの「外側」にある
 
-§5.4 の将来課題に次の記述がある：
+> **注記（2026-08-18 訂正）**: 当初この節を「経路Aは小川らが名指しで残した課題」と記述していたが，原文を再照合した結果，過大主張だったため訂正した。以下が正確な位置づけである。
+
+§5.4 の将来課題には次の記述がある：
 
 > A particularly important next step is to evaluate attention-based and Transformer-style models. Self-attention is naturally suited to content-dependent selection, and therefore provides a direct way to test whether a model can learn to attend to the input-dependent referenced position.
 
-小川らの実験は重み学習型のCNN/LSTM/MLPに限られ，Transformer・LLM・in-context推論（重み凍結）は一切扱っていない。**経路Aは先行研究が明示的に残した空白を埋める実験である**という，新規性の明快な根拠になる。
+続けて，PassGPT・PassLLM等のLLMベースのパスワード推測研究にも言及し，「Transformerエンコーダ・小型のdecoder-onlyモデル・LLM支援の記号-ニューラルハイブリッドが，漏洩したチャレンジ・レスポンス組から $f\circ\sigma$ を**学習する**より強いベースラインになりうる」と述べている（large pretrained or **fine-tuned** sequence models という語も明記されている）。
 
-さらに，PassGPT・PassLLM等のLLMベースのパスワード推測研究にも言及し，「Transformerエンコーダ・小型のdecoder-onlyモデル・LLM支援の記号-ニューラルハイブリッドが，漏洩したチャレンジ・レスポンス組から $f\circ\sigma$ を学習するより強いベースラインになりうる」と述べている。
+**しかし枠組みは一貫して「教師あり予測」である**:
+
+- LLMへの言及はすべて *"stronger future **baselines for learning $f\circ\sigma$ from leaked challenge-response pairs**"* という文脈にある。
+- `in-context` / `ICL` / `prompt` / `few-shot` / `zero-shot` / `frozen` の語は**本文に一度も現れない**（全文検索で確認済み）。
+- 脅威モデル（§3.1）に *"The attacker's goal is **not to recover $\sigma$ explicitly**, but to learn a predictor approximating $f \circ \sigma$"* と明記されている。$\sigma$ の復元は §2.4 で厳密ソルバー（CSP/SAT）の担当として明確に別枠に置かれている。
+
+したがって小川らの将来課題は，字義通りには**経路B（教師あり学習）をより大きなモデルへ拡張するもの**である。経路Aは，アーキテクチャの方向（attention）では一致するが，**学習パラダイム（重みを更新しない）と目標（$\sigma$ そのものの復元）の両方**で先行研究の想定外にある。
+
+**新規性の主張の立て方**: 「先行研究の未実施課題を実行する」ではなく，**「先行研究が扱っていない問いを立てる —— 関数近似から逆問題への再定式化」**という形で立てるべきである。貢献としてはこちらの方が強く，かつ原文と矛盾しない（前者の書き方は原文照合で齟齬を突かれる）。
 
 ### 6.3 方法論上の教訓
 

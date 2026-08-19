@@ -46,7 +46,8 @@ LLM の成否は，次の基準線に対して位置づける（実装済み）:
 指導教員から Blocki et al.（原論文，1.1参照）に加え，小川ら [Ogawa, Ikeda, Sakurai, "Learning Human-Computable Passwords: What Makes Them Hard (or Easy) for Neural Models?"] と 加地ら [Kachi, Viglietta, Sakurai, SCIS 2025] の2本を提示された．内容を確認し，本研究の位置づけに次の含意があることを確認した．
 
 - **経路Bの結論は，小川ら(2025)がCNN/Bi-LSTM/MLPで既に得ている結論とほぼ同一**である：小川らは，動的参照の添字（$j$項）を除去した統制関数（no-j ablation）では埋め込み+CNNがほぼ完全（最大99.87〜100%）に学習できる一方，$j$項を残すと反復実行の平均正解率が偶然水準付近に張り付く（例: $(k_1,k_2)=(2,2)$ で平均$0.2872\pm0.1651$，最大値のみ68.58%）ことを報告している．これは経路Bの主結論（①記憶・②合成は学習できるが③動的参照だけがデータ量を増やしても崩壊する）と，モデルアーキテクチャ（CNN/LSTM vs QLoRA-LLM）が異なるだけで実質的に同じ知見である．したがって**経路Bは「新発見」ではなく「小川ら(2025)の知見が，学習方式（教師ありNN vs 勾配微調整LLM）を変えても再現することを確認した，収束的証拠の一部」として卒論に位置づける**．新規性を経路B単体に求めるのは避け，1.3の整理（経路Bは関数近似層の追試，経路A以降が本研究固有の貢献）をより強く採用する．
-- **経路A（in-context推論によるLLMの鍵逆推定）は，小川ら(2025)が明示的に挙げた今後の課題そのもの**である．同論文5.4節は次のように将来課題を述べている：「A particularly important next step is to evaluate attention-based and Transformer-style models... Self-attention is naturally suited to content-dependent selection, and therefore provides a direct way to test whether a model can learn to attend to the input-dependent referenced position.」小川らの実験は重み学習型のCNN/LSTM/MLPに限られ，Transformer・LLM・in-context推論（重み凍結）は一切扱っていない．したがって経路Aは，先行研究が名指しで残した空白を埋める実験であり，新規性の説明として「小川ら(2025)の未実施課題を実行する」という明快な根拠を追加できる．
+- **経路A（in-context推論によるLLMの鍵逆推定）は，小川ら(2025)の枠組みの外側にある**（2026-08-18に原文を再照合して記述を訂正．当初「小川らが明示的に挙げた今後の課題そのもの」と記載していたが過大主張だった）．同論文5.4節の将来課題は「A particularly important next step is to evaluate attention-based and Transformer-style models... Self-attention is naturally suited to content-dependent selection, and therefore provides a direct way to test whether a model can learn to attend to the input-dependent referenced position.」と述べ，続けて大規模な事前学習済み・**fine-tuned** モデルやdecoder-onlyモデルにも言及する．ただしその目的は一貫して "stronger future **baselines for learning f ◦ σ from leaked challenge-response pairs**" であり，`in-context` / `prompt` / `few-shot` / `frozen` の語は本文に一度も現れない．さらに脅威モデル（3.1節）には "The adversary's goal is **not to recover σ explicitly**, but to learn a predictor approximating f ◦ σ" と明記され，鍵復元はニューラル攻撃の目標から除外され，厳密ソルバーの担当（2.4節）として別枠に置かれている．
+  - したがって小川らの将来課題は，字義通りには**経路B（教師あり学習）を大きなモデルへ拡張するもの**である．経路Aは，アーキテクチャの方向（attention）では一致するが，**学習パラダイム（重み凍結）と目標（σの復元）の両方**において先行研究の想定外にある．新規性の主張は「先行研究の未実施課題を実行する」ではなく，**「先行研究が扱っていない問いを立てる（関数近似から逆問題への再定式化）」**という形で立てるべきである（1.4の整理と整合）．こちらの方が貢献としては強く，かつ原文と矛盾しない．
 - **加地ら(2025)は，$j$項を含む Blocki et al. の関数 $f$ を，標数11の素体 $\mathbb{F}_{11}$ 上のラグランジュ補間で明示的な多項式として表現し，$j$項があることで $f$ 全体が非自明に絡み合った代数構造を持つことを示した**．これは小川らの実証結果（$j$項の有無で学習可能性が劇的に変わる）に対する代数的な裏付けであり，本研究がfunc_22などの命名で `f_{k1,k2}` に対応づけている設計（A.3.1参照）の理論的正当性を補強する．経路Aの実験設計そのものへの変更は不要だが，1.1の背景説明・考察（第3期）で引用する一次資料として活用する．
 
 ### 1.4 研究の性質そのものが経路A/Bで変わる点（指導教員レビュー 2026-07 での指摘）
@@ -82,7 +83,7 @@ LLM の成否は，次の基準線に対して位置づける（実装済み）:
 
 **位置づけの整理**: 8月の作業は無駄ではないが，**道具の改良であって測定ではない**．道具の改良は測定に還元されて初めて価値が確定する．実際に得られた知見（鍵ヒストグラムの漏洩，不動点による自明化，n_test=50 の検出力不足）は，経路Aの実験設計にもそのまま効く教訓であり，「道具の限界を明らかにした付随的知見」として位置づけるのが妥当と考える．
 
-**日程上の懸念**: §5 の計画では第2期（8月〜10月中旬）を経路Aの相転移スイープに充てる予定だが，第2期に3週間入った時点で未着手である．また 1.3.1 の通り，**経路Aは小川ら(2025)が論文中で名指しした空白**であり，新規性の根拠が最も強い．新規性の強さは 経路A ≫ 関数設計 > 経路B（追試）という序列になる．
+**日程上の懸念**: §5 の計画では第2期（8月〜10月中旬）を経路Aの相転移スイープに充てる予定だが，第2期に3週間入った時点で未着手である．また 1.3.1 の通り，**経路Aは小川ら(2025)の枠組みの外側（学習パラダイムと目標の両方が想定外）**にあり，新規性の根拠が最も強い．新規性の強さは 経路A ≫ 関数設計 > 経路B（追試）という序列になる．
 
 **方針案（要相談）**: 焦点を経路A（LLMの推論能力の測定）に戻すことを提案する．深さラダーは「道具の限界の診断」として区切り，3.1.1 に記録した知見をもって完了とする．ただしこれは指導教員の8月指示と方向が異なるため，面談で以下を議題に載せて判断を仰ぐ：
 
