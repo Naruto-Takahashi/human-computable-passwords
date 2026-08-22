@@ -309,6 +309,38 @@ _FUNC_22 = Algorithm(
 )
 
 
+_FUNC_22_K10 = Algorithm(
+    name="func_22_k10",
+    level=2,
+    key_size=10,
+    fn=_fn_func_22,
+    rule_text=(
+        "ルール：\n" + _KEYED_RULE_PREFIX +
+        "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
+        "3. Z = (X[j] + X[12] + X[13]) mod 10 を計算します。\n"
+    ),
+    rationale_text=(
+        "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+        "2. 変換後の位置10と位置11の値の和を10で割った余りを j とする．\n"
+        "3. 変換後の位置 j, 12, 13 の値を合計し，10で割った余りが答えです．\n"
+    ),
+    code_body=(
+        _KEYED_CODE_PREFIX +
+        "    j = (X_val[10] + X_val[11]) % 10\n"
+        "    return (X_val[j] + X_val[12] + X_val[13]) % 10\n"
+    ),
+    explain=_explain_func_22,
+)
+"""func_22 の鍵10マス版．
+
+dualptr / recptr（いずれも動的参照2本＋末尾の足し算）と比較するときの
+**基準線**として使う．func_22 は本来 k=26 だが，k=26 では動的参照の有無に
+関わらず崩壊して差が見えないため（2026-07 の table_add3 との統制実験），
+深さラダーと同じ k=10 に揃えた版を用意した．これにより「動的参照の構造」
+だけを変数にした3点比較（1本 / 並列2本 / 直列2本）が成立する．
+"""
+
+
 def _fn_func_31(ch, key):
     def x(i):
         return key[ch[i]]
@@ -783,7 +815,7 @@ _DEPTH_LADDER = [
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
     for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER,
-              _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_31, _FUNC_POW]
+              _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10, _FUNC_31, _FUNC_POW]
 }
 
 
