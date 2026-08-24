@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-08-23 13:50:16）．
-一次データ: `results/summary_llm.csv`（58 実験）
+`experiments/summarize.py` により自動生成（2026-08-24 06:27:25）．
+一次データ: `results/summary_llm.csv`（60 実験）
 
 | モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -21,6 +21,8 @@
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/dualptr_k10/run_20260823_092300 | dualptr_k10 | predict(pure) | 2 | 0 | 0 | 1 | 13.80% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260823_004525 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 13.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260823_025131 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 16.00% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260823_151707 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 12.20% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260823_210006 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 12.60% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d1/run_20260816_143142 | pointer_chain_k10_d1 | predict(pure) | 2 | 0 | 0 | 1 | 30.40% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d1/run_20260816_195925 | pointer_chain_k10_d1 | predict(pure) | 2 | 0 | 0 | 1 | 24.80% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/pointer_chain_k10_d1/run_20260816_235035 | pointer_chain_k10_d1 | predict(pure) | 2 | 0 | 0 | 1 | 35.80% | - | - | - |
