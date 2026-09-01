@@ -791,6 +791,74 @@ def _make_recptr(k: int) -> Algorithm:
     )
 
 
+def _make_narrowptr(k: int, m: int) -> Algorithm:
+    """
+    参照範囲を m マスに絞った動的参照（2026-08 の構造ラダーを受けた設計）．
+
+        j = (X[10] + X[11]) mod m,  Z = (X[j] + X[12] + X[13]) mod 10
+
+    m は「ポインタが指しうる行き先の数」であり，動的参照の強さを連続的に
+    刻むためのつまみである。
+
+      m = 1  … j は常に 0。参照先が固定なので，実質は静的参照3箇所の足し算
+               （table_add3 と同型）。7月の実験では 100% 学習できていた水準。
+      m = 10 … 現行の func_22_k10 と完全に一致する（床の水準，13.0%）。
+
+    設計の動機：段階3・段階4（weekly_report_20260823 §2）で，動的参照を
+    1本→2本（並列・直列）に増やしても，学習量を5倍にしても，正解率は
+    10〜16% の床から動かなかった。一方で動的参照を持たない table_add3_k10 は
+    100% である。つまり壁は「0本と1本の間」に立っており，1本より上に
+    刻みを増やしても平坦な床しか測れない。そこで刻むべきは 0本と1本の
+    「間」であり，このつまみはその区間を連続的に埋める。
+
+    m を振ることで初めて 100% 側と床側を両端に持つ勾配が得られ，
+    「動的参照はどの時点で学習不能になるのか」を定量できる見込みである。
+    """
+    if not 1 <= m <= 10:
+        raise ValueError(f"m は 1〜10 の範囲で指定してください: {m}")
+
+    def fn(ch, key):
+        def x(i):
+            return key[ch[i]]
+        j = (x(10) + x(11)) % m
+        return (x(j) + x(12) + x(13)) % 10
+
+    def explain(ch, key, z):
+        X = [key[i] for i in ch]
+        j = (X[10] + X[11]) % m
+        return (
+            f"1. テーブル値を参照: X10=sgm[{ch[10]}]={X[10]}, X11=sgm[{ch[11]}]={X[11]}\n"
+            f"2. ポインタ j = (X10 + X11) mod {m} = ({X[10]} + {X[11]}) mod {m} = {j} を計算"
+            f"（行き先は 0〜{m - 1} の {m} 通り）\n"
+            f"3. インデックス {j} の値を参照: X{j}=sgm[{ch[j]}]={X[j]}\n"
+            f"4. Z = (X{j} + X12 + X13) mod 10 = "
+            f"({X[j]} + {X[12]} + {X[13]}) mod 10 = {z}"
+        )
+
+    return Algorithm(
+        name=f"narrowptr_k{k}_m{m}",
+        level=2,
+        key_size=k,
+        fn=fn,
+        rule_text=(
+            "ルール：\n" + _KEYED_RULE_PREFIX +
+            f"2. j = (X[10] + X[11]) mod {m} を計算します。\n"
+            "3. Z = (X[j] + X[12] + X[13]) mod 10 を計算します。\n"
+        ),
+        rationale_text=(
+            "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+            f"2. 変換後の位置10と位置11の値の和を{m}で割った余りを j とする．\n"
+            "3. 変換後の位置 j, 12, 13 の値を合計し，10で割った余りが答えです．\n"
+        ),
+        code_body=(
+            _KEYED_CODE_PREFIX +
+            f"    j = (X_val[10] + X_val[11]) % {m}\n"
+            "    return (X_val[j] + X_val[12] + X_val[13]) % 10\n"
+        ),
+        explain=explain,
+    )
+
+
 _LADDER = [_make_lookup(4), _make_lookup(10), _make_lookup(26),
            _make_table_add(10), _make_table_add(13), _make_table_add(16),
            _make_table_add(20), _make_table_add(26),
@@ -807,6 +875,12 @@ _DEPTH_LADDER = [
     _make_recptr(10), _make_recptr(26),
 ]
 
+# 動的参照の「参照範囲」ラダー（2026-09: 段階5）。
+# m = 1 は静的参照（table_add3 相当，100% 側），m = 10 は func_22_k10 と等価
+# （床の水準，13.0%）。この2点を両端に持つため，本研究で初めて
+# 「床でない勾配」を測れる見込みの設計である。
+_RANGE_LADDER = [_make_narrowptr(10, m) for m in (1, 2, 3, 5, 10)]
+
 
 # =============================================================================
 # レジストリ
@@ -814,7 +888,7 @@ _DEPTH_LADDER = [
 
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
-    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER,
+    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER,
               _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10, _FUNC_31, _FUNC_POW]
 }
 
