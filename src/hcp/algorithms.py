@@ -196,141 +196,101 @@ _KEYED_CODE_PREFIX = (
 )
 
 
-def _fn_func_13(ch, key):
-    def x(i):
-        return key[ch[i]]
-    j = x(10) % 10
-    return (x(j) + x(11) + x(12) + x(13)) % 10
+def _make_func(k1: int, k2: int, key_size: int, name: str,
+               rationale_period: str = "．") -> Algorithm:
+    """原論文の人間計算可能関数 $f_{k_1,k_2}$．
 
+        j = (X[10] + ... + X[9+k1]) mod 10
+        Z = (X[j] + X[10+k1] + ... + X[9+k1+k2]) mod 10
 
-def _explain_func_13(ch, key, z):
-    X = [key[i] for i in ch]
-    j = X[10] % 10
-    return (
-        f"1. インデックスに対応するテーブル値を参照: X10=sgm[{ch[10]}]={X[10]}\n"
-        f"2. ポインタ j = X10 mod 10 = {X[10]} mod 10 = {j} を計算\n"
-        f"3. インデックス {j} の値をテーブルから取得: X{j}=sgm[{ch[j]}]={X[j]}\n"
-        f"4. Z = (X{j} + X11 + X12 + X13) mod 10 = "
-        f"({X[j]} + {X[11]} + {X[12]} + {X[13]}) mod 10 = {z}"
+    k1 は添字を作る項数，k2 は末尾で足す項数で，入力の個数は 10+k1+k2 = 14 になる．
+    安全性パラメータは s(f) = min{(k2+1)/2, k1+1, 11}（docs/plan.md）．
+
+    func_13 / func_22 / func_31 はこの族の一員で，以前は3つとも計算・ルール文・
+    教師コード・解説を別々に書いていた（189行）．鍵サイズ違いを含めると5定義あり，
+    1つ直すと他も直す必要があった．
+
+    **文面は1文字も変えていない．** 学習済みアダプタはこのルール文で学習しており，
+    表現を変えると過去の結果と比較できなくなる．そのため k1 ごとの言い回しの揺れも，
+    func_13_k26 だけ「考え方」の句点が `。`（他は `．`）という不統一も，
+    そのまま再現している（`rationale_period`）．
+    """
+    idx = list(range(10, 10 + k1))            # 添字を作る項の位置
+    add = list(range(10 + k1, 10 + k1 + k2))  # 末尾で足す項の位置
+
+    def fn(ch, key):
+        def x(i):
+            return key[ch[i]]
+        j = sum(x(i) for i in idx) % 10
+        return (x(j) + sum(x(i) for i in add)) % 10
+
+    # 以下はすべて既存の文面をそのまま再現するためのもの。
+    j_expr = f"X[{idx[0]}]" if k1 == 1 else "(" + " + ".join(f"X[{i}]" for i in idx) + ")"
+    z_expr = " + ".join(["X[j]"] + [f"X[{i}]" for i in add])
+    j_code = (f"X_val[{idx[0]}]" if k1 == 1
+              else "(" + " + ".join(f"X_val[{i}]" for i in idx) + ")")
+    z_code = " + ".join(["X_val[j]"] + [f"X_val[{i}]" for i in add])
+
+    # 「変換後の位置…」の言い回しは k1 ごとに違う。過去の学習と揃えるため維持する。
+    j_words = {
+        1: "変換後の位置10の値を",
+        2: "変換後の位置10と位置11の値の和を",
+        3: "変換後の位置10, 11, 12の値の和を",
+    }[k1]
+    z_words = ", ".join(["j"] + [str(i) for i in add])
+
+    def explain(ch, key, z):
+        X = [key[i] for i in ch]
+        j = sum(X[i] for i in idx) % 10
+        refs = ", ".join(f"X{i}=sgm[{ch[i]}]={X[i]}" for i in idx)
+        # k1=1 のときだけ言い回しが違う（既存の文面のまま）。
+        head = ("1. インデックスに対応するテーブル値を参照: " if k1 == 1
+                else "1. テーブル値を参照: ")
+        pick = ("3. インデックス {} の値をテーブルから取得: " if k1 == 1
+                else "3. インデックス {} の値を参照: ").format(j)
+        j_show = f"X{idx[0]}" if k1 == 1 else "(" + " + ".join(f"X{i}" for i in idx) + ")"
+        j_vals = (f"{X[idx[0]]}" if k1 == 1
+                  else "(" + " + ".join(str(X[i]) for i in idx) + ")")
+        z_show = " + ".join([f"X{j}"] + [f"X{i}" for i in add])
+        z_vals = " + ".join([str(X[j])] + [str(X[i]) for i in add])
+        return (
+            f"{head}{refs}\n"
+            f"2. ポインタ j = {j_show} mod 10 = {j_vals} mod 10 = {j} を計算\n"
+            f"{pick}X{j}=sgm[{ch[j]}]={X[j]}\n"
+            f"4. Z = ({z_show}) mod 10 = ({z_vals}) mod 10 = {z}"
+        )
+
+    return Algorithm(
+        name=name,
+        level=2,
+        key_size=key_size,
+        fn=fn,
+        rule_text=(
+            "ルール：\n" + _KEYED_RULE_PREFIX +
+            f"2. j = {j_expr} mod 10 を計算します。\n"
+            f"3. Z = ({z_expr}) mod 10 を計算します。\n"
+        ),
+        rationale_text=(
+            "考え方:\n" + _KEYED_RATIONALE_PREFIX +
+            f"2. {j_words}10で割った余りを j とする{rationale_period}\n"
+            f"3. 変換後の位置 {z_words} の値を合計し，10で割った余りが答えです"
+            f"{rationale_period}\n"
+        ),
+        code_body=(
+            _KEYED_CODE_PREFIX +
+            f"    j = {j_code} % 10\n"
+            f"    return ({z_code}) % 10\n"
+        ),
+        explain=explain,
     )
 
 
-_FUNC_13 = Algorithm(
-    name="func_13",
-    level=2,
-    key_size=100,
-    fn=_fn_func_13,
-    rule_text=(
-        "ルール：\n" + _KEYED_RULE_PREFIX +
-        "2. j = X[10] mod 10 を計算します。\n"
-        "3. Z = (X[j] + X[11] + X[12] + X[13]) mod 10 を計算します。\n"
-    ),
-    rationale_text=(
-        "考え方:\n" + _KEYED_RATIONALE_PREFIX +
-        "2. 変換後の位置10の値を10で割った余りを j とする．\n"
-        "3. 変換後の位置 j, 11, 12, 13 の値を合計し，10で割った余りが答えです．\n"
-    ),
-    code_body=(
-        _KEYED_CODE_PREFIX +
-        "    j = X_val[10] % 10\n"
-        "    return (X_val[j] + X_val[11] + X_val[12] + X_val[13]) % 10\n"
-    ),
-    explain=_explain_func_13,
-)
+_FUNC_13     = _make_func(1, 3, 100, "func_13")
+_FUNC_13_K26 = _make_func(1, 3, 26, "func_13_k26", rationale_period="。")
+_FUNC_22     = _make_func(2, 2, 26, "func_22")
+_FUNC_31     = _make_func(3, 1, 26, "func_31")
 
-
-# key_size=26 版（RQ4: s(f) 軸の比較用）．
-# 原論文のデモ例に合わせた既定の func_13（key_size=100）は，func_22/func_31（ともに
-# key_size=26）と鍵サイズが揃っておらず，N*_info の差が s(f) 由来か鍵サイズ由来か
-# 分離できない．func_22/func_31 と鍵サイズを揃えた比較用にこちらを用いる．
-_FUNC_13_K26 = Algorithm(
-    name="func_13_k26",
-    level=2,
-    key_size=26,
-    fn=_fn_func_13,
-    rule_text=(
-        "ルール：\n" + _KEYED_RULE_PREFIX +
-        "2. j = X[10] mod 10 を計算します。\n"
-        "3. Z = (X[j] + X[11] + X[12] + X[13]) mod 10 を計算します。\n"
-    ),
-    rationale_text=(
-        "考え方:\n" + _KEYED_RATIONALE_PREFIX +
-        "2. 変換後の位置10の値を10で割った余りを j とする。\n"
-        "3. 変換後の位置 j, 11, 12, 13 の値を合計し，10で割った余りが答えです。\n"
-    ),
-    code_body=(
-        _KEYED_CODE_PREFIX +
-        "    j = X_val[10] % 10\n"
-        "    return (X_val[j] + X_val[11] + X_val[12] + X_val[13]) % 10\n"
-    ),
-    explain=_explain_func_13,
-)
-
-
-def _fn_func_22(ch, key):
-    def x(i):
-        return key[ch[i]]
-    j = (x(10) + x(11)) % 10
-    return (x(j) + x(12) + x(13)) % 10
-
-
-def _explain_func_22(ch, key, z):
-    X = [key[i] for i in ch]
-    j = (X[10] + X[11]) % 10
-    return (
-        f"1. テーブル値を参照: X10=sgm[{ch[10]}]={X[10]}, X11=sgm[{ch[11]}]={X[11]}\n"
-        f"2. ポインタ j = (X10 + X11) mod 10 = ({X[10]} + {X[11]}) mod 10 = {j} を計算\n"
-        f"3. インデックス {j} の値を参照: X{j}=sgm[{ch[j]}]={X[j]}\n"
-        f"4. Z = (X{j} + X12 + X13) mod 10 = ({X[j]} + {X[12]} + {X[13]}) mod 10 = {z}"
-    )
-
-
-_FUNC_22 = Algorithm(
-    name="func_22",
-    level=2,
-    key_size=26,
-    fn=_fn_func_22,
-    rule_text=(
-        "ルール：\n" + _KEYED_RULE_PREFIX +
-        "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
-        "3. Z = (X[j] + X[12] + X[13]) mod 10 を計算します。\n"
-    ),
-    rationale_text=(
-        "考え方:\n" + _KEYED_RATIONALE_PREFIX +
-        "2. 変換後の位置10と位置11の値の和を10で割った余りを j とする．\n"
-        "3. 変換後の位置 j, 12, 13 の値を合計し，10で割った余りが答えです．\n"
-    ),
-    code_body=(
-        _KEYED_CODE_PREFIX +
-        "    j = (X_val[10] + X_val[11]) % 10\n"
-        "    return (X_val[j] + X_val[12] + X_val[13]) % 10\n"
-    ),
-    explain=_explain_func_22,
-)
-
-
-_FUNC_22_K10 = Algorithm(
-    name="func_22_k10",
-    level=2,
-    key_size=10,
-    fn=_fn_func_22,
-    rule_text=(
-        "ルール：\n" + _KEYED_RULE_PREFIX +
-        "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
-        "3. Z = (X[j] + X[12] + X[13]) mod 10 を計算します。\n"
-    ),
-    rationale_text=(
-        "考え方:\n" + _KEYED_RATIONALE_PREFIX +
-        "2. 変換後の位置10と位置11の値の和を10で割った余りを j とする．\n"
-        "3. 変換後の位置 j, 12, 13 の値を合計し，10で割った余りが答えです．\n"
-    ),
-    code_body=(
-        _KEYED_CODE_PREFIX +
-        "    j = (X_val[10] + X_val[11]) % 10\n"
-        "    return (X_val[j] + X_val[12] + X_val[13]) % 10\n"
-    ),
-    explain=_explain_func_22,
-)
+_FUNC_22_K10 = _make_func(2, 2, 10, "func_22_k10")
 """func_22 の鍵10マス版．
 
 dualptr / recptr（いずれも動的参照2本＋末尾の足し算）と比較するときの
@@ -338,51 +298,10 @@ dualptr / recptr（いずれも動的参照2本＋末尾の足し算）と比較
 関わらず崩壊して差が見えないため（2026-07 の table_add3 との統制実験），
 深さラダーと同じ k=10 に揃えた版を用意した．これにより「動的参照の構造」
 だけを変数にした3点比較（1本 / 並列2本 / 直列2本）が成立する．
+
+なお 2026-09 の監査で，この統制実験（34% vs 100%）は鍵を揃えていない比較
+だったことが判明している（docs/plan.md §3.1.2）．
 """
-
-
-def _fn_func_31(ch, key):
-    def x(i):
-        return key[ch[i]]
-    j = (x(10) + x(11) + x(12)) % 10
-    return (x(j) + x(13)) % 10
-
-
-def _explain_func_31(ch, key, z):
-    X = [key[i] for i in ch]
-    j = (X[10] + X[11] + X[12]) % 10
-    return (
-        f"1. テーブル値を参照: X10=sgm[{ch[10]}]={X[10]}, X11=sgm[{ch[11]}]={X[11]}, "
-        f"X12=sgm[{ch[12]}]={X[12]}\n"
-        f"2. ポインタ j = (X10 + X11 + X12) mod 10 = "
-        f"({X[10]} + {X[11]} + {X[12]}) mod 10 = {j} を計算\n"
-        f"3. インデックス {j} の値を参照: X{j}=sgm[{ch[j]}]={X[j]}\n"
-        f"4. Z = (X{j} + X13) mod 10 = ({X[j]} + {X[13]}) mod 10 = {z}"
-    )
-
-
-_FUNC_31 = Algorithm(
-    name="func_31",
-    level=2,
-    key_size=26,
-    fn=_fn_func_31,
-    rule_text=(
-        "ルール：\n" + _KEYED_RULE_PREFIX +
-        "2. j = (X[10] + X[11] + X[12]) mod 10 を計算します。\n"
-        "3. Z = (X[j] + X[13]) mod 10 を計算します。\n"
-    ),
-    rationale_text=(
-        "考え方:\n" + _KEYED_RATIONALE_PREFIX +
-        "2. 変換後の位置10, 11, 12の値の和を10で割った余りを j とする．\n"
-        "3. 変換後の位置 j, 13 の値を合計し，10で割った余りが答えです．\n"
-    ),
-    code_body=(
-        _KEYED_CODE_PREFIX +
-        "    j = (X_val[10] + X_val[11] + X_val[12]) % 10\n"
-        "    return (X_val[j] + X_val[13]) % 10\n"
-    ),
-    explain=_explain_func_31,
-)
 
 
 def _fn_func_pow(ch, key):

@@ -31,7 +31,7 @@ help:
 	@echo "         （新規作成は experiments/batch/README.md の雛形を使う）"
 	@echo ""
 	@echo "── 保守 ─────────────────────────────────────────────"
-	@echo "make test           # アルゴリズム自己検証 + ソルバー健全性チェック"
+	@echo "make test           # アルゴリズム自己検証 + 文面の非退行検査 + ソルバー"
 	@echo "make smoke          # mock プロバイダによる E2E ドライラン（predict/recover_key）"
 	@echo "make info-limit     # func_22 の情報限界 N*_info を測定（results/theory/）"
 	@echo "make migrate-eval-paths  # 評価結果を n_test 入りのパス構造へ移行（確認のみ）"
@@ -47,6 +47,7 @@ help:
 
 test:
 	$(PY) src/hcp/algorithms.py
+	$(PY) tests/check_algorithm_texts.py
 	$(PY) experiments/info_limit.py --algorithm func_pow --n_shots 60 --key_seeds 0 \
 		--output_dir /tmp/hcp_test_theory
 
