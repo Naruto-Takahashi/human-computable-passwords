@@ -63,3 +63,5 @@ toc-depth: 2
        - 見た目の指定は本文に書かず template.typ 側で行う。
      ビルド： make report-latest ／ プレビュー： make report-live
      ============================================================ -->
+
+<!-- 前提知識の節は ../hcp_background.md から写す（手で書き直さない） -->
