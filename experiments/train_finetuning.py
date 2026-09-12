@@ -74,6 +74,15 @@ def parse_args():
     parser.add_argument("--lora_r", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--quant", type=str, default="4bit", choices=["4bit", "8bit"])
+    parser.add_argument("--lr_scheduler", type=str, default="linear",
+                        choices=["linear", "cosine", "constant", "constant_with_warmup"],
+                        help="学習率のスケジュール．既定の linear は全ステップで0まで減衰するため，"
+                             "エポック数を変えると学習率の下がり方まで変わり，短い run が長い run の"
+                             "前半と一致しない．difficulty を『離陸に要するステップ数』で測るときは "
+                             "constant を使う（予算の宣言が測定値に混ざらなくなる）")
+    parser.add_argument("--warmup_ratio", type=float, default=0.0,
+                        help="学習率を0から上げる区間の割合．一般的な SFT レシピでは 0.03〜0.1 だが，"
+                             "本研究は従来 0（HuggingFace の既定）で回してきた")
     parser.add_argument("--seed", type=int, default=42,
                         help="学習の乱数シード（LoRA の A の初期化・データの並び順・"
                              "ドロップアウトを決める）．鍵とデータの抽選は --key_seed / "
@@ -256,6 +265,8 @@ def main():
         # 明示しておく。既定でも42だが，指定しないと train_metadata.json に
         # 「どのシードで回したか」が残らず，あとから確認できない。
         seed=args.seed,
+        lr_scheduler_type=args.lr_scheduler,
+        warmup_ratio=args.warmup_ratio,
         report_to="none",
         remove_unused_columns=False,
         assistant_only_loss=True,

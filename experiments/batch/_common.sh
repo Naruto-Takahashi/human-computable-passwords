@@ -47,6 +47,7 @@ hcp_init() {
     HCP_EPOCHS="${HCP_EPOCHS:-5}"
     HCP_STAGE="${HCP_STAGE:-2}"
     HCP_SEED="${HCP_SEED:-42}"
+    HCP_LR_SCHEDULER="${HCP_LR_SCHEDULER:-linear}"
     HCP_PARADIGM="${HCP_PARADIGM:-pure}"
     HCP_N_SHOT="${HCP_N_SHOT:-0}"
     HCP_FAILED=0
@@ -70,7 +71,7 @@ hcp_init() {
 hcp_run() {
     local algorithm="" key_seed=0 data_seed=0
     local n_train="$HCP_N_TRAIN" epochs="$HCP_EPOCHS" n_test="$HCP_N_TEST"
-    local stage="$HCP_STAGE" lr="" seed="$HCP_SEED"
+    local stage="$HCP_STAGE" lr="" seed="$HCP_SEED" sched="$HCP_LR_SCHEDULER"
     while [ $# -gt 0 ]; do
         case "$1" in
             --algorithm) algorithm="$2"; shift 2 ;;
@@ -82,6 +83,7 @@ hcp_run() {
             --stage)     stage="$2";     shift 2 ;;
             --lr)        lr="$2";        shift 2 ;;
             --seed)      seed="$2";      shift 2 ;;
+            --lr_scheduler) sched="$2";  shift 2 ;;
             *) echo "hcp_run: 不明な引数 '$1'" >&2; return 2 ;;
         esac
     done
@@ -115,6 +117,7 @@ hcp_run() {
             --paradigm "$HCP_PARADIGM" --stage "$stage" --n_shot "$HCP_N_SHOT" \
             --n_train "$n_train" --epochs "$epochs" \
             --key_seed "$key_seed" --data_seed "$data_seed" --seed "$seed" \
+            --lr_scheduler "$sched" \
             --tag "$HCP_TAG" "${lr_opt[@]}" >>"$log" 2>&1; then
         echo "!!! TRAIN FAILED: $tag" >>"$log"
         echo "[失敗] 学習: $tag（$log）" >&2
