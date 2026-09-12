@@ -2,7 +2,11 @@
 
 本研究の直接の系譜．**卒論の第3章（既存研究）はこの並びを書くことになる．**
 
-PDF の実体は `literature/` にある。R4・R5 は ToUnicode CMap を持たないため
+> **表記について**: 本リポジトリは public なので，先輩方の氏名は**苗字のみ**で記す
+> （`literature/README.md` の「個人名を含む資料を public に置かない」運用に合わせる）。
+> 卒論本体では通常の引用としてフルネームを記載してよい。
+
+PDF の実体は `literature/` にある（`.gitignore` で追跡対象外）。R4・R5 は ToUnicode CMap を持たないため
 通常の PDF ビューアではコピーできるが機械抽出できない。読むには
 `python3 tools/read_pdf.py literature/R4_村田.pdf --toc` を使う。
 
