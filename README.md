@@ -169,42 +169,6 @@ make test        # アルゴリズム自己検証＋文面の非退行検査
 ```
 
 <details>
-<summary>🔬 実験を1本回す</summary>
-
-```bash
-# 学習（1000件・5エポックで約100分）
-.venv/bin/python experiments/train_finetuning.py \
-  --model Qwen/Qwen2.5-3B-Instruct --algorithm func_22_k10 \
-  --paradigm pure --stage 2 --n_shot 0 --n_train 1000 --epochs 5 \
-  --key_seed 0 --data_seed 0
-
-# 評価（学習時と同じ algorithm / stage / key_seed を指定すること）
-.venv/bin/python experiments/run_eval.py --provider lora \
-  --model <学習が出力した run ディレクトリ> --algorithm func_22_k10 \
-  --stage 2 --n_shot 0 --n_test 500 --key_seeds 0 --data_seeds 0
-```
-
-引数の意味と既定値の落とし穴 → [docs/cli_reference.md](docs/cli_reference.md)
-
-</details>
-
-<details>
-<summary>🌙 バッチで回す（推奨）</summary>
-
-```bash
-# まず空実行で確認（GPU を掴まないので走行中のバッチがあっても安全）
-HCP_DRY_RUN=1 bash experiments/batch/run_xxx.sh
-
-# 本番。セッションを閉じても走り続ける
-nohup bash experiments/batch/run_xxx.sh > results/logs/run_xxx.out 2>&1 & disown
-tail -f results/logs/run_xxx.out
-```
-
-書き方と過去の実験 → [experiments/batch/README.md](experiments/batch/README.md)
-
-</details>
-
-<details>
 <summary>⚙️ 環境構築</summary>
 
 ```bash
@@ -219,10 +183,9 @@ GPU は 8GB を想定（QLoRA 4bit + LoRA r=16）。フル学習なら 34.8GB �
 
 </details>
 
-> [!WARNING]
-> **走行中のスクリプトは編集しないこと。** bash はバイト位置で逐次読むため、
-> 行を足すと実行位置がずれて別の箇所が再実行されます（2026-09-12 に実際に発生）。
-> 作業の約束 → [CLAUDE.md](CLAUDE.md)
+実験の回し方と守るべき約束は **[CLAUDE.md](CLAUDE.md)**、引数の意味は
+**[docs/cli_reference.md](docs/cli_reference.md)**、バッチの書き方は
+**[experiments/batch/README.md](experiments/batch/README.md)** にあります。
 
 ---
 
