@@ -49,6 +49,9 @@ hcp_init() {
     HCP_PARADIGM="${HCP_PARADIGM:-pure}"
     HCP_N_SHOT="${HCP_N_SHOT:-0}"
     HCP_FAILED=0
+    HCP_DONE=0
+    # 何本回す予定かを HCP_TOTAL に入れておくと「[2/4]」のように進捗が出る。
+    HCP_TOTAL="${HCP_TOTAL:-0}"
     # HCP_DRY_RUN=1 で，実際には学習・評価を起動せず実行内容だけを表示する。
     # スクリプトの疎通確認に使う。GPU を掴まないので，走行中のバッチに影響しない。
     HCP_DRY_RUN="${HCP_DRY_RUN:-0}"
@@ -92,6 +95,16 @@ hcp_run() {
         return 0
     fi
 
+    # 標準出力にも1行ずつ出す。バッチは nohup で走らせるので，ここに何も
+    # 出さないと「何時間も無言」になり，tail -f しても進捗が分からなかった。
+    HCP_DONE=$((HCP_DONE + 1))
+    local counter=""
+    [ "$HCP_TOTAL" -gt 0 ] && counter=" [${HCP_DONE}/${HCP_TOTAL}]"
+    printf '[%s]%s 開始 %s（鍵%s データ%s 件数%s ep%s → 評価%s件）\n' \
+        "$(date '+%m/%d %H:%M')" "$counter" "$algorithm" \
+        "$key_seed" "$data_seed" "$n_train" "$epochs" "$n_test"
+    local started=$SECONDS
+
     echo "=== [$(date '+%m/%d %H:%M:%S')] TRAIN $tag ===" > "$log"
     local lr_opt=()
     [ -n "$lr" ] && lr_opt=(--lr "$lr")
@@ -126,6 +139,21 @@ hcp_run() {
         HCP_FAILED=$((HCP_FAILED + 1))
         return 1
     fi
+
+    # 終わったその場で結果を出す。集計コマンドを別に叩かなくても
+    # nohup の出力を見れば流れが追えるようにするため。
+    local ok tot acc="?" vl="-" mins=$(( (SECONDS - started) / 60 ))
+    ok=$(grep -c '✓' "$log" 2>/dev/null || true); ok=${ok:-0}
+    tot=$(grep -c '✓\|✗' "$log" 2>/dev/null || true); tot=${tot:-0}
+    [ "$tot" -gt 0 ] && acc=$(awk -v a="$ok" -v b="$tot" 'BEGIN{printf "%.1f%%", 100*a/b}')
+    if [ -f "$run_dir/history.csv" ]; then
+        vl=$(awk -F, 'NR==1{for(i=1;i<=NF;i++) if($i=="eval_loss") c=i; next}
+                      c && $c != "" {v=$c} END{if(v!="") printf "%.4f", v}' \
+             "$run_dir/history.csv" 2>/dev/null)
+        vl=${vl:--}
+    fi
+    printf '[%s] 完了 %-20s 正解率 %-7s val損失 %-8s（%d分）\n' \
+        "$(date '+%m/%d %H:%M')" "$algorithm(鍵$key_seed)" "$acc" "$vl" "$mins"
     return 0
 }
 
@@ -137,6 +165,7 @@ hcp_finish() {
     $HCP_PY experiments/summarize.py >"$HCP_LOGDIR/summarize_last.log" 2>&1 || true
     $HCP_PY experiments/inventory.py >>"$HCP_LOGDIR/summarize_last.log" 2>&1 || true
     local marker="$HCP_LOGDIR/$(echo "$HCP_TAG" | tr ' :/' '___')_done.log"
+    echo "  （結果一覧: make inventory / 進捗: make status）"
     if [ "$HCP_FAILED" -gt 0 ]; then
         echo "=== [$(date '+%m/%d %H:%M:%S')] $HCP_TAG 完了（失敗 $HCP_FAILED 件）===" | tee -a "$marker"
     else

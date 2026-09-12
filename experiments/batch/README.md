@@ -11,11 +11,23 @@
 # 疎通確認（GPU を掴まないので，走行中のバッチがあっても安全）
 HCP_DRY_RUN=1 bash experiments/batch/run_xxx.sh
 
-# 本番。セッションを閉じても走り続ける
-nohup bash experiments/batch/run_xxx.sh > /dev/null 2>&1 & disown
+# 本番。セッションを閉じても走り続ける。出力を捨てずに取っておくと進捗が追える
+nohup bash experiments/batch/run_xxx.sh > results/logs/run_xxx.out 2>&1 & disown
+tail -f results/logs/run_xxx.out
 
-# 進捗
+# 進捗（別の窓から）
 make status
+```
+
+実行中は1条件につき2行が出る．終わったその場で正解率と検証損失が分かるので，
+集計コマンドを別に叩かなくても流れが追える．
+
+```
+=== [09/12 18:27:11] 開始: 段階8: 学習予算を外す ===
+[09/12 18:27] [1/2] 開始 func_22_k10（鍵0 データ0 件数1000 ep40 → 評価500件）
+[09/12 21:14] 完了 func_22_k10(鍵0)     正解率 31.2%   val損失 0.1103  （167分）
+[09/12 21:14] [2/2] 開始 table_add3_k10（鍵1 データ0 件数1000 ep40 → 評価500件）
+...
 ```
 
 ## 新しく書くとき
@@ -28,6 +40,7 @@ make status
 set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_common.sh"
 
+HCP_TOTAL=2                       # 何本回すか（進捗表示 [1/2] に使う。省略可）
 hcp_init "段階X: 実験の名前"      # この名前が make inventory の見出しになる
 HCP_EPOCHS=40                     # 既定値を変えたいときだけ書く
 
