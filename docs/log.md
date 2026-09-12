@@ -481,8 +481,8 @@
 ### 2026/06/05: GitコミットID自動記録および実験結果集計の自動化
 - **実施したこと**:
   - `metadata.json` 内に，実行時のGitコミットハッシュ（短縮ID）を自動的に記録する機能を実装した．（`git rev-parse --short HEAD` をプログラム内部で実行）．
-  - 依存ライブラリを必要としない，純粋なPythonのみによる実験結果自動集計スクリプト [`code/summarize_results.py`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/code/summarize_results.py) を新規に作成した．
-  - 同スクリプトにより，`results/` 下のメタデータを自動で読み込み，Markdownテーブルとして整形されたレポート [`results/summary.md`](file:///home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/summary.md) を自動更新・作成できるようにした．
+  - 依存ライブラリを必要としない，純粋なPythonのみによる実験結果自動集計スクリプト `code/summarize_results.py`（2026-07 のリファクタリングで [experiments/summarize.py](../experiments/summarize.py) になった） を新規に作成した．
+  - 同スクリプトにより，`results/` 下のメタデータを自動で読み込み，Markdownテーブルとして整形されたレポート `results/summary.md`（現在は [results/summary_llm.md](../results/summary_llm.md)） を自動更新・作成できるようにした．
 - **得られた知見**:
   - コミットIDが紐づくことで，過去の任意の実験データを生み出したソースコードの状態へ Git で一発で戻れるようになり，再現性が大幅に向上した．
   - 集計スクリプトによって，実験が増えた場合でも一括で進捗やモデル精度を一覧化できるようになり，報告書の作成が非常に楽になった．

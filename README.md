@@ -42,14 +42,22 @@ human-computable-passwords/
 │   ├── summarize.py           # 評価結果の自動集計（summary_llm.{md,csv}）
 │   ├── train_finetuning.py    # QLoRAファインチューニング
 │   ├── train_baseline.py 等   # 従来MLベースライン
-│   └── batch/                 # 夜間バッチ（デタッチ実行用 .sh）
-├── tools/                     # 補助ツール（Google Drive 同期等）
+│   ├── inventory.py           # 学習 run の棚卸し（make inventory）
+│   └── batch/                 # 夜間バッチ（一覧: experiments/batch/README.md）
+├── tools/                     # 補助ツール
+│   ├── status.sh              # 走行中バッチと進捗（make status）
+│   ├── list_algorithms.py     # アルゴリズム一覧（make algorithms）
+│   ├── migrate_eval_paths.py  # 評価結果のパス移行
+│   └── sync_results.sh        # Google Drive 同期
 ├── legacy/                    # 旧実装（参照用，動作保証なし）
-├── docs/                      # 計画書・ログ・リファクタリングノート
-│   ├── plan.md               # 研究計画書（v2, 2026-07-18改訂）
+├── docs/                      # ドキュメント（索引: docs/README.md）
+│   ├── plan.md                # 研究計画書（v2）．問い・実験設計・現状
+│   ├── log.md                 # 日誌（新しい順）
+│   ├── parameters.md          # 実験パラメータの手引き（既定値の落とし穴つき）
+│   ├── training_dynamics.md   # 学習率・エポック数の前提知識と測定系の監査
+│   ├── literature/            # 先行研究の要約
 │   ├── refactor_notes.md      # 2026-07 監査とリファクタリングの記録
-│   ├── reports/               # 週次進捗報告
-│   └── experiment_guide.md, log.md
+│   └── reports/               # 週次進捗報告（Markdown が原本）
 ├── Makefile                   # test / smoke / summarize / sync 等の運用タスク
 ├── literature/                # 先行研究の文献（実体はGoogle Drive管理，README.mdにリンク集）
 ├── results/                   # 実験結果
@@ -134,11 +142,18 @@ python experiments/summarize_baseline.py   # 学習結果の集計
 
 ## ドキュメント・実行結果へのリンク
 
-- [HCP LLM 実験実行ガイド (`experiment_guide.md`)](docs/experiment_guide.md)
-- [研究計画書 (`plan.md`)](docs/plan.md)
-- [研究ログ (`log.md`)](docs/log.md)
-- [学習実験結果のサマリー (`summary.md`)](results/summary.md)
-- [LLMベンチマーク結果のサマリー (`summary_llm.md`)](results/summary_llm.md)
+**まず [ドキュメントの索引 (`docs/README.md`)](docs/README.md) を見ると早い．**
+
+| | |
+|---|---|
+| 研究計画書 | [docs/plan.md](docs/plan.md) |
+| 研究ログ（新しい順） | [docs/log.md](docs/log.md) |
+| 実験パラメータの手引き | [docs/parameters.md](docs/parameters.md) |
+| 学習率・エポック数の前提知識 | [docs/training_dynamics.md](docs/training_dynamics.md) |
+| 過去のバッチ実験の一覧 | [experiments/batch/README.md](experiments/batch/README.md) |
+| 結果の置き場と歩き方 | [results/README.md](results/README.md) |
+| 学習 run の棚卸し | [results/inventory.md](results/inventory.md)（`make inventory`） |
+| LLMベンチマーク結果のサマリー | [results/summary_llm.md](results/summary_llm.md)（`make summarize`） |
 
 ---
 

@@ -1,8 +1,20 @@
-# HCP LLM 実験実行ガイド (HCP LLM Experiment Execution Guide)
+# 【旧】HCP LLM 実験実行ガイド（2026-07-12 のリファクタリング以前）
 
 > [!WARNING]
-> **このガイドは 2026-07-12 のリファクタリング以前の旧スクリプト（`run_prompting.py` 等，現在は `code/legacy/`）を対象としており，非推奨です．**
-> 現行の実行手順は [README.md](../README.md) と [refactor_notes.md](refactor_notes.md) を参照してください．
+> **このドキュメントは保存用である．現行の手順を知りたいなら読まないこと．**
+>
+> 2026-07-12 のリファクタリング以前のスクリプト（`run_prompting.py`，
+> `run_finetuning_pipeline.py` 等，現在は `legacy/`）を対象としており，
+> 参照しているファイルの多くは既に存在しない．2026-09-12 に `docs/` から
+> `legacy/` へ移した（2ヶ月間「非推奨」の警告つきで置かれたままだったため）．
+>
+> | 知りたいこと | 現行のドキュメント |
+> |---|---|
+> | 実験の回し方 | [../README.md](../README.md)，`make help` |
+> | パラメータの意味と既定値 | [../docs/parameters.md](../docs/parameters.md) |
+> | バッチの書き方・過去の実験 | [../experiments/batch/README.md](../experiments/batch/README.md) |
+> | 結果の置き場 | [../results/README.md](../results/README.md) |
+> | リファクタリングの経緯 | [../docs/refactor_notes.md](../docs/refactor_notes.md) |
 
 このドキュメントは，人間計算可能なパスワード（HCP）のLLM評価実験（プロンプティングおよびファインチューニング）を行うための手順，パラメータ仕様，および最適化に関する解説です．
 
