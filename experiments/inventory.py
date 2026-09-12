@@ -34,14 +34,14 @@ EVAL_DIR = os.path.join(REPO_ROOT, "results", "llm_eval")
 
 # 検証損失がこの値を下回ったエポックを「離陸した」とみなす。
 # 未学習の run は 0.19 前後で張り付き，離陸した run は 0.02 以下まで落ちるため，
-# その中間に取った（2026-09-12 の監査，docs/training_dynamics.md 参照）。
+# その中間に取った（2026-09-12 の監査，docs/measurement_audit.md 参照）。
 TAKEOFF_THRESHOLD = 0.15
 
 # 過去の run がどの実験に属するかの対応表（run ディレクトリ名の時刻で引く）。
 #
-# 段階の定義そのものは docs/experiments.md が正本である。ここはツールが日付から
+# 段階の定義そのものは docs/experiment_index.md が正本である。ここはツールが日付から
 # 段階名を引くための対応表にすぎないので，段階を追加・改称するときは
-# まず docs/experiments.md を直し，それに合わせてここを更新すること。
+# まず docs/experiment_index.md を直し，それに合わせてここを更新すること。
 #
 # 2026-09-12 より前の run には実験名が記録されていないため，ここで後づけする。
 # 以降の run は train_finetuning.py の --tag で記録されるので，そちらが優先される。
@@ -239,7 +239,7 @@ def build_md(rows: list[dict], show_all: bool) -> list[str]:
         "",
         f"「離陸」は検証損失が {TAKEOFF_THRESHOLD} を下回った最初のエポック．"
         "`-` は最後まで下回らなかったこと（＝学習が始まっていないこと）を表す．"
-        "詳しくは [docs/training_dynamics.md](../docs/training_dynamics.md)．",
+        "詳しくは [docs/measurement_audit.md](../docs/measurement_audit.md)．",
         "",
         "研究の焦点が移ったあとの run を並べ続けると，いま動いている実験が埋もれる．"
         "そのため**いま関心のある実験だけを詳細に出し，決着済みの実験は要約に畳んでいる**．"

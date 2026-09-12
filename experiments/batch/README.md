@@ -1,6 +1,6 @@
 # バッチスクリプト一覧
 
-**各段階が何だったかの一覧は [docs/experiments.md](../../docs/experiments.md) にある．**
+**各段階が何だったかの一覧は [docs/experiment_index.md](../../docs/experiment_index.md) にある．**
 ここはスクリプト側の索引で，「どのファイルがどの実験か」を引くためのもの．
 
 `experiments/batch/` には，これまでに回した実験が1本1ファイルで残っている．

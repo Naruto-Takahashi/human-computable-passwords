@@ -42,7 +42,7 @@ llm_finetune/{モデル}/{アルゴリズム}/run_{YYYYMMDD_HHMMSS}/
 
 `history.csv` の `eval_loss` は，500件評価を回さなくても学習の成否が読める指標である
 （鍵10本で正解率を完全に順位づけることを確認済み）。読み方は
-[docs/training_dynamics.md](../docs/training_dynamics.md)．
+[docs/measurement_audit.md](../docs/measurement_audit.md)．
 
 ## 評価: `llm_eval/`
 

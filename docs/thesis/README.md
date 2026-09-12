@@ -86,11 +86,11 @@
 
 **素材**
 - 難易度の分解と関数の定義 → [../hcp_background.md](../hcp_background.md)
-- 実験の一覧 → [../experiments.md](../experiments.md)
+- 実験の一覧 → [../experiment_index.md](../experiment_index.md)
 - 学習の設定 → [../llm_training_basics.md](../llm_training_basics.md) の「本研究の設定」，
-  [../parameters.md](../parameters.md)
-- **測定系の確立** → [../training_dynamics.md](../training_dynamics.md)，
-  [../experiments.md](../experiments.md) の方法論上の規則8項目
+  [../cli_reference.md](../cli_reference.md)
+- **測定系の確立** → [../measurement_audit.md](../measurement_audit.md)，
+  [../experiment_index.md](../experiment_index.md) の方法論上の規則8項目
 
 **足りないもの**
 - 測定系が確定していない。実験8a で学習率・エポック・シードの扱いが決まる。
@@ -102,7 +102,7 @@
 
 **書くこと（案）**: 5.1 難易度の分解／5.2 測定系の交絡の発見／5.3 動的参照の計算量
 
-**素材**: [../experiments.md](../experiments.md)，[../log.md](../log.md)
+**素材**: [../experiment_index.md](../experiment_index.md)，[../log.md](../log.md)
 
 **足りないもの**
 - 5.1 は実験1 の結果だが，強い主張2 と中程度の主張が撤回済み。

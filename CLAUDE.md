@@ -21,7 +21,7 @@ PDF を組む。Word は使わない。
 ## 実験を回すとき
 
 **設計を書いたら，回す前に必ず見直す。** 1回書いて終わりにしない。
-見直しの手順は [`docs/experiments.md`](docs/experiments.md) の
+見直しの手順は [`docs/experiment_index.md`](docs/experiment_index.md) の
 「新しい実験を設計したら，回す前に見直す」にあるチェックリストを使う
 （評価件数・基準線・鍵の本数・1条件1run・予算が測定値に混ざっていないか，など）。
 これらはすべて実際に失敗して得た規則なので，順に当てるだけで穴が見つかる。
@@ -39,6 +39,6 @@ Conventional Commits 形式（`feat:` / `fix:` / `docs:` など）を使う。
 ## その他
 
 - ドキュメントの索引は [`docs/README.md`](docs/README.md)。迷ったらまずここ。
-- 「実験N」が何を指すかは [`docs/experiments.md`](docs/experiments.md)。
+- 「実験N」が何を指すかは [`docs/experiment_index.md`](docs/experiment_index.md)。
   `Stage 0〜3`（プロンプトで何を開示するか）とは別物なので混同しない。
 - 運用コマンドは `make help` で一覧できる。

@@ -6,8 +6,8 @@
 数字のうち「実測」と書いたものは，このリポジトリで実際に測った値である．
 
 学習率とエポック数を深掘りし，「5エポックという予算が測定器になっていた」という
-監査結果を扱うのは [training_dynamics.md](training_dynamics.md)．
-引数の一覧は [parameters.md](parameters.md)．
+監査結果を扱うのは [measurement_audit.md](measurement_audit.md)．
+引数の一覧は [cli_reference.md](cli_reference.md)．
 
 ## 目次
 - [すべての学習に共通する骨格](#すべての学習に共通する骨格)
@@ -107,7 +107,7 @@ $e^{\mathcal{L}}$ を **パープレキシティ**と呼び，「実質何択で
 | 0.0005（実測） | 正解の数字に約99.6%の確率を割り当てている |
 
 正解率では「10%」も「12%」も偶然と区別できないが，損失を見れば
-「学習の途中」か「一歩も動いていない」かが分かる（[training_dynamics.md](training_dynamics.md)）．
+「学習の途中」か「一歩も動いていない」かが分かる（[measurement_audit.md](measurement_audit.md)）．
 
 ## 最適化 — どうやって下るのか
 

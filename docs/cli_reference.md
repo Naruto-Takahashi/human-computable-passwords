@@ -1,4 +1,10 @@
-# 実験パラメータの手引き
+# コマンドライン引数の手引き
+
+> **研究のパラメータ（鍵サイズ $n$・チャレンジ長 $k$・$k_1$・$k_2$・安全性
+> パラメータ $s(f)$）ではなく，スクリプトの引数の話．** 前者は
+> [hcp_background.md](hcp_background.md) にある。
+> 旧ファイル名 `parameters.md`（2026-09-13 に改名。研究のパラメータと
+> 紛らわしかったため）。
 
 `train_finetuning.py` と `run_eval.py` の引数を，**既定値をソースから確認したうえで**
 まとめたもの（2026-09-12 時点）．旧 `experiment_guide.md` の §2 を現行の実装に合わせて
@@ -64,7 +70,7 @@
 |---|---|---|
 | `--n_train` | 500 | 学習サンプル数．実効バッチ8なので `n_train/8` ステップ／エポック |
 | `--n_val` | `n_train // 5` | 検証サンプル数．`history.csv` の `eval_loss` がここから出る |
-| `--epochs` | 3 | **既定の線形減衰では，学習率が全エポックで0まで下がるため予算の指定でもある**（[training_dynamics.md](training_dynamics.md)） |
+| `--epochs` | 3 | **既定の線形減衰では，学習率が全エポックで0まで下がるため予算の指定でもある**（[measurement_audit.md](measurement_audit.md)） |
 | `--lr_scheduler` | linear | `constant` にすると減衰しない．難易度を「離陸に要するステップ数」で測るときはこちら（予算の宣言が測定値に混ざらなくなる） |
 | `--warmup_ratio` | 0.0 | 学習率を0から上げる区間．一般的な SFT レシピは 0.03〜0.1 だが本研究は従来 0 |
 | `--seed` | 42 | 学習の乱数（$A$ の初期化・並び順・ドロップアウト）．鍵とデータの抽選とは独立 |
@@ -97,5 +103,5 @@
 - 正解率だけで判断しない．**衝突確率（$\sum p_i^2$）と最頻値基準線**を併記する
   （偶然の10%ではなく，鍵ごとの基準線と比べる）
 - 500件評価を回す前に `history.csv` の `eval_loss` を見る．学習が離陸していなければ
-  評価しても床しか出ない（[training_dynamics.md](training_dynamics.md)）
+  評価しても床しか出ない（[measurement_audit.md](measurement_audit.md)）
 - 保存先の構造は [results/README.md](../results/README.md)

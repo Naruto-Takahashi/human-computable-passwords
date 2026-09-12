@@ -9,14 +9,14 @@
 | この研究は何をしているのか | [plan.md](plan.md)（研究計画書．背景・問い・実験設計・現状） |
 | 認証とは何か（パスワード認証・チャレンジレスポンス認証） | [authentication_background.md](authentication_background.md) |
 | HCP とは何か，記号の意味（σ・C・Z・$f_{k_1,k_2}$・$s(f)$） | [hcp_background.md](hcp_background.md) |
-| **段階N が何を指すか**（実験の一覧） | [experiments.md](experiments.md) |
+| **段階N が何を指すか**（実験の一覧） | [experiment_index.md](experiment_index.md) |
 | 何をやってきたか，いつ何が分かったか | [log.md](log.md)（日誌．新しい順） |
 | 教授に何を報告したか | [reports/](reports/)（週次報告．Markdown が原本） |
 | 卒論の章立てと，各章の素材はどこにあるか | [thesis/README.md](thesis/README.md) |
 | 実験の回し方 | [../README.md](../README.md)，`make help` |
-| 引数の意味と既定値 | [parameters.md](parameters.md) |
+| 引数の意味と既定値 | [cli_reference.md](cli_reference.md) |
 | LLM の学習とは何か（事前学習・SFT・LoRA・損失・過学習…） | [llm_training_basics.md](llm_training_basics.md) |
-| 学習率・エポック数とは何か／なぜ5エポックが問題だったか | [training_dynamics.md](training_dynamics.md) |
+| 学習率・エポック数とは何か／なぜ5エポックが問題だったか | [measurement_audit.md](measurement_audit.md) |
 | 過去のバッチ実験の一覧・新しい書き方 | [../experiments/batch/README.md](../experiments/batch/README.md) |
 | 結果がどこに保存されるか | [../results/README.md](../results/README.md) |
 | 先行研究の要約 | [literature/](literature/) |
@@ -36,7 +36,7 @@
   研究の枠組み・記号の定義・関数族 $f_{k_1,k_2}$・安全性パラメータ $s(f)$・
   難易度の分解・扱っている関数の定義．報告書にはここから写す．
   本研究で独自に使う用語（衝突確率・最頻値基準線・離陸・床・動的参照）の表も末尾に．
-- **[experiments.md](experiments.md)** — **実験の一覧（実験1〜）**．各段階の問い・結果・
+- **[experiment_index.md](experiment_index.md)** — **実験の一覧（実験1〜）**．各段階の問い・結果・
   「現在その結論は生きているか」を1行で引ける．測定系の交絡で撤回・保留になった
   ものが分かる．末尾に，これまでに確定した方法論上の規則8項目．
   **段階を追加・改称するときはまずここを直す．**
@@ -52,10 +52,10 @@
   共通する考え方と用語．損失・最適化・バッチとエポック・汎化と過学習・正則化・
   数値精度とメモリ・PEFT（LoRA / QLoRA）・乱数と再現性．本研究の設定は最後に
   この枠組みの中で位置づけている．**学習の話が出てきたらまずここ．**
-- **[parameters.md](parameters.md)** — `train_finetuning.py` / `run_eval.py` の引数．
+- **[cli_reference.md](cli_reference.md)** — `train_finetuning.py` / `run_eval.py` の引数．
   既定値が現行の実験条件と違う点や，`--paradigm` の語彙が学習と評価で違う点など，
   つまずきやすい箇所を先頭にまとめてある．
-- **[training_dynamics.md](training_dynamics.md)** — 学習率とエポック数の前提知識と，
+- **[measurement_audit.md](measurement_audit.md)** — 学習率とエポック数の前提知識と，
   「5エポックという予算そのものが測定器になっていた」という監査結果．
   検証損失の読み方（離陸したかどうか）もここ．
 

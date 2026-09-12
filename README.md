@@ -10,7 +10,7 @@
 |---|---|
 | [docs/README.md](docs/README.md) | **ドキュメントの索引**（目的別） |
 | [docs/plan.md](docs/plan.md) | 研究計画書 — 背景・問い・実験設計・スケジュール |
-| [docs/experiments.md](docs/experiments.md) | 実験の一覧 — 各実験の問い・結果・**いまその結論は生きているか** |
+| [docs/experiment_index.md](docs/experiment_index.md) | 実験の一覧 — 各実験の問い・結果・**いまその結論は生きているか** |
 
 ## 研究の内容
 
@@ -26,8 +26,8 @@
 | | |
 |---|---|
 | [docs/llm_training_basics.md](docs/llm_training_basics.md) | LLM の学習の基礎 — 事前学習・SFT・LoRA・損失・過学習・乱数 |
-| [docs/training_dynamics.md](docs/training_dynamics.md) | 学習率とエポック数 — なぜ固定予算が測定器になるのか |
-| [docs/parameters.md](docs/parameters.md) | 実験パラメータの手引き — 既定値の落とし穴 |
+| [docs/measurement_audit.md](docs/measurement_audit.md) | 学習率とエポック数 — なぜ固定予算が測定器になるのか |
+| [docs/cli_reference.md](docs/cli_reference.md) | 実験パラメータの手引き — 既定値の落とし穴 |
 
 ## 実験の記録
 

@@ -1,4 +1,7 @@
-# 実験の一覧（実験1〜）
+# 実験の一覧
+
+> 旧ファイル名 `experiments.md`（2026-09-13 に改名。コードの `experiments/`
+> ディレクトリと紛らわしかったため）。
 
 **「実験N」が何を指すかの正式な一覧．** これまで `docs/plan.md` §3.1.2，
 `experiments/batch/README.md`，`experiments/inventory.py` の3箇所に分かれて
@@ -11,7 +14,7 @@
 
 「現在の評価」は 2026-09-13 時点のもの．**測定系に2つの交絡が見つかったため，
 実験2〜6 の結論の多くは保留または撤回されている．**経緯は
-[training_dynamics.md](training_dynamics.md)（学習予算）と実験5b・6・7 を参照．
+[measurement_audit.md](measurement_audit.md)（学習予算）と実験5b・6・7 を参照．
 
 ---
 
