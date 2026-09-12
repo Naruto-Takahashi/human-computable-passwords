@@ -1,5 +1,9 @@
 # バッチスクリプト一覧
 
+> バッチスクリプトの一覧と書き方。過去の実験がどのファイルか引ける
+>
+> 📚 [ドキュメント索引](../../docs/README.md) ／ 関連: [実験の一覧](../../docs/experiment_index.md) ・ [引数の手引き](../../docs/cli_reference.md)
+
 **各段階が何だったかの一覧は [docs/experiment_index.md](../../docs/experiment_index.md) にある．**
 ここはスクリプト側の索引で，「どのファイルがどの実験か」を引くためのもの．
 
@@ -96,3 +100,15 @@ experiments/batch/
 
 `_common.sh` を実行済みスクリプトに遡って適用していないのは，
 [done/README.md](done/README.md) に理由を書いてある．
+
+---
+
+## 次に読む
+
+| | |
+|---|---|
+| [実験の一覧](../../docs/experiment_index.md) | 各実験の問いと結果 |
+| [実行済みのバッチ](done/README.md) | 過去のスクリプト |
+| [結果の置き場](../../results/README.md) | 回したあとどこを見るか |
+
+📚 [ドキュメント索引](../../docs/README.md) へ戻る

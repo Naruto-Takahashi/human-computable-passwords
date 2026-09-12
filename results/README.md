@@ -1,5 +1,9 @@
 # results/ の歩き方
 
+> 実験結果の置き場と歩き方。学習の成果物・評価結果・ログの構造
+>
+> 📚 [ドキュメント索引](../docs/README.md) ／ 関連: [実験の一覧](../docs/experiment_index.md) ・ [引数の手引き](../docs/cli_reference.md)
+
 実験結果の置き場．**中身はほぼ Git 管理外**で，集計物（`summary_llm.*`，
 `inventory.*`）と `solver/`・`figures/` だけが追跡されている（`.gitignore` 参照）．
 
@@ -97,3 +101,15 @@ $ find results/llm_eval/table_add3_k10 -name metrics.json
 
 中身は前半が学習の進捗，後半が採点の `✓` / `✗`．`*_done.log` はバッチの完了マーカー．
 進捗は `make status` で見る（手で `grep -c '✓'` しなくてよい）．
+
+---
+
+## 次に読む
+
+| | |
+|---|---|
+| [実験の一覧](../docs/experiment_index.md) | 結果が何を意味するか |
+| [測定系の監査](../docs/measurement_audit.md) | 検証損失の読み方 |
+| [バッチの書き方](../experiments/batch/README.md) | 次の実験を組む |
+
+📚 [ドキュメント索引](../docs/README.md) へ戻る

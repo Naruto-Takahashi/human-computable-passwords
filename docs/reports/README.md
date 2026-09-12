@@ -235,6 +235,28 @@ Source Han を指定している（同一設計なので見え方はほぼ変わ
 
 ---
 
+## これまでの報告
+
+新しい順。PDF は `docs/reports/pdf/` にある（`make report-latest` で生成）。
+
+| 日付 | 報告 | 主題 |
+|---|---|---|
+| 2026-08-23 | [weekly_report_20260823.md](weekly_report_20260823.md) | 構造ラダー（dualptr / recptr）。全条件が床で識別できず |
+| 2026-08-19 | [weekly_report_20260819.md](weekly_report_20260819.md) | 深さラダーの再評価。不動点による自明化を特定 |
+| 2026-08-18 | [weekly_report_20260818.md](weekly_report_20260818.md) | 評価件数の不足に気づき n_test=500 へ。結論が覆った |
+| 2026-08-16 | [weekly_report_20260816.md](weekly_report_20260816.md) | 動的参照の深さラダー（#pointer chasing）の開始 |
+| 2026-07-29 | [weekly_report_20260729.md](weekly_report_20260729.md) | 統制実験 table_add3。動的参照と組み合わせ爆発の切り分け |
+| 2026-07-21 | [weekly_report_20260721.md](weekly_report_20260721.md) | 難易度ラダーと CNN 同条件比較。学習可能性の境界 |
+| 2026-07-05 | [weekly_report_20260705.md](weekly_report_20260705.md) | PoT パラダイムの鍵リーク問題の発見と再設計 |
+
+> [!WARNING]
+> **2026-08-23 の報告は，その後の実験で前提が覆っている。**
+> 実験5b〜7 で測定系の交絡が判明し，「動的参照が原因」という帰属が
+> 成り立たなくなった。提出・引用の前に
+> [../experiment_index.md](../experiment_index.md) で現在の評価を確認すること。
+
+---
+
 ## 次に読む
 
 | | |
