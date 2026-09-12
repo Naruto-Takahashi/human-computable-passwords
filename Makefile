@@ -5,13 +5,17 @@
 
 PY ?= python3
 
-.PHONY: test smoke summarize inventory status migrate-eval-paths sync info-limit clean-pycache help
+.PHONY: test smoke summarize inventory status algorithms migrate-eval-paths sync info-limit clean-pycache help
 
 help:
 	@echo "── 日々の確認 ───────────────────────────────────────"
 	@echo "make status         # 走行中バッチと各ログの進捗を1画面で"
 	@echo "make inventory      # どのパラメータで学習したかの棚卸し（results/inventory.md）"
 	@echo "make summarize      # 評価結果を集計して summary_llm.{md,csv} を生成"
+	@echo "make algorithms     # 登録アルゴリズムを難易度の分解にそって一覧"
+	@echo ""
+	@echo "  results/ の歩き方         : results/README.md"
+	@echo "  過去のバッチ実験の一覧     : experiments/batch/README.md"
 	@echo ""
 	@echo "── 実験を回す ───────────────────────────────────────"
 	@echo "  学習:  .venv/bin/python experiments/train_finetuning.py \\"
@@ -22,8 +26,9 @@ help:
 	@echo "           --model <学習が出力した run ディレクトリ> --algorithm func_22_k10 \\"
 	@echo "           --stage 2 --n_shot 0 --n_test 500 --key_seeds 0 --data_seeds 0"
 	@echo "         ※ 学習時と同じ algorithm / stage / key_seed を指定すること"
-	@echo "  一括:  nohup bash experiments/batch/<名前>.sh > /dev/null 2>&1 & disown"
-	@echo "         （experiments/batch/ の各スクリプト冒頭に，なぜ回すかを書いてある）"
+	@echo "  一括:  HCP_DRY_RUN=1 bash experiments/batch/<名前>.sh   # まず空実行で確認"
+	@echo "         nohup bash experiments/batch/<名前>.sh > /dev/null 2>&1 & disown"
+	@echo "         （新規作成は experiments/batch/README.md の雛形を使う）"
 	@echo ""
 	@echo "── 保守 ─────────────────────────────────────────────"
 	@echo "make test           # アルゴリズム自己検証 + ソルバー健全性チェック"
@@ -69,6 +74,9 @@ inventory:
 
 status:
 	@bash tools/status.sh
+
+algorithms:
+	@$(PY) tools/list_algorithms.py
 
 # 引数なしは確認のみ。実際に移動するには APPLY=1 を付ける。
 migrate-eval-paths:

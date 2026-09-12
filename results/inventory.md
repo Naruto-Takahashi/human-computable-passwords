@@ -1,6 +1,6 @@
 # 実験の棚卸し（どのパラメータで走らせたか）
 
-`experiments/inventory.py` により自動生成（2026-09-12 18:00:07）．
+`experiments/inventory.py` により自動生成（2026-09-12 18:03:50）．
 一次データ: `results/inventory.csv`（学習 run 74 本）
 
 「離陸」は検証損失が 0.15 を下回った最初のエポック．`-` は最後まで下回らなかったこと（＝学習が始まっていないこと）を表す．詳しくは [docs/training_dynamics.md](../docs/training_dynamics.md)．
