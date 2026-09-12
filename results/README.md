@@ -7,8 +7,8 @@
 
 | 見たいもの | 見る場所 |
 |---|---|
-| どのパラメータで学習したか，未実施の組み合わせ | `inventory.md`（`make inventory`） |
-| 評価結果の一覧（鍵・評価件数つき） | `summary_llm.md`（`make summarize`） |
+| どのパラメータで学習したか，未実施の組み合わせ | `inventory.md`（`make inventory`）— **学習 run が1行** |
+| 評価結果の一覧（鍵・評価件数つき） | `summary_llm.md`（`make summarize`）— **評価1件が1行** |
 | いま何が走っているか | `make status` |
 | 生の数値をプロットしたい | `inventory.csv` / `summary_llm.csv` |
 

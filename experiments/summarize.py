@@ -158,6 +158,10 @@ def main():
         f"`experiments/summarize.py` により自動生成（{datetime.now():%Y-%m-%d %H:%M:%S}）．",
         f"一次データ: `results/summary_llm.csv`（{len(rows)} 実験）",
         "",
+        "**この表は「評価1件」が1行**．ファインチューニングもプロンプティングも含む．",
+        "学習条件（件数・エポック・lr）や検証損失，まだ評価していない学習 run を見たいなら",
+        "[inventory.md](inventory.md)（`make inventory`）を見ること．",
+        "",
         "| モデル | アルゴリズム | タスク | Stage | K | N_shot | 評価件数 | 鍵 | 反復数 "
         "| 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |",
         "|---|---|---|---|---|---|---|---|---|---|---|---|---|",

@@ -228,6 +228,11 @@ def build_md(rows: list[dict], show_all: bool) -> list[str]:
         f"`experiments/inventory.py` により自動生成（{datetime.now():%Y-%m-%d %H:%M:%S}）．",
         f"一次データ: `results/inventory.csv`（学習 run {len(rows)} 本）",
         "",
+        "**この表は「学習 run」が1行**．学習条件（件数・エポック・lr）と検証損失が見える．"
+        "まだ評価していない run も載る．",
+        "評価そのものを一覧したいなら [summary_llm.md](summary_llm.md)（`make summarize`）を見ること"
+        "（プロンプティング評価も含む，評価1件が1行）．",
+        "",
         f"「離陸」は検証損失が {TAKEOFF_THRESHOLD} を下回った最初のエポック．"
         "`-` は最後まで下回らなかったこと（＝学習が始まっていないこと）を表す．"
         "詳しくは [docs/training_dynamics.md](../docs/training_dynamics.md)．",

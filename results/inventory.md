@@ -1,7 +1,10 @@
 # 実験の棚卸し（どのパラメータで走らせたか）
 
-`experiments/inventory.py` により自動生成（2026-09-12 18:33:44）．
+`experiments/inventory.py` により自動生成（2026-09-12 18:42:57）．
 一次データ: `results/inventory.csv`（学習 run 74 本）
+
+**この表は「学習 run」が1行**．学習条件（件数・エポック・lr）と検証損失が見える．まだ評価していない run も載る．
+評価そのものを一覧したいなら [summary_llm.md](summary_llm.md)（`make summarize`）を見ること（プロンプティング評価も含む，評価1件が1行）．
 
 「離陸」は検証損失が 0.15 を下回った最初のエポック．`-` は最後まで下回らなかったこと（＝学習が始まっていないこと）を表す．詳しくは [docs/training_dynamics.md](../docs/training_dynamics.md)．
 
