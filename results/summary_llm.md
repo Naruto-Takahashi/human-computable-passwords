@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-09-12 18:42:57）．
-一次データ: `results/summary_llm.csv`（78 実験）
+`experiments/summarize.py` により自動生成（2026-09-13 02:54:04）．
+一次データ: `results/summary_llm.csv`（83 実験）
 
 **この表は「評価1件」が1行**．ファインチューニングもプロンプティングも含む．
 学習条件（件数・エポック・lr）や検証損失，まだ評価していない学習 run を見たいなら
@@ -78,6 +78,11 @@
 | table_add3_k10/run_20260910_053027 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 7 | 1 | 33.60% | - | - | - |
 | table_add3_k10/run_20260910_072655 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 8 | 1 | 10.60% | - | - | - |
 | table_add3_k10/run_20260910_092238 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 9 | 1 | 11.60% | - | - | - |
+| table_add3_k10/run_20260912_171242 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 3 | 1 | 100.00% | - | - | - |
+| table_add3_k10/run_20260912_190607 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 3 | 1 | 99.00% | - | - | - |
+| table_add3_k10/run_20260912_210005 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 100.00% | - | - | - |
+| table_add3_k10/run_20260912_225525 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 3 | 1 | 98.20% | - | - | - |
+| table_add3_k10/run_20260913_004808 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 96.20% | - | - | - |
 | table_add3_k26/run_20260729_041333 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 12.00% | - | - | - |
 | table_add3_k26/run_20260729_055650 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 14.00% | - | - | - |
 | table_add_k10/run_20260716_173814 | table_add_k10 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |

@@ -6,8 +6,8 @@
 
 週次報告に方法論のセクションとして転記することを想定している。
 
-QLoRA・LoRA・SFT そのものの仕組み（4bit 量子化，低ランク差分，損失とは何か，
-ドロップアウト，乱数が効く箇所）は [finetuning_basics.md](finetuning_basics.md) にある。
+LLM の学習そのものの仕組み（事前学習と SFT の違い，損失とは何か，最適化，
+汎化と過学習，LoRA，乱数と再現性）は [llm_training_basics.md](llm_training_basics.md) にある。
 本ドキュメントはそれを前提に，学習率とエポック数だけを扱う。
 
 ## 目次

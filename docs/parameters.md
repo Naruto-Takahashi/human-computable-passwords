@@ -5,7 +5,7 @@
 書き直し，内容が古くなっていた箇所を訂正した．
 
 各引数が何をしているのか（LoRA のランクとは，ドロップアウトとは）は
-[finetuning_basics.md](finetuning_basics.md) を参照．
+[llm_training_basics.md](llm_training_basics.md) を参照．
 
 実際に回すときは `experiments/batch/_common.sh` を使うと，ここの多くを書かずに済む
 （[experiments/batch/README.md](../experiments/batch/README.md) 参照）．

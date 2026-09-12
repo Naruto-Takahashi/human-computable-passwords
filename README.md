@@ -53,7 +53,7 @@ human-computable-passwords/
 ├── docs/                      # ドキュメント（索引: docs/README.md）
 │   ├── plan.md                # 研究計画書（v2）．問い・実験設計・現状
 │   ├── log.md                 # 日誌（新しい順）
-│   ├── finetuning_basics.md   # QLoRA/LoRA/SFT の仕組み（学習の基礎知識）
+│   ├── llm_training_basics.md   # LLM の学習の基礎（事前学習・SFT・LoRA）
 │   ├── parameters.md          # 実験パラメータの手引き（既定値の落とし穴つき）
 │   ├── training_dynamics.md   # 学習率・エポック数の前提知識と測定系の監査
 │   ├── literature/            # 先行研究の要約
@@ -150,7 +150,7 @@ python experiments/summarize_baseline.py   # 学習結果の集計
 | 研究計画書 | [docs/plan.md](docs/plan.md) |
 | 研究ログ（新しい順） | [docs/log.md](docs/log.md) |
 | 実験パラメータの手引き | [docs/parameters.md](docs/parameters.md) |
-| 学習の仕組み（QLoRA/LoRA/SFT） | [docs/finetuning_basics.md](docs/finetuning_basics.md) |
+| LLM の学習の基礎（事前学習・SFT・LoRA） | [docs/llm_training_basics.md](docs/llm_training_basics.md) |
 | 学習率・エポック数の前提知識 | [docs/training_dynamics.md](docs/training_dynamics.md) |
 | 過去のバッチ実験の一覧 | [experiments/batch/README.md](experiments/batch/README.md) |
 | 結果の置き場と歩き方 | [results/README.md](results/README.md) |
