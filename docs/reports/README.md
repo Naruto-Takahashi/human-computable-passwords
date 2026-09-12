@@ -232,3 +232,14 @@ Source Han を指定している（同一設計なので見え方はほぼ変わ
 
 - 日本語見出しから生成される Typst のラベルが不正になるため，pandoc は
   `-f markdown-auto_identifiers` で呼んでいる（`Makefile` 参照）。
+
+---
+
+## 次に読む
+
+| | |
+|---|---|
+| [前提知識の正本](../hcp_background.md) | 報告書に写す内容 |
+| [雛形](TEMPLATE.md) | 新しい報告を作る |
+
+📚 [ドキュメント索引](README.md) へ戻る

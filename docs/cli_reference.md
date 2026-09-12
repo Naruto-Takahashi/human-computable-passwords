@@ -110,3 +110,14 @@
 - 500件評価を回す前に `history.csv` の `eval_loss` を見る．学習が離陸していなければ
   評価しても床しか出ない（[measurement_audit.md](measurement_audit.md)）
 - 保存先の構造は [results/README.md](../results/README.md)
+
+---
+
+## 次に読む
+
+| | |
+|---|---|
+| [バッチの書き方](../experiments/batch/README.md) | 毎回引数を書かずに済ませる |
+| [結果の置き場](../results/README.md) | 回したあとどこを見るか |
+
+📚 [ドキュメント索引](README.md) へ戻る
