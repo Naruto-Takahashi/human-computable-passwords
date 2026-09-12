@@ -1,6 +1,6 @@
 # 実験の棚卸し（どのパラメータで走らせたか）
 
-`experiments/inventory.py` により自動生成（2026-09-13 02:54:04）．
+`experiments/inventory.py` により自動生成（2026-09-13 03:05:52）．
 一次データ: `results/inventory.csv`（学習 run 78 本）
 
 **この表は「学習 run」が1行**．学習条件（件数・エポック・lr）と検証損失が見える．まだ評価していない run も載る．
