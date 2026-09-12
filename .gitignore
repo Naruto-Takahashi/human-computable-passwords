@@ -11,6 +11,8 @@
 !/results/summary.md
 !/results/summary_llm.md
 !/results/summary_llm.csv
+!/results/inventory.md
+!/results/inventory.csv
 !/results/solver/
 !/results/figures/
 *Zone.Identifier

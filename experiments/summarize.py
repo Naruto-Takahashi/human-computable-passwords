@@ -82,6 +82,18 @@ def load_legacy_format(path: str) -> dict | None:
     }
 
 
+def short_model(model: str) -> str:
+    """表示用にモデル名を詰める．
+
+    LoRA では model に学習 run ディレクトリの絶対パスが入るため，そのまま並べると
+    表の幅を食い潰して他の列が読めなくなる。末尾2階層（アルゴリズム名/run名）に詰める。
+    """
+    m = str(model).rstrip("/")
+    if "/" in m:
+        return "/".join(m.split("/")[-2:])
+    return m
+
+
 def fmt(v) -> str:
     if v is None or v == "":
         return "-"
@@ -123,11 +135,16 @@ def main():
         writer.writeheader()
         writer.writerows(rows)
 
-    # ---- Markdown（シードをまとめて平均）----
+    # ---- Markdown（データシードのみまとめて平均）----
+    # 鍵シード（key_seed）と評価件数（n_test）は表に出す。
+    # 2026-09 の監査まで両方とも表から落ちており，鍵で正解率が 10.6%〜99.8% まで
+    # 動くことも，50件評価と500件評価が混在していることも表から読めなかった。
+    # どちらも結論を左右する変数なので，まとめずに列として並べる。
     groups: dict[tuple, list[dict]] = defaultdict(list)
     for r in rows:
-        key = (r["model"], r["algorithm"], r["task"], r["paradigm"],
-               r["stage"], r["k_disclosed"], r["n_shot"], r["format"])
+        key = (short_model(r["model"]), r["algorithm"], r["task"], r["paradigm"],
+               r["stage"], r["k_disclosed"], r["n_shot"], r["n_test"],
+               r["key_seed"], r["format"])
         groups[key].append(r)
 
     def mean_of(items, field):
@@ -141,19 +158,21 @@ def main():
         f"`experiments/summarize.py` により自動生成（{datetime.now():%Y-%m-%d %H:%M:%S}）．",
         f"一次データ: `results/summary_llm.csv`（{len(rows)} 実験）",
         "",
-        "| モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "| モデル | アルゴリズム | タスク | Stage | K | N_shot | 評価件数 | 鍵 | 反復数 "
+        "| 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for key in sorted(groups.keys(), key=lambda k: tuple(str(x) for x in k)):
         items = groups[key]
-        model, algo, task, paradigm, stage, k, n_shot, fmt_ver = key
+        model, algo, task, paradigm, stage, k, n_shot, n_test, key_seed, fmt_ver = key
         task_str = f"{task}({paradigm})" if paradigm else task
         if fmt_ver == "legacy":
             task_str += " [旧]"
         exact_vals = [x["key_exact_match"] for x in items if x["key_exact_match"] is not None]
         exact_rate = sum(exact_vals) / len(exact_vals) if exact_vals else None
         md.append(
-            f"| {model} | {algo} | {task_str} | {stage} | {k} | {n_shot} | {len(items)} "
+            f"| {model} | {algo} | {task_str} | {stage} | {k} | {n_shot} "
+            f"| {n_test or '-'} | {key_seed if key_seed != '' else '-'} | {len(items)} "
             f"| {fmt(mean_of(items, 'accuracy'))} "
             f"| {fmt(mean_of(items, 'key_cell_accuracy'))} "
             f"| {fmt(exact_rate)} "

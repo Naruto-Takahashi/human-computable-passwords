@@ -85,7 +85,7 @@ def main():
         run_dir = make_run_dir(
             base_dir=args.output_base_dir, model=args.model, algorithm=algo,
             task_label=task_lbl, stage=args.stage, k_disclosed=k,
-            n_shot=n_shot, key_seed=ks, data_seed=ds_seed,
+            n_shot=n_shot, key_seed=ks, data_seed=ds_seed, n_test=args.n_test,
         )
         done = is_run_completed(run_dir) and not args.overwrite
         plan.append((algo, n_shot, k, ks, ds_seed, done))

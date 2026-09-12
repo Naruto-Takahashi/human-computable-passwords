@@ -5,16 +5,35 @@
 
 PY ?= python3
 
-.PHONY: test smoke summarize sync info-limit clean-pycache help
+.PHONY: test smoke summarize inventory status migrate-eval-paths sync info-limit clean-pycache help
 
 help:
+	@echo "── 日々の確認 ───────────────────────────────────────"
+	@echo "make status         # 走行中バッチと各ログの進捗を1画面で"
+	@echo "make inventory      # どのパラメータで学習したかの棚卸し（results/inventory.md）"
+	@echo "make summarize      # 評価結果を集計して summary_llm.{md,csv} を生成"
+	@echo ""
+	@echo "── 実験を回す ───────────────────────────────────────"
+	@echo "  学習:  .venv/bin/python experiments/train_finetuning.py \\"
+	@echo "           --model Qwen/Qwen2.5-3B-Instruct --algorithm func_22_k10 \\"
+	@echo "           --paradigm pure --stage 2 --n_shot 0 --n_train 1000 --epochs 5 \\"
+	@echo "           --key_seed 0 --data_seed 0"
+	@echo "  評価:  .venv/bin/python experiments/run_eval.py --provider lora \\"
+	@echo "           --model <学習が出力した run ディレクトリ> --algorithm func_22_k10 \\"
+	@echo "           --stage 2 --n_shot 0 --n_test 500 --key_seeds 0 --data_seeds 0"
+	@echo "         ※ 学習時と同じ algorithm / stage / key_seed を指定すること"
+	@echo "  一括:  nohup bash experiments/batch/<名前>.sh > /dev/null 2>&1 & disown"
+	@echo "         （experiments/batch/ の各スクリプト冒頭に，なぜ回すかを書いてある）"
+	@echo ""
+	@echo "── 保守 ─────────────────────────────────────────────"
 	@echo "make test           # アルゴリズム自己検証 + ソルバー健全性チェック"
 	@echo "make smoke          # mock プロバイダによる E2E ドライラン（predict/recover_key）"
 	@echo "make info-limit     # func_22 の情報限界 N*_info を測定（results/theory/）"
-	@echo "make summarize      # results/evals/ を集計して summary_llm.{md,csv} を生成"
+	@echo "make migrate-eval-paths  # 評価結果を n_test 入りのパス構造へ移行（確認のみ）"
 	@echo "make sync           # results/ を Google Drive へ rclone 同期"
 	@echo "make clean-pycache  # __pycache__ を削除"
 	@echo ""
+	@echo "── 報告書 ───────────────────────────────────────────"
 	@echo "make report         # 週次報告を全てPDF化（docs/reports/pdf/）"
 	@echo "make report-latest  # 最新の週次報告だけPDF化"
 	@echo "make report-live    # プレビュー配信＋自動再ビルド（通常はこれ）"
@@ -44,6 +63,16 @@ info-limit:
 
 summarize:
 	$(PY) experiments/summarize.py
+
+inventory:
+	$(PY) experiments/inventory.py
+
+status:
+	@bash tools/status.sh
+
+# 引数なしは確認のみ。実際に移動するには APPLY=1 を付ける。
+migrate-eval-paths:
+	$(PY) tools/migrate_eval_paths.py $(if $(APPLY),--apply,)
 
 sync:
 	bash tools/sync_results.sh

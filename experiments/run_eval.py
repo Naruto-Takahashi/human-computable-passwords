@@ -105,6 +105,7 @@ def run_one(client, args, key_seed: int, data_seed: int) -> dict | None:
         n_shot=args.n_shot,
         key_seed=key_seed,
         data_seed=data_seed,
+        n_test=args.n_test,
     )
     if is_run_completed(run_dir) and not args.overwrite:
         print(f"  [skip] 完了済み: {os.path.relpath(run_dir, REPO_ROOT)}")
