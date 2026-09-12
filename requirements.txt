@@ -11,3 +11,5 @@ trl
 bitsandbytes
 accelerate
 datasets
+pypdf
+pdfminer.six

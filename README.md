@@ -58,7 +58,8 @@ human-computable-passwords/
 │   ├── llm_training_basics.md   # LLM の学習の基礎（事前学習・SFT・LoRA）
 │   ├── parameters.md          # 実験パラメータの手引き（既定値の落とし穴つき）
 │   ├── training_dynamics.md   # 学習率・エポック数の前提知識と測定系の監査
-│   ├── literature/            # 先行研究の要約
+│   ├── thesis/                # 卒論の章立てと素材の対応表（本文は書かない）
+│   ├── literature/            # 先行研究の要約（研究室の卒論4本を含む）
 │   ├── refactor_notes.md      # 2026-07 監査とリファクタリングの記録
 │   └── reports/               # 週次進捗報告（Markdown が原本）
 ├── Makefile                   # test / smoke / summarize / sync 等の運用タスク
@@ -153,6 +154,7 @@ python experiments/summarize_baseline.py   # 学習結果の集計
 | HCP とは何か・記号の意味 | [docs/hcp_background.md](docs/hcp_background.md) |
 | 実験の一覧（実験1〜） | [docs/experiments.md](docs/experiments.md) |
 | 研究ログ（新しい順） | [docs/log.md](docs/log.md) |
+| 卒論の章立てと素材の所在 | [docs/thesis/README.md](docs/thesis/README.md) |
 | 実験パラメータの手引き | [docs/parameters.md](docs/parameters.md) |
 | LLM の学習の基礎（事前学習・SFT・LoRA） | [docs/llm_training_basics.md](docs/llm_training_basics.md) |
 | 学習率・エポック数の前提知識 | [docs/training_dynamics.md](docs/training_dynamics.md) |

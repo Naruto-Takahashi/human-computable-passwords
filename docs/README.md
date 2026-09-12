@@ -11,6 +11,7 @@
 | **段階N が何を指すか**（実験の一覧） | [experiments.md](experiments.md) |
 | 何をやってきたか，いつ何が分かったか | [log.md](log.md)（日誌．新しい順） |
 | 教授に何を報告したか | [reports/](reports/)（週次報告．Markdown が原本） |
+| 卒論の章立てと，各章の素材はどこにあるか | [thesis/README.md](thesis/README.md) |
 | 実験の回し方 | [../README.md](../README.md)，`make help` |
 | 引数の意味と既定値 | [parameters.md](parameters.md) |
 | LLM の学習とは何か（事前学習・SFT・LoRA・損失・過学習…） | [llm_training_basics.md](llm_training_basics.md) |
