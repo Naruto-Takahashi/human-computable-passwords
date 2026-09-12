@@ -46,6 +46,7 @@ hcp_init() {
     HCP_N_TRAIN="${HCP_N_TRAIN:-1000}"
     HCP_EPOCHS="${HCP_EPOCHS:-5}"
     HCP_STAGE="${HCP_STAGE:-2}"
+    HCP_SEED="${HCP_SEED:-42}"
     HCP_PARADIGM="${HCP_PARADIGM:-pure}"
     HCP_N_SHOT="${HCP_N_SHOT:-0}"
     HCP_FAILED=0
@@ -64,12 +65,12 @@ hcp_init() {
 
 # 1条件を学習して評価する。
 #   hcp_run --algorithm <名前> [--key_seed N] [--data_seed N]
-#           [--n_train N] [--epochs N] [--n_test N] [--stage N] [--lr X]
+#           [--n_train N] [--epochs N] [--n_test N] [--stage N] [--lr X] [--seed N]
 # 指定しなかったものは hcp_init の既定値を使う。
 hcp_run() {
     local algorithm="" key_seed=0 data_seed=0
     local n_train="$HCP_N_TRAIN" epochs="$HCP_EPOCHS" n_test="$HCP_N_TEST"
-    local stage="$HCP_STAGE" lr=""
+    local stage="$HCP_STAGE" lr="" seed="$HCP_SEED"
     while [ $# -gt 0 ]; do
         case "$1" in
             --algorithm) algorithm="$2"; shift 2 ;;
@@ -80,18 +81,19 @@ hcp_run() {
             --n_test)    n_test="$2";    shift 2 ;;
             --stage)     stage="$2";     shift 2 ;;
             --lr)        lr="$2";        shift 2 ;;
+            --seed)      seed="$2";      shift 2 ;;
             *) echo "hcp_run: 不明な引数 '$1'" >&2; return 2 ;;
         esac
     done
     [ -n "$algorithm" ] || { echo "hcp_run: --algorithm は必須です" >&2; return 2; }
 
     # ログ名は条件から決まるようにする（あとから grep で探せるように）。
-    local tag="${algorithm}_ks${key_seed}_ds${data_seed}_n${n_train}_ep${epochs}"
+    local tag="${algorithm}_ks${key_seed}_ds${data_seed}_n${n_train}_ep${epochs}_s${seed}"
     local log="$HCP_LOGDIR/${tag}.log"
 
     if [ "$HCP_DRY_RUN" = "1" ]; then
-        printf '  学習: %-22s 鍵%-2s データ%-2s 件数%-5s ep%-3s → 評価 %s件\n' \
-            "$algorithm" "$key_seed" "$data_seed" "$n_train" "$epochs" "$n_test"
+        printf '  学習: %-22s 鍵%-2s データ%-2s シード%-3s 件数%-5s ep%-3s → 評価 %s件\n' \
+            "$algorithm" "$key_seed" "$data_seed" "$seed" "$n_train" "$epochs" "$n_test"
         return 0
     fi
 
@@ -100,9 +102,9 @@ hcp_run() {
     HCP_DONE=$((HCP_DONE + 1))
     local counter=""
     [ "$HCP_TOTAL" -gt 0 ] && counter=" [${HCP_DONE}/${HCP_TOTAL}]"
-    printf '[%s]%s 開始 %s（鍵%s データ%s 件数%s ep%s → 評価%s件）\n' \
+    printf '[%s]%s 開始 %s（鍵%s データ%s シード%s 件数%s ep%s → 評価%s件）\n' \
         "$(date '+%m/%d %H:%M')" "$counter" "$algorithm" \
-        "$key_seed" "$data_seed" "$n_train" "$epochs" "$n_test"
+        "$key_seed" "$data_seed" "$seed" "$n_train" "$epochs" "$n_test"
     local started=$SECONDS
 
     echo "=== [$(date '+%m/%d %H:%M:%S')] TRAIN $tag ===" > "$log"
@@ -112,7 +114,7 @@ hcp_run() {
             --model "$HCP_MODEL" --algorithm "$algorithm" \
             --paradigm "$HCP_PARADIGM" --stage "$stage" --n_shot "$HCP_N_SHOT" \
             --n_train "$n_train" --epochs "$epochs" \
-            --key_seed "$key_seed" --data_seed "$data_seed" \
+            --key_seed "$key_seed" --data_seed "$data_seed" --seed "$seed" \
             --tag "$HCP_TAG" "${lr_opt[@]}" >>"$log" 2>&1; then
         echo "!!! TRAIN FAILED: $tag" >>"$log"
         echo "[失敗] 学習: $tag（$log）" >&2

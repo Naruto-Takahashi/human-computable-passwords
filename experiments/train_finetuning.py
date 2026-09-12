@@ -74,6 +74,11 @@ def parse_args():
     parser.add_argument("--lora_r", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--quant", type=str, default="4bit", choices=["4bit", "8bit"])
+    parser.add_argument("--seed", type=int, default=42,
+                        help="学習の乱数シード（LoRA の A の初期化・データの並び順・"
+                             "ドロップアウトを決める）．鍵とデータの抽選は --key_seed / "
+                             "--data_seed が決めるので，これらとは独立．"
+                             "既定の42は HuggingFace の既定値に合わせてある（従来の実験と同じ）")
     parser.add_argument("--tag", type=str, default="",
                         help="この run が属する実験の名前（例: 段階7 seedばらつき）．"
                              "train_metadata.json に記録され，make inventory の見出しに使われる．"
@@ -248,6 +253,9 @@ def main():
         fp16=not torch.cuda.is_bf16_supported(),
         bf16=torch.cuda.is_bf16_supported(),
         optim="adamw_8bit",
+        # 明示しておく。既定でも42だが，指定しないと train_metadata.json に
+        # 「どのシードで回したか」が残らず，あとから確認できない。
+        seed=args.seed,
         report_to="none",
         remove_unused_columns=False,
         assistant_only_loss=True,
