@@ -180,9 +180,10 @@ SVG ならベクタのまま埋め込まれる（matplotlib なら `plt.savefig(
 
 ```markdown
 ![深さごとの正解率](figures/depth_accuracy.svg)
-
-（上は書き方の例．実在する図は `results/figures/` にある）
 ```
+
+図の実体は `docs/reports/figures/` に置く（上のファイル名は書き方の例）．
+`results/figures/` にある図を使うときはコピーするか相対パスで参照する．
 
 ### 8. 体裁を変えたいときは `template.typ` を触る
 
