@@ -1,5 +1,10 @@
 # 測定系の監査 — 5エポックという予算が測定器になっていた
 
+> 2026-09 の監査記録。**学習予算が測定値そのものを作っていた**
+>
+> 📚 [ドキュメント索引](README.md) ／ 関連: [学習の基礎](llm_training_basics.md) ・ [実験の一覧](experiment_index.md)
+
+> [!NOTE]
 > 旧ファイル名 `training_dynamics.md`（2026-09-13 に改名）。学習率とエポック数の
 > 一般的な説明は [llm_training_basics.md](llm_training_basics.md) に移してあり，
 > 本ドキュメントは**監査の記録**に絞っている。

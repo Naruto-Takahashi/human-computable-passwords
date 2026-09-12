@@ -1,5 +1,9 @@
 # 文献要約
 
+> 先行研究の資料一覧（実体は Google Drive）
+>
+> 📚 [ドキュメント索引](../README.md) ／ 関連: [研究室の卒論4本](lab_theses.md) ・ [HCP の前提知識](../hcp_background.md)
+
 論文の読解メモ。PDF実体は `literature/`（Google Drive管理）を参照。
 
 ## 収録

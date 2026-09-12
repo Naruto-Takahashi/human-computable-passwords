@@ -1,5 +1,9 @@
 # Ogawa, Ikeda, Sakurai "Learning Human-Computable Passwords: What Makes Them Hard (or Easy) for Neural Models?"
 
+> 直前の先行研究の要約（小川ら 2025・英語論文）
+>
+> 📚 [ドキュメント索引](../README.md) ／ 関連: [研究室の卒論4本](lab_theses.md) ・ [先行研究一覧](README.md)
+
 小川さん（九州大学・櫻井研）らの英語論文。読解日: 2026年8月。本研究の直接の先行研究であり，**経路B（FT）の結論とほぼ同一の知見を，異なるアーキテクチャで先に得ている**。
 
 ## 1. 問題設定と脅威モデル

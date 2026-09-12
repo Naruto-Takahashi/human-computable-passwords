@@ -1,5 +1,9 @@
 # Blocki, Blum, Datta, Vempala "Towards Human Computable Passwords" (ITCS 2017 / arXiv:1404.0024v4)
 
+> 原論文の要約（Blocki ら 2017）
+>
+> 📚 [ドキュメント索引](../README.md) ／ 関連: [HCP の前提知識](../hcp_background.md) ・ [先行研究一覧](README.md)
+
 本研究が対象とするHCP方式そのものを提案した原論文。読解日: 2026年8月。
 
 ## 1. 問題設定

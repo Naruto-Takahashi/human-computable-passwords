@@ -1,5 +1,9 @@
 # Kachi, Viglietta, Sakurai "Applying Lagrange Interpolation to Polynomial Expressions of Human-Computable Functions" (SCIS 2025)
 
+> 代数的な裏づけの要約（加地ら 2025）
+>
+> 📚 [ドキュメント索引](../README.md) ／ 関連: [HCP の前提知識](../hcp_background.md) ・ [先行研究一覧](README.md)
+
 加地康之先生（会津大学）らの論文。読解日: 2026年8月。HCP関数 $f$ を**純粋に数学的（代数的）に**扱った，本研究の理論的な支柱。
 
 ## 1. 動機
