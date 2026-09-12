@@ -52,6 +52,23 @@ def main() -> None:
                 print(f"  {rel}: {label} — {len(hits)} 箇所（{hits[:5]} 行目）")
                 problems += len(hits)
 
+    # インライン数式が markdown の強調に食われないか
+    # GitHub は $...$ の中の _ を強調記法として解釈してしまうことがあり，
+    # そうなると下付き文字が消えて数式が崩れる。公式の回避策は $`...`$ である。
+    for path in targets():
+        if "reports/" in path:      # 週次報告は pandoc を通すので $...$ のままが正しい
+            continue
+        body = open(path, encoding="utf-8").read()
+        body = re.sub(r"```.*?```", "", body, flags=re.S)
+        body = re.sub(r"\$\$.*?\$\$", "", body, flags=re.S)
+        body = re.sub(r"\$`[^`]*`\$", "", body)     # 変換済みは除く
+        bad = [m for m in re.findall(r"\$([^$\n]+)\$", body) if "_" in m or "*" in m]
+        if bad:
+            rel = os.path.relpath(path, ROOT)
+            print(f"  {rel}: インライン数式が強調に食われる — {len(bad)} 箇所"
+                  f"（例 ${bad[0][:30]}$ → $`{bad[0][:30]}`$ と書く）")
+            problems += len(bad)
+
     # 数式の $ が閉じているか
     for path in targets():
         body = re.sub(r"```.*?```", "", open(path, encoding="utf-8").read(), flags=re.S)

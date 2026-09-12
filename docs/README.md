@@ -15,7 +15,7 @@
 | | |
 |---|---|
 | [authentication_background.md](authentication_background.md) | **認証とは何か** — 3分類・パスワード認証の限界・チャレンジレスポンス・Passkey。卒論 第2章の素材（出典は未確定） |
-| [hcp_background.md](hcp_background.md) | **HCP とは何か** — 記号（σ・C・Z）・関数族 $f_{k_1,k_2}$・安全性パラメータ $s(f)$・難易度の分解。**週次報告の「前提知識」節の正本** |
+| [hcp_background.md](hcp_background.md) | **HCP とは何か** — 記号（σ・C・Z）・関数族 $`f_{k_1,k_2}`$・安全性パラメータ $s(f)$・難易度の分解。**週次報告の「前提知識」節の正本** |
 | [literature/lab_theses.md](literature/lab_theses.md) | **研究室の卒論4本** — MLP → LSTM → BiLSTM → CNN → 本研究の系譜。卒論 第3章の素材 |
 | [literature/](literature/) | **先行研究の要約** — Blocki ら（原論文）・小川ら・加地ら |
 

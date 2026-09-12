@@ -49,7 +49,7 @@
   移行ツールはディレクトリ名を解釈せず各 `metrics.json` の条件から移動先を計算するので，
   今後また構造を変えても同じ手順で済む。
 - **`algorithms.py` の重複解消**（935→854行）
-  関数族 $f_{k_1,k_2}$ の5定義（189行）を `_make_func` 1つ（105行）に集約。
+  関数族 $`f_{k_1,k_2}`$ の5定義（189行）を `_make_func` 1つ（105行）に集約。
   文面は1バイトも変えていない（上記の非退行検査で保証）。
 - **バッチの共通化**
   学習→評価の手順が15本のスクリプトに複製されていた。`experiments/batch/_common.sh` に
@@ -68,7 +68,7 @@
   番号も衝突していたため，実験側を「実験N」に改称
 - ファイル名の曖昧さを解消（`experiments.md` → `experiment_index.md`：コードの
   `experiments/` と紛らわしい／`parameters.md` → `cli_reference.md`：研究のパラメータ
-  $n$・$k_1$・$k_2$ と紛らわしい／`training_dynamics.md` → `measurement_audit.md`：
+  $n$・$`k_1`$・$`k_2`$ と紛らわしい／`training_dynamics.md` → `measurement_audit.md`：
   中身が監査記録だった）
 - `plan.md` §3.1 が `experiment_index.md` と結果の数値を二重に持っていたため，
   計画としての位置づけだけに削った（143→34行）

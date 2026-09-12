@@ -5,7 +5,7 @@
 > 📚 [ドキュメント索引](README.md) ／ 関連: [学習の基礎](llm_training_basics.md) ・ [バッチの書き方](../experiments/batch/README.md) ・ [結果の置き場](../results/README.md)
 
 > [!IMPORTANT]
-> **研究のパラメータ（鍵サイズ $n$・チャレンジ長 $k$・$k_1$・$k_2$・安全性
+> **研究のパラメータ（鍵サイズ $n$・チャレンジ長 $k$・$`k_1`$・$`k_2`$・安全性
 > パラメータ $s(f)$）ではなく，スクリプトの引数の話．** 前者は
 > [hcp_background.md](hcp_background.md) にある。
 > 旧ファイル名 `parameters.md`（2026-09-13 に改名。研究のパラメータと
@@ -105,7 +105,7 @@
 
 ## 結果の読み方
 
-- 正解率だけで判断しない．**衝突確率（$\sum p_i^2$）と最頻値基準線**を併記する
+- 正解率だけで判断しない．**衝突確率（$`\sum p_i^2`$）と最頻値基準線**を併記する
   （偶然の10%ではなく，鍵ごとの基準線と比べる）
 - 500件評価を回す前に `history.csv` の `eval_loss` を見る．学習が離陸していなければ
   評価しても床しか出ない（[measurement_audit.md](measurement_audit.md)）
