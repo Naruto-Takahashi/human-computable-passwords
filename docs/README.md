@@ -7,6 +7,7 @@
 | 知りたいこと | 読むもの |
 |---|---|
 | この研究は何をしているのか | [plan.md](plan.md)（研究計画書．背景・問い・実験設計・現状） |
+| 認証とは何か（パスワード認証・チャレンジレスポンス認証） | [authentication_background.md](authentication_background.md) |
 | HCP とは何か，記号の意味（σ・C・Z・$f_{k_1,k_2}$・$s(f)$） | [hcp_background.md](hcp_background.md) |
 | **段階N が何を指すか**（実験の一覧） | [experiments.md](experiments.md) |
 | 何をやってきたか，いつ何が分かったか | [log.md](log.md)（日誌．新しい順） |
@@ -28,6 +29,9 @@
 - **[plan.md](plan.md)** — 研究計画書（v2）．問い・実験設計・スケジュール．
   実験で何かが分かったらここに反映する．§3.1.2 に測定系の監査（2026-09-12）と，
   それによって修正された過去の主張がまとまっている．
+- **[authentication_background.md](authentication_background.md)** — 認証の背景知識
+  （3分類・パスワード認証の限界・チャレンジレスポンス認証・Passkey/TOTP・
+  HCP の位置づけ）．卒論 第2章 2.1 の素材．出典は未確定（「要確認」節を参照）．
 - **[hcp_background.md](hcp_background.md)** — **週次報告の「前提知識」節の正本**．
   研究の枠組み・記号の定義・関数族 $f_{k_1,k_2}$・安全性パラメータ $s(f)$・
   難易度の分解・扱っている関数の定義．報告書にはここから写す．
