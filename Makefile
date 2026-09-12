@@ -5,7 +5,7 @@
 
 PY ?= python3
 
-.PHONY: test smoke summarize inventory status algorithms migrate-eval-paths sync info-limit clean-pycache help
+.PHONY: test smoke summarize inventory status algorithms check-mermaid migrate-eval-paths sync info-limit clean-pycache help
 
 help:
 	@echo "── 日々の確認 ───────────────────────────────────────"
@@ -34,6 +34,7 @@ help:
 	@echo "make test           # アルゴリズム自己検証 + 文面の非退行検査 + ソルバー"
 	@echo "make smoke          # mock プロバイダによる E2E ドライラン（predict/recover_key）"
 	@echo "make info-limit     # func_22 の情報限界 N*_info を測定（results/theory/）"
+	@echo "make check-mermaid  # Markdown 内の mermaid 図の構文を検査"
 	@echo "make migrate-eval-paths  # 評価結果を n_test 入りのパス構造へ移行（確認のみ）"
 	@echo "make sync           # results/ を Google Drive へ rclone 同期"
 	@echo "make clean-pycache  # __pycache__ を削除"
@@ -78,6 +79,11 @@ status:
 
 algorithms:
 	@$(PY) tools/list_algorithms.py
+
+# GitHub は ```mermaid をそのまま描画するので，構文を誤ると図の代わりに
+# エラーが出る。初回は tools/mermaid_check で npm install が要る。
+check-mermaid:
+	@$(PY) tools/check_mermaid.py
 
 # 引数なしは確認のみ。実際に移動するには APPLY=1 を付ける。
 migrate-eval-paths:
