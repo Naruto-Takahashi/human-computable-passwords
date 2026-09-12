@@ -99,7 +99,9 @@ forward して勾配を足してから1回更新する」という仕掛けで�
 
 である。すなわち
 
-$$\mathrm{lr}(t) = \mathrm{lr}_0 \times \left(1 - \frac{t}{T}\right), \qquad T = \text{総ステップ数}$$
+$$
+\mathrm{lr}(t) = \mathrm{lr}_0 \times \left(1 - \frac{t}{T}\right), \qquad T = \text{総ステップ数}
+$$
 
 **$T$ はエポック数で決まる。** したがって**エポック数を変えると学習率の下がり方まで変わる**。
 `table_add3_k10`（key_seed=7）の実測値：

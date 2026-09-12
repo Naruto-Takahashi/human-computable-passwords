@@ -11,7 +11,9 @@
 Blocki らは $f$ の安全性を組み合わせ論で評価したが，**$f$ 自体の純粋に数学的な性質の解明は将来の研究者に委ねた**（"they shied away from dissecting the function f purely mathematically"）。本論文はその空白を埋める。
 
 対象は原論文の代表的関数：
-$$f(x_0,\dots,x_9; x_{10},x_{11},x_{12},x_{13}) := x_{(x_{10}+x_{11} \bmod 10)} + x_{12} + x_{13} \bmod 10$$
+$$
+f(x_0,\dots,x_9; x_{10},x_{11},x_{12},x_{13}) := x_{(x_{10}+x_{11} \bmod 10)} + x_{12} + x_{13} \bmod 10
+$$
 
 **§1.1 の指摘が本質的**: 一見すると単純な定義だが，通常なら単なる添字であるはずの "$j$" が，**それ自体が変数を含む量**になっている。したがって（一見そう見えないかもしれないが）**$f$ は14個の変数 $`x_0,\dots,x_{13}`$ のすべてに依存する**。
 
@@ -19,7 +21,9 @@ $$f(x_0,\dots,x_9; x_{10},x_{11},x_{12},x_{13}) := x_{(x_{10}+x_{11} \bmod 10)} 
 
 **Theorem 1.5（主定理）**: mod 10 で定義された人間計算可能関数 $f$ を，**標数11の素体 $`\mathbb{F}_{11} = \mathbb{Z}/11\mathbb{Z}`$ 上の明示的な多項式**として表現できる。
 
-$$f(x_0,\dots,x_{13}) = \sum_{i=0}^{10}\sum_{j=0}^{10} C_{i+1,j+1}\cdot\left[\text{（}x_{10},x_{11}\text{ のVandermonde型ベクトルと } \textstyle\sum_k x_k^i M_k \text{ の積）}\right]\cdot\left[\text{（}x_{12},x_{13}\text{ の同様の積）}\right] \bmod 11$$
+$$
+f(x_0,\dots,x_{13}) = \sum_{i=0}^{10}\sum_{j=0}^{10} C_{i+1,j+1}\cdot\left[\text{（}x_{10},x_{11}\text{ のVandermonde型ベクトルと } \textstyle\sum_k x_k^i M_k \text{ の積）}\right]\cdot\left[\text{（}x_{12},x_{13}\text{ の同様の積）}\right] \bmod 11
+$$
 
 構成要素：
 - $`L_k`$（$11\times11$ 行列，$(i,j)$ 成分は $i+j \equiv k+2 \pmod{10}$ のとき1，それ以外0）

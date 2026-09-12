@@ -31,7 +31,7 @@ help:
 	@echo "         （新規作成は experiments/batch/README.md の雛形を使う）"
 	@echo ""
 	@echo "── 保守 ─────────────────────────────────────────────"
-	@echo "make test           # アルゴリズム自己検証 + 文面の非退行検査 + 記法検査 + ソルバー"
+	@echo "make test           # アルゴリズム自己検証 + 文面/記法/数式の検査 + ソルバー"
 	@echo "make smoke          # mock プロバイダによる E2E ドライラン（predict/recover_key）"
 	@echo "make info-limit     # func_22 の情報限界 N*_info を測定（results/theory/）"
 	@echo "make check-mermaid  # Markdown 内の mermaid 図の構文を検査"
@@ -50,6 +50,7 @@ test:
 	$(PY) src/hcp/algorithms.py
 	$(PY) tests/check_algorithm_texts.py
 	$(PY) tools/check_docs.py
+	$(PY) tools/check_math.py
 	$(PY) experiments/info_limit.py --algorithm func_pow --n_shots 60 --key_seeds 0 \
 		--output_dir /tmp/hcp_test_theory
 
