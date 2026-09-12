@@ -4,6 +4,9 @@
 まとめたもの（2026-09-12 時点）．旧 `experiment_guide.md` の §2 を現行の実装に合わせて
 書き直し，内容が古くなっていた箇所を訂正した．
 
+各引数が何をしているのか（LoRA のランクとは，ドロップアウトとは）は
+[finetuning_basics.md](finetuning_basics.md) を参照．
+
 実際に回すときは `experiments/batch/_common.sh` を使うと，ここの多くを書かずに済む
 （[experiments/batch/README.md](../experiments/batch/README.md) 参照）．
 

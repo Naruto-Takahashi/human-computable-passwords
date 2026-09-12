@@ -11,6 +11,7 @@
 | 教授に何を報告したか | [reports/](reports/)（週次報告．Markdown が原本） |
 | 実験の回し方 | [../README.md](../README.md)，`make help` |
 | 引数の意味と既定値 | [parameters.md](parameters.md) |
+| QLoRA・LoRA・SFT とは何か（学習の仕組みそのもの） | [finetuning_basics.md](finetuning_basics.md) |
 | 学習率・エポック数とは何か／なぜ5エポックが問題だったか | [training_dynamics.md](training_dynamics.md) |
 | 過去のバッチ実験の一覧・新しい書き方 | [../experiments/batch/README.md](../experiments/batch/README.md) |
 | 結果がどこに保存されるか | [../results/README.md](../results/README.md) |
@@ -32,6 +33,10 @@
 
 ### 手引き
 
+- **[finetuning_basics.md](finetuning_basics.md)** — QLoRA によるファインチューニングの
+  仕組み．4bit 量子化と LoRA が何をしているか，損失とは何か，乱数が効く3箇所
+  （初期化・並び順・ドロップアウト），再現性と GPU の非決定性．数字はすべて
+  このリポジトリの実測値．**学習の話が出てきたらまずここ．**
 - **[parameters.md](parameters.md)** — `train_finetuning.py` / `run_eval.py` の引数．
   既定値が現行の実験条件と違う点や，`--paradigm` の語彙が学習と評価で違う点など，
   つまずきやすい箇所を先頭にまとめてある．
