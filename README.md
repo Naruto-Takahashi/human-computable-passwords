@@ -53,7 +53,7 @@ human-computable-passwords/
 ├── docs/                      # ドキュメント（索引: docs/README.md）
 │   ├── plan.md                # 研究計画書（v2）．問い・実験設計・現状
 │   ├── hcp_background.md      # HCP の前提知識（報告書の前提知識節の正本）
-│   ├── experiments.md         # 実験の一覧（段階1〜．問い・結果・現在の評価）
+│   ├── experiments.md         # 実験の一覧（実験1〜．問い・結果・現在の評価）
 │   ├── log.md                 # 日誌（新しい順）
 │   ├── llm_training_basics.md   # LLM の学習の基礎（事前学習・SFT・LoRA）
 │   ├── parameters.md          # 実験パラメータの手引き（既定値の落とし穴つき）
@@ -151,7 +151,7 @@ python experiments/summarize_baseline.py   # 学習結果の集計
 |---|---|
 | 研究計画書 | [docs/plan.md](docs/plan.md) |
 | HCP とは何か・記号の意味 | [docs/hcp_background.md](docs/hcp_background.md) |
-| 実験の一覧（段階1〜） | [docs/experiments.md](docs/experiments.md) |
+| 実験の一覧（実験1〜） | [docs/experiments.md](docs/experiments.md) |
 | 研究ログ（新しい順） | [docs/log.md](docs/log.md) |
 | 実験パラメータの手引き | [docs/parameters.md](docs/parameters.md) |
 | LLM の学習の基礎（事前学習・SFT・LoRA） | [docs/llm_training_basics.md](docs/llm_training_basics.md) |

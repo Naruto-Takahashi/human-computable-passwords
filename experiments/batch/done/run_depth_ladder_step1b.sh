@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 段階2-1b: 深さ1 vs 深さ2 を，偏りの小さい鍵で再確認
+# 実験2-1b: 深さ1 vs 深さ2 を，偏りの小さい鍵で再確認
 # key_seed=0（最頻値3/10=30%水準）は鍵の偏りが強く，「常に最頻値」戦略だけで
 # 高い基準線になってしまうことが判明した。key_seed=1, 2（どちらも最頻値2/10=
 # 20%水準）という，通常のランダム生成の中から偏りの小さいものを選んで
@@ -40,4 +40,4 @@ for ks in 1 2; do
 done
 
 python3 experiments/summarize.py >"$LOGDIR/summarize_depth_step1b.log" 2>&1 || true
-echo "=== [$(date '+%m/%d %H:%M:%S')] 段階2-1b バッチ完了 ===" >> "$LOGDIR/depth_step1b_done.log"
+echo "=== [$(date '+%m/%d %H:%M:%S')] 実験2-1b バッチ完了 ===" >> "$LOGDIR/depth_step1b_done.log"

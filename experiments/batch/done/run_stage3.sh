@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 段階3: 重み格納型学習の境界探索バッチ（難易度ラダー + CNN同条件比較）
+# 実験1a: 重み格納型学習の境界探索バッチ（難易度ラダー + CNN同条件比較）
 # =============================================================================
 # 実行順:
 #   1. Stage 2（ルール開示）: lookup_k4/k10/k26 → table_add_k10/k26 → func_22
@@ -68,4 +68,4 @@ CUDA_VISIBLE_DEVICES="" python3 experiments/train_baseline.py \
 
 # ---- 4. 集計 ----
 python3 experiments/summarize.py >"$LOGDIR/summarize.log" 2>&1 || true
-echo "=== [$(date +%H:%M:%S)] 段階3 バッチ完了 ==="
+echo "=== [$(date +%H:%M:%S)] 実験1a バッチ完了 ==="

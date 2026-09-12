@@ -80,7 +80,7 @@ def parse_args():
                              "--data_seed が決めるので，これらとは独立．"
                              "既定の42は HuggingFace の既定値に合わせてある（従来の実験と同じ）")
     parser.add_argument("--tag", type=str, default="",
-                        help="この run が属する実験の名前（例: 段階7 seedばらつき）．"
+                        help="この run が属する実験の名前（例: 実験7 seedばらつき）．"
                              "train_metadata.json に記録され，make inventory の見出しに使われる．"
                              "バッチスクリプトから渡すことを想定している")
     parser.add_argument("--exclude_pairs", type=int, default=0,

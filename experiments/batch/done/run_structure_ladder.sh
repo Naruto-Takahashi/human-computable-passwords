@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 段階3: 動的参照の「構造」を振る3点比較
+# 実験3: 動的参照の「構造」を振る3点比較
 #
 # 8月のご指示（動的参照を増やす方向でLLMの限界を探る）に対し，これまで
 # pointer_chain（深さ方向）しか実験していなかった。しかもそれは3候補の中で
@@ -58,4 +58,4 @@ for ks in 1 2; do
 done
 
 $PY experiments/summarize.py >"$LOGDIR/summarize_structure_ladder.log" 2>&1 || true
-echo "=== [$(date '+%m/%d %H:%M:%S')] 段階3 構造ラダー バッチ完了 ===" >> "$LOGDIR/structure_ladder_done.log"
+echo "=== [$(date '+%m/%d %H:%M:%S')] 実験3 構造ラダー バッチ完了 ===" >> "$LOGDIR/structure_ladder_done.log"

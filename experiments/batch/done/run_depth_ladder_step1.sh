@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 段階2-1: 深さ1 vs 深さ2 の最小比較（指導教員指示 #pointer chasing）
+# 実験2-1: 深さ1 vs 深さ2 の最小比較（指導教員指示 #pointer chasing）
 # 既存 pointer_k10（34%, paradigm=pure, stage=2, n_shot=0, n_train=1000,
 # epochs=5, key_seed=0, data_seed=0）と完全に同一条件で
 # pointer_chain_k10_d1（再学習，学習のばらつき込みの対照）と
@@ -39,4 +39,4 @@ run_one pointer_chain_k10_d1
 run_one pointer_chain_k10_d2
 
 python3 experiments/summarize.py >"$LOGDIR/summarize_depth_step1.log" 2>&1 || true
-echo "=== [$(date '+%m/%d %H:%M:%S')] 段階2-1 バッチ完了 ===" >> "$LOGDIR/depth_step1_done.log"
+echo "=== [$(date '+%m/%d %H:%M:%S')] 実験2-1 バッチ完了 ===" >> "$LOGDIR/depth_step1_done.log"

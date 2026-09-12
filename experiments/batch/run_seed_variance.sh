@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 段階7: 「鍵の性質」なのか「run のばらつき」なのかを切り分ける
+# 実験7: 「鍵の性質」なのか「run のばらつき」なのかを切り分ける
 #
 # 【なぜ必要になったのか】
-# 段階6で table_add3_k10（静的参照3箇所の足し算）を鍵10本で回したところ，
+# 実験6で table_add3_k10（静的参照3箇所の足し算）を鍵10本で回したところ，
 # 正解率の分布が二峰性になった。
 #     ks=3 99.8% / ks=0 99.6% / ks=4 96.8%     ← 上の山（3本）
 #     ks=7 33.6% / ks=2 26.2% / ks=5 17.4% /
@@ -23,7 +23,7 @@
 # これは鍵の性質ではなく，学習の run ごとのばらつき（初期化や事例の並びの運）
 # ではないか。二峰性はその見方と整合する（一種の「当たりくじ」的な挙動）。
 # もしそうなら，この実験系では1条件1runでの条件間比較が成立しない。
-# 段階3〜6の数字はすべて運の1サンプルだったことになる。
+# 実験3〜6の数字はすべて運の1サンプルだったことになる。
 #
 # 【切り分け】
 # 鍵を固定したまま data_seed だけを変える。data_seed はチャレンジ集合の
@@ -38,7 +38,7 @@
 #       → run のばらつきである。今後すべての条件を複数 seed で回して
 #         分布で比較する必要があり，過去の結論はすべて測り直しになる。
 #
-# 学習条件は段階3〜6と完全に同一（pure / stage2 / n_train=1000 / epochs=5），
+# 学習条件は実験3〜6と完全に同一（pure / stage2 / n_train=1000 / epochs=5），
 # 評価は500件。約8時間。
 #
 # 【注意】評価の出力先パスは data_seed を含む（ks{key}_ds{data}）ので，
@@ -62,7 +62,7 @@ run_one() {
     if $PY experiments/train_finetuning.py --model "$MODEL" --algorithm "$ALGO" \
         --paradigm pure --stage 2 --n_shot 0 --n_train 1000 --epochs 5 \
         --key_seed "$key_seed" --data_seed "$data_seed" \
-        --tag "段階7: seed ばらつきの検証" >>"$log" 2>&1; then
+        --tag "実験7: seed ばらつきの検証" >>"$log" 2>&1; then
         local run_dir
         run_dir=$(grep -oP '(?<=^Results will be saved to: ).*' "$log" | head -1)
         echo "run_dir=$run_dir" >> "$log"
@@ -82,4 +82,4 @@ run_one 3 2
 run_one 6 2
 
 $PY experiments/summarize.py >"$LOGDIR/summarize_seed_variance.log" 2>&1 || true
-echo "=== [$(date '+%m/%d %H:%M:%S')] 段階7 seed ばらつきの検証 完了 ===" >> "$LOGDIR/seed_variance_done.log"
+echo "=== [$(date '+%m/%d %H:%M:%S')] 実験7 seed ばらつきの検証 完了 ===" >> "$LOGDIR/seed_variance_done.log"

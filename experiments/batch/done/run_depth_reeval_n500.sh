@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# 段階2-3: 既存の学習済みアダプタを n_test=500 で再評価（再学習なし・推論のみ）
+# 実験2-3: 既存の学習済みアダプタを n_test=500 で再評価（再学習なし・推論のみ）
 #
 # 動機: これまでの深さラダーは全て n_test=50 で評価してきたが，この規模では
 #   検出できる最小の差が約27ポイントしかない（深さ1→3で観測された差は12〜18
@@ -51,4 +51,4 @@ eval_one pointer_chain_k10_d3 1 "$REPO/$BASE/pointer_chain_k10_d3/run_20260817_0
 eval_one pointer_chain_k10_d3 2 "$REPO/$BASE/pointer_chain_k10_d3/run_20260817_120042"
 
 $PY experiments/summarize.py >"$LOGDIR/summarize_reeval_n500.log" 2>&1 || true
-echo "=== [$(date '+%m/%d %H:%M:%S')] 段階2-3 再評価バッチ完了 ===" >> "$LOGDIR/depth_reeval_done.log"
+echo "=== [$(date '+%m/%d %H:%M:%S')] 実験2-3 再評価バッチ完了 ===" >> "$LOGDIR/depth_reeval_done.log"
