@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-09-06 03:06:40）．
-一次データ: `results/summary_llm.csv`（70 実験）
+`experiments/summarize.py` により自動生成（2026-09-10 11:16:48）．
+一次データ: `results/summary_llm.csv`（78 実験）
 
 | モデル | アルゴリズム | タスク | Stage | K | N | 反復数 | 応答精度 | 鍵セル一致率 | 鍵完全一致率 | held-out精度 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -23,6 +23,7 @@
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260823_025131 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 16.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260823_151707 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 12.20% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260823_210006 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 12.60% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/func_22_k10/run_20260909_195019 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 1 | 20.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/narrowptr_k10_m1/run_20260902_015225 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 1 | 9.80% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/narrowptr_k10_m1/run_20260902_101812 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 1 | 13.40% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/narrowptr_k10_m2/run_20260902_035831 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 1 | 9.60% | - | - | - |
@@ -46,6 +47,13 @@
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/recptr_k10/run_20260823_113251 | recptr_k10 | predict(pure) | 2 | 0 | 0 | 1 | 20.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260905_231205 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 10.60% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260906_010906 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 26.20% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260909_215428 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 99.80% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260909_234850 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 96.80% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260910_014404 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 17.40% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260910_033625 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 10.20% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260910_053027 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 33.60% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260910_072655 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 10.60% | - | - | - |
+| /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k10/run_20260910_092238 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 1 | 11.60% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k26/run_20260729_041333 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 1 | 12.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add3_k26/run_20260729_055650 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 1 | 14.00% | - | - | - |
 | /home/nalt/ghq/github.com/Naruto-Takahashi/human-computable-passwords/results/llm_finetune/qwen2.5_3b/table_add_k26/run_20260721_161433 | table_add_k26 | predict(pure) | 2 | 0 | 0 | 1 | 100.00% | - | - | - |
