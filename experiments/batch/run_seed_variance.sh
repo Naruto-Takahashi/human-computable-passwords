@@ -61,7 +61,8 @@ run_one() {
     echo "=== [$(date '+%m/%d %H:%M:%S')] TRAIN $tag ===" > "$log"
     if $PY experiments/train_finetuning.py --model "$MODEL" --algorithm "$ALGO" \
         --paradigm pure --stage 2 --n_shot 0 --n_train 1000 --epochs 5 \
-        --key_seed "$key_seed" --data_seed "$data_seed" >>"$log" 2>&1; then
+        --key_seed "$key_seed" --data_seed "$data_seed" \
+        --tag "段階7: seed ばらつきの検証" >>"$log" 2>&1; then
         local run_dir
         run_dir=$(grep -oP '(?<=^Results will be saved to: ).*' "$log" | head -1)
         echo "run_dir=$run_dir" >> "$log"

@@ -24,6 +24,7 @@ import csv
 import glob
 import json
 import os
+import re
 from collections import defaultdict
 from datetime import datetime
 
@@ -35,6 +36,54 @@ EVAL_DIR = os.path.join(REPO_ROOT, "results", "llm_eval")
 # 未学習の run は 0.19 前後で張り付き，離陸した run は 0.02 以下まで落ちるため，
 # その中間に取った（2026-09-12 の監査，docs/training_dynamics.md 参照）。
 TAKEOFF_THRESHOLD = 0.15
+
+# 過去の run がどの実験に属するかの対応表（run ディレクトリ名の時刻で引く）。
+#
+# 2026-09-12 より前の run には実験名が記録されていないため，ここで後づけする。
+# 以降の run は train_finetuning.py の --tag で記録されるので，そちらが優先される。
+# 区間は [開始, 終了) で，実験を追加したらここに1行足す。
+#
+# 「決着済み」に分類された実験は既定では1行に畳んで表示する。研究の焦点が
+# 移ったあとも全 run を並べ続けると，いま動いている実験が埋もれてしまうため。
+STAGES: list[tuple[str, str, str, bool]] = [
+    # (開始, 終了, 実験名, いま関心があるか)
+    ("20260601", "20260801", "7月: 難易度ラダーの探索（記憶・合成・動的参照）", False),
+    ("20260801", "20260823", "段階2: 深さラダー（pointer_chain）", False),
+    ("20260823", "20260824", "段階3: 構造ラダー（dualptr / recptr）", False),
+    ("20260824", "20260901", "段階4: 学習量スイープ", False),
+    ("20260901", "20260905", "段階5: 参照範囲ラダー（narrowptr）", False),
+    ("20260905", "20260909", "段階5b: 静的端点の検証", True),
+    ("20260909", "20260912", "段階6: 鍵の交絡", True),
+    ("20260912", "20270101", "段階7: seed ばらつきの検証", True),
+]
+
+
+# 日付の区間では拾えない run の例外（run 名 → (実験名, いま関心があるか)）。
+# 区間の境界をまたいで実施した実験や，あとから別の実験の一部として読み直した run を
+# ここで正す。--tag が使えない過去の run のための措置であり，新しい run では不要。
+RUN_STAGE_OVERRIDES: dict[str, tuple[str, bool]] = {
+    # 7月に学習したが，2026-09 に500件で再評価して段階5b・6 の静的参照の端点
+    # （99.6%）として使っている。学習日は7月でも，議論に効いているのは現在。
+    "run_20260729_023201": ("段階5b: 静的端点の検証", True),
+    # 学習量スイープ（n_train=3000 / 5000）。段階3 の当日に走り始めたため
+    # 日付の区間では段階3 に入ってしまう。
+    "run_20260823_151707": ("段階4: 学習量スイープ", False),
+    "run_20260823_210006": ("段階4: 学習量スイープ", False),
+}
+
+
+def stage_of(run_name: str, tag: str) -> tuple[str, bool]:
+    """(実験名, いま関心があるか) を返す．--tag があればそれを優先する．"""
+    if tag:
+        return tag, True
+    if run_name in RUN_STAGE_OVERRIDES:
+        return RUN_STAGE_OVERRIDES[run_name]
+    m = re.match(r"run_(\d{8})", run_name)
+    if m:
+        for start, end, name, active in STAGES:
+            if start <= m.group(1) < end:
+                return name, active
+    return "分類なし", False
 
 
 def read_history(run_dir: str) -> tuple[float | None, int | None, float | None]:
@@ -107,6 +156,7 @@ def collect_rows(algorithm_filter: str | None) -> list[dict]:
         if algorithm_filter and algo != algorithm_filter:
             continue
         final_vl, takeoff, min_vl = read_history(run_dir)
+        stage, active = stage_of(os.path.basename(run_dir), args.get("tag", ""))
         matched = evals.get(run_key(run_dir), [])
         # 同じ run を複数の n_test で評価している場合は，件数の多い方を代表にする
         best = max(matched, key=lambda r: r["n_test"] or 0) if matched else {}
@@ -126,6 +176,8 @@ def collect_rows(algorithm_filter: str | None) -> list[dict]:
             "min_val_loss": min_vl,
             "takeoff_epoch": takeoff,
             "legacy_meta": args.get("algorithm") is None,
+            "stage": stage,
+            "active": active,
             "run": os.path.basename(run_dir),
             "path": os.path.relpath(run_dir, REPO_ROOT),
         })
@@ -142,71 +194,120 @@ def num(v, spec="{:.4f}") -> str:
     return "-" if v is None else spec.format(v)
 
 
-def build_md(rows: list[dict]) -> list[str]:
+def detail_table(items: list[dict]) -> list[str]:
+    md = ["| アルゴリズム | 鍵 | データ | 学習件数 | エポック | 評価件数 | 正解率 "
+          "| 最終val損失 | 離陸ep | run |",
+          "|---|---|---|---|---|---|---|---|---|---|"]
+    for r in items:
+        md.append(
+            f"| {r['algorithm']} | {r['key_seed']} | {r['data_seed']} | {r['n_train']} "
+            f"| {r['epochs']} | {r['n_test'] or '-'} | {pct(r['accuracy'])} "
+            f"| {num(r['final_val_loss'])} | {r['takeoff_epoch'] or '-'} | `{r['run']}` |"
+        )
+    return md
+
+
+def missing_combos(items: list[dict]) -> list[tuple]:
+    """そのアルゴリズムで一度でも使った値の直積のうち，実施記録が無いもの．"""
+    keys = sorted({r["key_seed"] for r in items if r["key_seed"] is not None})
+    seeds = sorted({r["data_seed"] for r in items if r["data_seed"] is not None})
+    trains = sorted({r["n_train"] for r in items if r["n_train"] is not None})
+    eps = sorted({r["epochs"] for r in items if r["epochs"] is not None})
+    done = {(r["key_seed"], r["data_seed"], r["n_train"], r["epochs"]) for r in items}
+    return [(k, d, t, e) for k in keys for d in seeds for t in trains for e in eps
+            if (k, d, t, e) not in done]
+
+
+def build_md(rows: list[dict], show_all: bool) -> list[str]:
+    active = [r for r in rows if r["active"]]
+    settled = [r for r in rows if not r["active"]]
+
     md = [
         "# 実験の棚卸し（どのパラメータで走らせたか）",
         "",
         f"`experiments/inventory.py` により自動生成（{datetime.now():%Y-%m-%d %H:%M:%S}）．",
         f"一次データ: `results/inventory.csv`（学習 run {len(rows)} 本）",
         "",
-        "「離陸」は検証損失が "
-        f"{TAKEOFF_THRESHOLD} を下回った最初のエポック．`-` は最後まで下回らなかったことを表す．",
+        f"「離陸」は検証損失が {TAKEOFF_THRESHOLD} を下回った最初のエポック．"
+        "`-` は最後まで下回らなかったこと（＝学習が始まっていないこと）を表す．"
         "詳しくは [docs/training_dynamics.md](../docs/training_dynamics.md)．",
         "",
+        "研究の焦点が移ったあとの run を並べ続けると，いま動いている実験が埋もれる．"
+        "そのため**いま関心のある実験だけを詳細に出し，決着済みの実験は要約に畳んでいる**．"
+        "どの run がどの実験に属するかは `experiments/inventory.py` の `STAGES` で決めており，"
+        "実験を追加したらそこに1行足す（今後の run は `--tag` で自動的に記録される）．",
+        "",
     ]
+
+    # ---- いま関心のある実験 ----
+    md += ["## いま動いている実験", ""]
+    by_stage: dict[str, list[dict]] = defaultdict(list)
+    for r in active:
+        by_stage[r["stage"]].append(r)
+    for stage in sorted(by_stage, reverse=True):
+        items = by_stage[stage]
+        md += [f"### {stage}", "", *detail_table(items), ""]
+
+    # ---- 未実施の組み合わせ（関心のある実験に限る）----
+    md += ["## まだ走らせていない組み合わせ", "",
+           "いま動いている実験に出てくるアルゴリズムについて，**そのアルゴリズムで一度でも"
+           "使った値**の直積のうち実施記録が無いものを挙げる．全条件を埋めるべきという"
+           "意味ではなく，「これは試したか？」を思い出すための一覧である．", ""]
     by_algo: dict[str, list[dict]] = defaultdict(list)
     for r in rows:
         by_algo[r["algorithm"]].append(r)
-
-    md += ["## 実施済みの学習 run", ""]
-    for algo in sorted(by_algo):
-        md += [f"### {algo}", "",
-               "| 鍵 | データ | 学習件数 | エポック | lr | 評価件数 | 正解率 | 最終val損失 | 離陸ep | run |",
-               "|---|---|---|---|---|---|---|---|---|---|"]
-        for r in by_algo[algo]:
-            md.append(
-                f"| {r['key_seed']} | {r['data_seed']} | {r['n_train']} | {r['epochs']} "
-                f"| {num(r['lr'], '{:.0e}')} | {r['n_test'] or '-'} | {pct(r['accuracy'])} "
-                f"| {num(r['final_val_loss'])} | {r['takeoff_epoch'] or '-'} | `{r['run']}` |"
-            )
-        md.append("")
-
-    # ---- 走らせていない組み合わせ ----
-    md += ["## まだ走らせていない組み合わせ", "",
-           "各アルゴリズムについて，**そのアルゴリズムで一度でも使った値**の直積のうち，",
-           "実施記録が無いものを挙げる（全条件を埋めるべきという意味ではなく，",
-           "「これは試したか？」を思い出すための一覧である）．", ""]
-    for algo in sorted(by_algo):
+    active_algos = sorted({r["algorithm"] for r in active})
+    if not active_algos:
+        md += ["（いま動いている実験がありません）", ""]
+    for algo in active_algos:
         items = by_algo[algo]
+        miss = missing_combos(items)
         keys = sorted({r["key_seed"] for r in items if r["key_seed"] is not None})
+        seeds = sorted({r["data_seed"] for r in items if r["data_seed"] is not None})
         trains = sorted({r["n_train"] for r in items if r["n_train"] is not None})
         eps = sorted({r["epochs"] for r in items if r["epochs"] is not None})
-        done = {(r["key_seed"], r["data_seed"], r["n_train"], r["epochs"]) for r in items}
-        seeds = sorted({r["data_seed"] for r in items if r["data_seed"] is not None})
-        missing = [(k, d, t, e) for k in keys for d in seeds for t in trains for e in eps
-                   if (k, d, t, e) not in done]
-        md.append(f"### {algo}")
-        md.append("")
-        md.append(f"使った値: 鍵={keys} / データ={seeds} / 学習件数={trains} / エポック={eps}")
-        md.append("")
-        if not missing:
-            md.append("直積はすべて実施済み。")
+        md += [f"### {algo}", "",
+               f"使った値: 鍵={keys} / データ={seeds} / 学習件数={trains} / エポック={eps}", ""]
+        if not miss:
+            md += ["直積はすべて実施済み。", ""]
         else:
-            md.append(f"未実施 {len(missing)} 通り:")
-            md.append("")
-            md.append("| 鍵 | データ | 学習件数 | エポック |")
-            md.append("|---|---|---|---|")
-            for k, d, t, e in missing[:20]:
+            md += [f"未実施 {len(miss)} 通り:", "",
+                   "| 鍵 | データ | 学習件数 | エポック |", "|---|---|---|---|"]
+            for k, d, t, e in miss[:20]:
                 md.append(f"| {k} | {d} | {t} | {e} |")
-            if len(missing) > 20:
-                md.append(f"| … | | | 他 {len(missing) - 20} 通り |")
-        md.append("")
+            if len(miss) > 20:
+                md.append(f"| … | | | 他 {len(miss) - 20} 通り |")
+            md.append("")
+
+    # ---- 決着済み ----
+    md += ["## 決着済みの実験（要約）", "",
+           "`--all` を付けると全 run の明細が出る。", "",
+           "| 実験 | run数 | アルゴリズム | 正解率の幅 |", "|---|---|---|---|"]
+    st_settled: dict[str, list[dict]] = defaultdict(list)
+    for r in settled:
+        st_settled[r["stage"]].append(r)
+    for stage in sorted(st_settled, reverse=True):
+        items = st_settled[stage]
+        accs = [r["accuracy"] for r in items if r["accuracy"] is not None]
+        span = f"{min(accs):.1%} 〜 {max(accs):.1%}" if accs else "評価なし"
+        algos = sorted({r["algorithm"] for r in items})
+        shown = ", ".join(algos[:4]) + (f" 他{len(algos) - 4}種" if len(algos) > 4 else "")
+        md.append(f"| {stage} | {len(items)} | {shown} | {span} |")
+    md.append("")
+
+    if show_all:
+        md += ["### 決着済みの明細", ""]
+        for stage in sorted(st_settled, reverse=True):
+            md += [f"#### {stage}", "", *detail_table(st_settled[stage]), ""]
+
     return md
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="実験の棚卸しを作る")
     ap.add_argument("--algorithm", default=None, help="このアルゴリズムだけに絞る")
+    ap.add_argument("--all", action="store_true",
+                    help="決着済みの実験も明細で出す（既定は要約のみ）")
     args = ap.parse_args()
 
     rows = collect_rows(args.algorithm)
@@ -220,7 +321,7 @@ def main() -> None:
         w.writeheader()
         w.writerows(rows)
 
-    md = build_md(rows)
+    md = build_md(rows, show_all=args.all)
     md_path = os.path.join(REPO_ROOT, "results", "inventory.md")
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("\n".join(md) + "\n")

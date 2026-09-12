@@ -74,6 +74,10 @@ def parse_args():
     parser.add_argument("--lora_r", type=int, default=16)
     parser.add_argument("--lora_alpha", type=int, default=32)
     parser.add_argument("--quant", type=str, default="4bit", choices=["4bit", "8bit"])
+    parser.add_argument("--tag", type=str, default="",
+                        help="この run が属する実験の名前（例: 段階7 seedばらつき）．"
+                             "train_metadata.json に記録され，make inventory の見出しに使われる．"
+                             "バッチスクリプトから渡すことを想定している")
     parser.add_argument("--exclude_pairs", type=int, default=0,
                         help="暗記/合成の切り分け実験用: (X0,X1) の組をこの個数だけ学習データから"
                              "完全に除外する（table_add 系のみ）。除外リストは train_metadata.json に"
