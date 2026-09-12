@@ -58,7 +58,7 @@ $$
 ### 4.2 安全性パラメータ $s(f)$（Claim 1）
 
 $$
-s(f_{k_1,k_2}) = \min\left\{\frac{k_2+1}{2},\ k_1+1\right\}
+s(f_{k_1,k_2}) = \min\left\lbrace \frac{k_2+1}{2},\ k_1+1\right\rbrace
 $$
 
 | 関数 | $`k_1`$ | $`k_2`$ | $s(f)$ |

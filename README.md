@@ -65,10 +65,11 @@ sequenceDiagram
 原論文の人間計算可能関数 $`f_{k_1,k_2}`$ を使います。
 
 $$j = \left(\sum_{i=10}^{9+k_1} X_i\right) \bmod 10, \qquad
-Z = \left(X_j + \sum_{i=10+k_1}^{9+k_1+k_2} X_i\right) \bmod 10$$
+Z = \left(X_j + \sum_{i=10+k_1}^{9+k_1+k_2} X_i\right) \bmod 10
+$$
 
 $`k_1`$ は添字を作る項数、$`k_2`$ は末尾で足す項数で、入力は $`10+k_1+k_2 = 14`$ 個です。
-安全性パラメータは $`s(f) = \min\{(k_2+1)/2,\ k_1+1,\ 11\}`$。
+安全性パラメータは $`s(f) = \min\lbrace (k_2+1)/2,\ k_1+1,\ 11\rbrace`$。
 
 - 記号の定義 → [docs/hcp_background.md](docs/hcp_background.md)
 - 実装（全35種の単一情報源） → [`src/hcp/algorithms.py`](src/hcp/algorithms.py)、`make algorithms` で一覧

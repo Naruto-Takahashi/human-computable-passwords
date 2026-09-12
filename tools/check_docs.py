@@ -36,6 +36,9 @@ def targets() -> list[str]:
 def strip_code(text: str) -> str:
     """コードブロックと数式を取り除く（書き方の例は検査しない）．"""
     text = re.sub(r"```.*?```", "", text, flags=re.S)
+    text = re.sub(r"\$`[^`]*`\$", "", text)    # GitHub 記法の数式は先に丸ごと除く
+    text = re.sub(r"``[^`]*``", "", text)      # `` ... `` の入れ子
+    text = re.sub(r"`[^`\n]*`", "", text)      # インラインコード
     text = re.sub(r"\$\$.*?\$\$", "", text, flags=re.S)
     return re.sub(r"\$[^$\n]+\$", "", text)
 
@@ -43,7 +46,10 @@ def strip_code(text: str) -> str:
 def main() -> None:
     problems = 0
     for path in targets():
-        body = strip_code(open(path, encoding="utf-8").read())
+        raw = open(path, encoding="utf-8").read()
+        # コードブロックだけ落とした原文で判定する（インラインコードを消すと
+        # 行頭に : が現れるなどの誤検出が起きるため）
+        body = re.sub(r"```.*?```", "", raw, flags=re.S)
         for label, pattern in CHECKS:
             hits = [i for i, l in enumerate(body.splitlines(), 1)
                     if re.search(pattern, l)]
@@ -68,6 +74,39 @@ def main() -> None:
             print(f"  {rel}: インライン数式が強調に食われる — {len(bad)} 箇所"
                   f"（例 ${bad[0][:30]}$ → $`{bad[0][:30]}`$ と書く）")
             problems += len(bad)
+
+    # 数式の中の \{ \} は markdown にエスケープとして食われる
+    # （\{ → { になり，MathJax が \left{ を受け取って
+    #  「Missing or unrecognized delimiter for \left」になる）。
+    # \lbrace / \rbrace を使うこと。
+    for path in targets():
+        if "reports/" in path:
+            continue
+        body = re.sub(r"```.*?```", "", open(path, encoding="utf-8").read(), flags=re.S)
+        hits = 0
+        for m in list(re.finditer(r"\$\$(.+?)\$\$", body, re.S)) + \
+                 list(re.finditer(r"\$`([^`]+)`\$", body)):
+            hits += m.group(1).count("\\{") + m.group(1).count("\\}")
+        if hits:
+            rel = os.path.relpath(path, ROOT)
+            print(f"  {rel}: 数式内の \\{{ \\}} — {hits} 箇所"
+                  f"（markdown に食われる。\\lbrace \\rbrace を使う）")
+            problems += hits
+
+    # $$ が独立した行にあるか（1行に詰めるとインライン扱いになり \left が壊れる）
+    for path in targets():
+        if "reports/" in path:
+            continue
+        body = re.sub(r"```.*?```", "", open(path, encoding="utf-8").read(), flags=re.S)
+        body = re.sub(r"\$`[^`]*`\$", "", body)
+        body = re.sub(r"``[^`]*``", "", body)
+        body = re.sub(r"`[^`\n]*`", "", body)
+        inline_dd = re.findall(r"^.*\S\$\$.*$|^\$\$.+\$\$$", body, re.M)
+        if inline_dd:
+            rel = os.path.relpath(path, ROOT)
+            print(f"  {rel}: $$ が独立行にない — {len(inline_dd)} 箇所"
+                  f"（前後で改行する）")
+            problems += len(inline_dd)
 
     # 数式の $ が閉じているか
     for path in targets():
