@@ -26,7 +26,7 @@ KEY_SEEDS = (1, 2)
 
 def load_results(name, key_seed):
     paths = glob.glob(
-        f"results/llm_eval/*/{name}/predict_pure/n0_stage2_k0/ks{key_seed}_ds0/results.csv"
+        f"results/llm_eval/{name}/predict_pure/n0_t*_stage2_k0/ks{key_seed}_ds0/*/results.csv"
     )
     if not paths:
         return None

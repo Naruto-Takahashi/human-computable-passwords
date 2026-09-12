@@ -47,7 +47,7 @@ llm_finetune/{モデル}/{アルゴリズム}/run_{YYYYMMDD_HHMMSS}/
 ## 評価: `llm_eval/`
 
 ```
-llm_eval/{モデル}/{アルゴリズム}/{タスク}/n{N}_t{T}_stage{S}_k{K}/ks{鍵}_ds{データ}/
+llm_eval/{アルゴリズム}/{タスク}/n{N}_t{T}_stage{S}_k{K}/ks{鍵}_ds{データ}/{モデル}/
 ├── metrics.json    正解率・パースエラー数・実行時の git コミット
 ├── results.csv     1問ごとの challenge / 正解 / 予測 / 正誤
 └── prompt_example.txt
@@ -55,23 +55,36 @@ llm_eval/{モデル}/{アルゴリズム}/{タスク}/n{N}_t{T}_stage{S}_k{K}/ks
 
 - `N` = few-shot の件数（ファインチューニング評価では 0）
 - **`T` = 評価件数**（2026-09-12 に追加。それ以前は 50件と500件が同じ場所に
-  書かれていて見分けられなかった。詳しくは `hcp.evaluation.make_run_dir` の説明）
+  書かれていて見分けられなかった）
 - `S` = Stage（情報開示の段階），`K` = 鍵の部分開示数
 
-### モデル名と学習 run の対応
+**アルゴリズムが先頭**なので，1つの実験の結果は1箇所にまとまる．
 
-ファインチューニングの評価では，`{モデル}` が `qwen2.5_3b_ft_{タイムスタンプ}` になる．
-これは**学習 run のディレクトリ名と対応している**：
+```
+$ find results/llm_eval/table_add3_k10 -name metrics.json
+  .../n0_t500_stage2_k0/ks0_ds0/qwen2.5_3b_ft_20260729_023201/metrics.json
+  .../n0_t500_stage2_k0/ks1_ds0/qwen2.5_3b_ft_20260905_231205/metrics.json
+  .../n0_t500_stage2_k0/ks2_ds0/qwen2.5_3b_ft_20260906_010906/metrics.json
+  ...                    ^^^ 鍵だけが違う10本が並ぶ
+```
+
+2026-09-12 まではモデル名が先頭にあり，ファインチューニング評価ではモデル名が
+学習 run ごとに変わるため，同じアルゴリズムの結果が60個のディレクトリに散っていた．
+
+最下層の `{モデル}` は，ファインチューニングでは `qwen2.5_3b_ft_{学習runの時刻}` になる．
+学習 run ディレクトリと対応している：
 
 ```
 学習: llm_finetune/qwen2.5_3b/table_add3_k10/run_20260729_023201
-評価: llm_eval/qwen2.5_3b_ft_20260729_023201/table_add3_k10/predict_pure/...
-                              ^^^^^^^^^^^^^^^ run_ を外した部分が一致する
+評価: .../ks0_ds0/qwen2.5_3b_ft_20260729_023201/
+                               ^^^^^^^^^^^^^^^ run_ を外した部分が一致する
 ```
 
-このため `llm_eval/` のトップ階層は run の本数だけ増える（現在60個）．
-同じアルゴリズムの結果を横断して見たいときは，ディレクトリを掘らずに
-`summary_llm.md` か `summary_llm.csv` を使うこと．
+`_legacy_format/` には 2026-07-12 のリファクタリング以前の結果が入っている
+（`metadata.json` を持つ旧形式．集計には含まれ，`summary_llm.md` で「[旧]」と表示される）．
+
+構造を変えたときは `make migrate-eval-paths`（確認）→ `APPLY=1` で既存結果を移せる．
+移動先は各 `metrics.json` の条件から計算するので，どの構造から来ても同じ手順で済む．
 
 ## ログ: `logs/`
 

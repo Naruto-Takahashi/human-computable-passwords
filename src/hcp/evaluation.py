@@ -61,7 +61,7 @@ def make_run_dir(
 ) -> str:
     """
     実験条件から決定的な出力ディレクトリを構成する．
-    構造: {base}/{model}/{algorithm}/{task}/n{N}_t{T}_stage{S}_k{K}/ks{key_seed}_ds{data_seed}
+    構造: {base}/{algorithm}/{task}/n{N}_t{T}_stage{S}_k{K}/ks{key_seed}_ds{data_seed}/{model}
 
     n_test（T）をパスに含めるのは 2026-09-12 の監査による修正である．
     以前は n_shot・stage・k_disclosed だけで条件を作っていたため，ファインチューニング
@@ -72,11 +72,17 @@ def make_run_dir(
     という事故が起きていた（実際に 2026-08 に発生し，results/llm_eval_backup_n50_20260817/
     へ退避して --overwrite で測り直している）。評価件数は結論の精度を直接左右する
     （50件では点推定が最大13ポイントずれる）ため，条件の一部として扱う。
+
+    アルゴリズムを先頭に置いているのは 2026-09-12 の整理による．以前はモデル名が
+    先頭にあり，ファインチューニング評価ではモデル名が学習 run ごとに変わるため，
+    同じアルゴリズムの結果が60個のディレクトリに散っていた（`table_add3_k10` の
+    10件が10箇所）。アルゴリズム→条件→シード→モデルの順にすると，1つの実験の
+    結果が1箇所に集まり，条件を揃えた比較が隣り合って並ぶ．
     """
     condition = f"n{n_shot}_t{n_test}_stage{stage}_k{k_disclosed}"
     seeds = f"ks{key_seed}_ds{data_seed}"
     return os.path.join(
-        base_dir, safe_model_name(model), algorithm, task_label, condition, seeds
+        base_dir, algorithm, task_label, condition, seeds, safe_model_name(model)
     )
 
 
