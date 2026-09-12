@@ -1,102 +1,57 @@
 # ドキュメントの索引
 
-> ここが **docs/ の入口**。各ドキュメントは
-> **冒頭に「📚 ドキュメント索引」への戻りリンク**、
-> **末尾に「次に読む」** を持っているので，どこからでも回遊できる。
-> リポジトリ全体の入口は **[../README.md](../README.md)**（研究の概要・現状・動かし方）。
-
-どれを読めばよいかの地図．**迷ったら下の「目的別」の表から入る．**
+> ここが **docs/ の入口**。各ドキュメントは冒頭に索引への戻りリンク、
+> 末尾に「次に読む」を持っているので、どこからでも回遊できる。
 
 > [!TIP]
-> **初めて読むなら** この3つを順に:
-> [研究計画](plan.md) → [HCP の前提知識](hcp_background.md) → [実験の一覧](experiment_index.md)
+> **初めて読むなら** [研究計画](plan.md) → [HCP の前提知識](hcp_background.md) → [実験の一覧](experiment_index.md)
 >
-> **いま何が起きているか**を知りたいなら:
-> [日誌](log.md)（新しい順）と [実験の一覧](experiment_index.md)（結論が生きているか）
-
-## 目的別
-
-| 知りたいこと | 読むもの |
-|---|---|
-| この研究は何をしているのか | [plan.md](plan.md)（研究計画書．背景・問い・実験設計・現状） |
-| 認証とは何か（パスワード認証・チャレンジレスポンス認証） | [authentication_background.md](authentication_background.md) |
-| HCP とは何か，記号の意味（σ・C・Z・$f_{k_1,k_2}$・$s(f)$） | [hcp_background.md](hcp_background.md) |
-| **段階N が何を指すか**（実験の一覧） | [experiment_index.md](experiment_index.md) |
-| 何をやってきたか，いつ何が分かったか | [log.md](log.md)（日誌．新しい順） |
-| 教授に何を報告したか | [reports/](reports/)（週次報告．Markdown が原本） |
-| 卒論の章立てと，各章の素材はどこにあるか | [thesis/README.md](thesis/README.md) |
-| 実験の回し方 | [../README.md](../README.md)，`make help` |
-| 引数の意味と既定値 | [cli_reference.md](cli_reference.md) |
-| LLM の学習とは何か（事前学習・SFT・LoRA・損失・過学習…） | [llm_training_basics.md](llm_training_basics.md) |
-| 学習率・エポック数とは何か／なぜ5エポックが問題だったか | [measurement_audit.md](measurement_audit.md) |
-| 過去のバッチ実験の一覧・新しい書き方 | [../experiments/batch/README.md](../experiments/batch/README.md) |
-| 結果がどこに保存されるか | [../results/README.md](../results/README.md) |
-| 先行研究の要約 | [literature/](literature/) |
-| コードがいまの形になった経緯 | [refactor_notes.md](refactor_notes.md) |
-
-## 一覧
-
-### 研究の記録
-
-- **[plan.md](plan.md)** — 研究計画書（v2）．問い・実験設計・スケジュール．
-  実験で何かが分かったらここに反映する．§3.1.2 に測定系の監査（2026-09-12）と，
-  それによって修正された過去の主張がまとまっている．
-- **[authentication_background.md](authentication_background.md)** — 認証の背景知識
-  （3分類・パスワード認証の限界・チャレンジレスポンス認証・Passkey/TOTP・
-  HCP の位置づけ）．卒論 第2章 2.1 の素材．出典は未確定（「要確認」節を参照）．
-- **[hcp_background.md](hcp_background.md)** — **週次報告の「前提知識」節の正本**．
-  研究の枠組み・記号の定義・関数族 $f_{k_1,k_2}$・安全性パラメータ $s(f)$・
-  難易度の分解・扱っている関数の定義．報告書にはここから写す．
-  本研究で独自に使う用語（衝突確率・最頻値基準線・離陸・床・動的参照）の表も末尾に．
-- **[experiment_index.md](experiment_index.md)** — **実験の一覧（実験1〜）**．各段階の問い・結果・
-  「現在その結論は生きているか」を1行で引ける．測定系の交絡で撤回・保留になった
-  ものが分かる．末尾に，これまでに確定した方法論上の規則8項目．
-  **段階を追加・改称するときはまずここを直す．**
-- **[log.md](log.md)** — 日誌．実施内容・得られた知見・次にやることを日付ごとに．
-  新しいものを**上**に足す．
-- **[reports/](reports/)** — 週次報告．書き方の約束は
-  [reports/README.md](reports/README.md)，雛形は [reports/TEMPLATE.md](reports/TEMPLATE.md)．
-  `make report-latest` で PDF 化，`make report-live` でプレビュー．
-
-### 手引き
-
-- **[llm_training_basics.md](llm_training_basics.md)** — 事前学習・継続事前学習・SFT・選好学習に
-  共通する考え方と用語．損失・最適化・バッチとエポック・汎化と過学習・正則化・
-  数値精度とメモリ・PEFT（LoRA / QLoRA）・乱数と再現性．本研究の設定は最後に
-  この枠組みの中で位置づけている．**学習の話が出てきたらまずここ．**
-- **[cli_reference.md](cli_reference.md)** — `train_finetuning.py` / `run_eval.py` の引数．
-  既定値が現行の実験条件と違う点や，`--paradigm` の語彙が学習と評価で違う点など，
-  つまずきやすい箇所を先頭にまとめてある．
-- **[measurement_audit.md](measurement_audit.md)** — 学習率とエポック数の前提知識と，
-  「5エポックという予算そのものが測定器になっていた」という監査結果．
-  検証損失の読み方（離陸したかどうか）もここ．
-
-### 背景
-
-- **[literature/](literature/)** — 先行研究の要約．Blum ら（原論文），小川ら，可知ら．
-- **[refactor_notes.md](refactor_notes.md)** — 2026-07 の監査とリファクタリングの記録
-  （アルゴリズム定義の単一情報源化，PoT の鍵リーク修正など）．
-
-### 保存用
-
-- `legacy/experiment_guide_20260712.md` — 旧実行ガイド．参照しているファイルの多くが
-  既に存在しない．現行の手順は上記を見ること．
-
-## 書くときの約束
-
-- 週次報告は **Markdown が唯一の原本**．Word は使わない．体裁の約束は
-  [reports/README.md](reports/README.md) を読んでから編集する（章番号を手で打たない，
-  数式は `$...$` で書く，など）．
-- 実験で分かったことは **log.md に日付つきで**書き，結論が変わるものは **plan.md にも
-  反映する**．過去の記述を消すのではなく，「いつ何が分かって，どの主張がどう変わったか」
-  が追える形にする．
+> **いま何が起きているかを知りたいなら** [実験の一覧](experiment_index.md)（結論が生きているか）と [日誌](log.md)（新しい順）
 
 ---
 
-## ドキュメントを書くとき
+## 研究の内容
 
-書き方の約束（冒頭・目次・末尾・注記・図・数式，同じ情報を2箇所に置かないこと）は
-**[../CLAUDE.md](../CLAUDE.md)** にまとめてある。
+| | |
+|---|---|
+| [authentication_background.md](authentication_background.md) | **認証とは何か** — 3分類・パスワード認証の限界・チャレンジレスポンス・Passkey。卒論 第2章の素材（出典は未確定） |
+| [hcp_background.md](hcp_background.md) | **HCP とは何か** — 記号（σ・C・Z）・関数族 $f_{k_1,k_2}$・安全性パラメータ $s(f)$・難易度の分解。**週次報告の「前提知識」節の正本** |
+| [literature/lab_theses.md](literature/lab_theses.md) | **研究室の卒論4本** — MLP → LSTM → BiLSTM → CNN → 本研究の系譜。卒論 第3章の素材 |
+| [literature/](literature/) | **先行研究の要約** — Blocki ら（原論文）・小川ら・加地ら |
+
+## 計画と記録
+
+| | |
+|---|---|
+| [plan.md](plan.md) | **研究計画** — 背景・問い・実験設計・評価指標・スケジュール。結果の数値は持たない |
+| [experiment_index.md](experiment_index.md) | **実験の一覧** — 実験1〜8の問い・結果・**いまその結論が生きているか**。末尾に方法論の規則8項目 |
+| [log.md](log.md) | **日誌** — 実施内容・得られた知見・次にやることを日付ごとに（新しい順） |
+| [../results/README.md](../results/README.md) | **結果の置き場と歩き方** — 学習の成果物・評価結果・ログの構造 |
+
+## 実験の道具
+
+| | |
+|---|---|
+| [llm_training_basics.md](llm_training_basics.md) | **LLM の学習の基礎** — 事前学習・SFT・LoRA・損失・過学習・乱数。**学習の話が出てきたらまずここ** |
+| [measurement_audit.md](measurement_audit.md) | **測定系の監査** — 5エポックという予算が測定値を作っていた。検証損失の読み方 |
+| [cli_reference.md](cli_reference.md) | **コマンドライン引数** — 既定値が現行の条件と違う点、`--paradigm` の語彙が学習と評価で違う点 |
+| [../experiments/batch/README.md](../experiments/batch/README.md) | **バッチの一覧と書き方** — 過去の実験がどのファイルか引ける |
+
+## 成果物
+
+| | |
+|---|---|
+| [thesis/README.md](thesis/README.md) | **卒論の章立てと素材** — 各章に何を書くか・根拠はどこか・何が足りないか（本文は書かない） |
+| [thesis/ch1_contribution.md](thesis/ch1_contribution.md) | **第1章 貢献の主張** — 実験の結果で分岐する下書き |
+| [reports/](reports/) | **週次報告** — Markdown が原本。[書き方](reports/README.md)・[雛形](reports/TEMPLATE.md) |
+
+## 開発
+
+| | |
+|---|---|
+| [refactor_notes.md](refactor_notes.md) | **コードがいまの形になった経緯** — 時期ごとの記録 |
+| [../CLAUDE.md](../CLAUDE.md) | **作業の約束** — 実験の回し方・ドキュメントの書き方・コミットメッセージ |
+| `../legacy/experiment_guide_20260712.md` | 旧実行ガイド（保存用。参照先の多くが既に存在しない） |
 
 ---
 
