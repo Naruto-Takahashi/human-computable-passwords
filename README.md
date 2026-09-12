@@ -1,183 +1,73 @@
-# 人間計算可能パスワード (HCP) に基づく LLM のルール実行（演繹）およびルール逆推定（帰納）の限界評価ベンチマーク
+# 人間計算可能パスワード (HCP) に基づく LLM の限界評価ベンチマーク
 
-このリポジトリは，  
-**人間計算可能パスワード（Human-Computable Password，HCP）に基づく LLM のルール実行（演繹）およびルール逆推定（帰納）の限界評価ベンチマーク**  
-に関する研究コードおよび研究資料をまとめたものです．
+九州大学 工学部 電気情報工学科 櫻井研究室 / 卒業研究（令和8年度）
 
 ---
 
-## 概要
-
-人間計算可能パスワード（HCP）とは，ユーザーが記憶している秘密のテーブル（鍵）と，頭の中で実行可能な簡素なアルゴリズムを用いて，提示されたランダムな「チャレンジ」に対する「レスポンス」を暗算で計算し，認証を行う仕組みです．
-
-本研究では，HCPが持つ「人間の暗算で実行できる簡潔さ」と「間接参照（ポインタ）やモジュロ演算（剰余）などの構造的・非線形なアルゴリズム関係」という性質に着目し，**LLMにおける「ルール実行（演繹）およびルール逆推定（帰納）の限界（臨界点）」を定量的に明らかにするためのベンチマーク**として再定義しました．
-
-予備実験において，ローカルLLM単体では入出力ペアのみから背後にあるルールを完全逆推定することはほぼ不可能であることが示されました．本ベンチマークでは，完全に不可能なブラックボックス状態から出発し，プロンプトへ提示する情報（アルゴリズム仕様や鍵の部分開示数 $K$）を段階的に変化（Stage 0〜3）させていくことで，**AIの推論（ルール実行・ルール逆推定）が「崩壊」から「成功」へと転移する境界（相転移境界）**を数理的・実証的に特定・スキャンします．
-
-また，実験結果のログは，LLMの思考過程と解答の成否を明確に追跡できるよう，大文字のステータスを用いた連番形式（例：`001_CORRECT.md`，`002_INCORRECT.md`）で詳細に記録されます．
-
----
-
-## ディレクトリ構造
-
-本リポジトリのディレクトリ構成および主要ファイルの説明は以下の通りです．
-
-```text
-human-computable-passwords/
-├── src/                       # ソースコード（ライブラリ）
-│   ├── hcp/                   # 研究の中核パッケージ（アルゴリズム定義の単一情報源）
-│   │   ├── algorithms.py      # HCPアルゴリズム定義（計算・ルール文・参照コード・解説）+ 自己検証
-│   │   ├── dataset.py         # 鍵シード/データシード分離のデータセット生成
-│   │   ├── prompts.py         # Stage 0〜3 × タスク（predict / recover_key）のプロンプト構築
-│   │   ├── clients.py         # Gemini / Ollama / Mock / LoRA クライアント
-│   │   ├── executor.py        # LLM出力のパース・鍵テーブル抽出・生成コード実行
-│   │   ├── evaluation.py      # 実験実行・採点・記録（応答精度・鍵復元率）
-│   │   ├── solver.py          # 厳密ソルバー（整合鍵の数え上げ=情報限界，鍵復元=計算可解性）
-│   │   └── plotting.py        # 学習曲線などの可視化
-│   └── baseline_ml/           # 従来ML（CNN等）ベースライン用モジュール
-├── experiments/               # 実験の実行スクリプト
-│   ├── run_eval.py            # 統一評価ランナー（predict / recover_key）
-│   ├── sweep.py               # N×K×アルゴリズム×シードのスイープ（レジューム対応）
-│   ├── info_limit.py          # 情報理論的限界 N*_info の測定
-│   ├── summarize.py           # 評価結果の自動集計（summary_llm.{md,csv}）
-│   ├── train_finetuning.py    # QLoRAファインチューニング
-│   ├── train_baseline.py 等   # 従来MLベースライン
-│   ├── inventory.py           # 学習 run の棚卸し（make inventory）
-│   └── batch/                 # 夜間バッチ（一覧: experiments/batch/README.md）
-├── tools/                     # 補助ツール
-│   ├── status.sh              # 走行中バッチと進捗（make status）
-│   ├── list_algorithms.py     # アルゴリズム一覧（make algorithms）
-│   ├── migrate_eval_paths.py  # 評価結果のパス移行
-│   └── sync_results.sh        # Google Drive 同期
-├── legacy/                    # 旧実装（参照用，動作保証なし）
-├── docs/                      # ドキュメント（索引: docs/README.md）
-│   ├── plan.md                # 研究計画書（v2）．問い・実験設計・現状
-│   ├── authentication_background.md  # 認証の背景知識（卒論 第2章の素材）
-│   ├── hcp_background.md      # HCP の前提知識（報告書の前提知識節の正本）
-│   ├── experiments.md         # 実験の一覧（実験1〜．問い・結果・現在の評価）
-│   ├── log.md                 # 日誌（新しい順）
-│   ├── llm_training_basics.md   # LLM の学習の基礎（事前学習・SFT・LoRA）
-│   ├── parameters.md          # 実験パラメータの手引き（既定値の落とし穴つき）
-│   ├── training_dynamics.md   # 学習率・エポック数の前提知識と測定系の監査
-│   ├── thesis/                # 卒論の章立てと素材の対応表（本文は書かない）
-│   ├── literature/            # 先行研究の要約（研究室の卒論4本を含む）
-│   ├── refactor_notes.md      # 2026-07 監査とリファクタリングの記録
-│   └── reports/               # 週次進捗報告（Markdown が原本）
-├── Makefile                   # test / smoke / summarize / sync 等の運用タスク
-├── literature/                # 先行研究の文献（実体はGoogle Drive管理，README.mdにリンク集）
-├── results/                   # 実験結果
-│   ├── llm_eval/              # LLM評価（モデル/アルゴリズム/タスク/条件/シードの階層）
-│   ├── llm_finetune/          # FT学習の成果物（メタデータ・学習曲線）
-│   ├── ml_baseline/           # 従来MLベースラインの結果
-│   ├── solver/                # 情報限界 N*_info（ソルバー出力, Git管理）
-│   ├── figures/               # 報告用の図（Git管理）
-│   ├── logs/                  # 実験バッチの実行ログ
-│   └── summary_llm.{md,csv}   # 自動集計（Git管理）
-├── flake.nix / flake.lock     # Nix (Flakes) 環境定義
-└── requirements.txt
-```
-
----
-
-## 本研究の意義
-
-1. **「データ汚染（Data Contamination）」からの完全な脱却**:  
-   独自のアルゴリズムと乱数シードから無限に未知の入出力パターンを合成可能なため，LLMが丸暗記している懸念のない純粋な「インコンテキスト推論能力（ルールの実行と逆推定）」を測定できます．
-2. **推論能力が崩壊する「相転移境界（臨界点）」の特定**:  
-   秘密鍵の部分開示（$K$ マス公開）などを段階的にスキャンし，AIが「崩壊」から「解読（復元）」へと移行する推論能力の限界値を境界探索できます．
-3. **AIの暗号解読能力（Cryptanalysis）の実践的評価**:  
-   流出した認証データから背後の秘密ルールやテーブルを再構築させる行為は，一種の「既知平文攻撃」であり，AIの敵対的耐性やセキュリティリスクを評価する指標となります．
-4. **従来の機械学習との「データ効率性」の対比**:  
-   数万 of データを用いた「教師あり学習」によって近似的に関数を再現する従来の機械学習に対し，僅かな Few-shot から論理構造を理解しようとするLLMの推論バイアスの違いを測定します．
-
----
-
-## 実験
-
-### 開発環境の構築
-
-`Nix` (Flakes) と `direnv` を用いて環境を管理しています．
-
-```bash
-direnv allow
-```
-
-以降，ディレクトリに入るだけで必要なライブラリが自動的に読み込まれます．
-
-### 動作確認
-
-```bash
-make test    # アルゴリズム自己検証 + ソルバー健全性チェック
-make smoke   # mock プロバイダによる E2E ドライラン（predict / recover_key）
-```
-
-### LLM 評価実験
-
-```bash
-# 応答予測タスク（paradigm: pure = JSON回答 / pot = Pythonコード実行）
-python experiments/run_eval.py --task predict --provider ollama --model qwen2.5:7b \
-    --algorithm func_22 --stage 2 --n_shot 30 --n_test 50 --key_seeds 0-4
-
-# 鍵復元タスク（観察データから鍵テーブルを丸ごと逆推定させ，鍵復元率を直接測定）
-python experiments/run_eval.py --task recover_key --provider ollama --model qwen2.5:7b \
-    --algorithm func_22 --stage 2 --n_shot 30 --key_seeds 0-4
-
-# 相転移スイープ（N×K×シードの直積を一括実行．中断しても再実行で続きから走る）
-python experiments/sweep.py --task recover_key --provider ollama --model qwen2.5:7b \
-    --algorithms func_22 --stage 2 --n_shots 10,20,30,40,50,75,100 --key_seeds 0-4
-
-# 情報理論的限界 N*_info の基準線（厳密ソルバーによる整合鍵数の数え上げ）
-python experiments/info_limit.py --algorithm func_22 --n_shots 5,10,20,26,30,40,50 --key_seeds 0-4
-
-# 評価結果の集計（summary_llm.md / summary_llm.csv の生成）
-make summarize
-```
-
-- **出力構造**: `results/llm_eval/<モデル>/<アルゴリズム>/<タスク>/n<N>_stage<S>_k<K>/ks<鍵シード>_ds<データシード>/` に自動整理され，プロンプト実物・生レスポンス・`metrics.json` が保存されます．
-- 設計変更の経緯と監査結果は [docs/refactor_notes.md](docs/refactor_notes.md) を参照してください．
-
-### 従来の機械学習モデルの学習
-
-```bash
-python experiments/train_baseline.py       # 個別モデルの学習
-python experiments/summarize_baseline.py   # 学習結果の集計
-```
-
----
-
-## ドキュメント・実行結果へのリンク
-
-**まず [ドキュメントの索引 (`docs/README.md`)](docs/README.md) を見ると早い．**
+## まず読む
 
 | | |
 |---|---|
-| 研究計画書 | [docs/plan.md](docs/plan.md) |
-| 認証とは何か | [docs/authentication_background.md](docs/authentication_background.md) |
-| HCP とは何か・記号の意味 | [docs/hcp_background.md](docs/hcp_background.md) |
-| 実験の一覧（実験1〜） | [docs/experiments.md](docs/experiments.md) |
-| 研究ログ（新しい順） | [docs/log.md](docs/log.md) |
-| 卒論の章立てと素材の所在 | [docs/thesis/README.md](docs/thesis/README.md) |
-| 実験パラメータの手引き | [docs/parameters.md](docs/parameters.md) |
-| LLM の学習の基礎（事前学習・SFT・LoRA） | [docs/llm_training_basics.md](docs/llm_training_basics.md) |
-| 学習率・エポック数の前提知識 | [docs/training_dynamics.md](docs/training_dynamics.md) |
-| 過去のバッチ実験の一覧 | [experiments/batch/README.md](experiments/batch/README.md) |
-| 結果の置き場と歩き方 | [results/README.md](results/README.md) |
-| 学習 run の棚卸し | [results/inventory.md](results/inventory.md)（`make inventory`） |
-| LLMベンチマーク結果のサマリー | [results/summary_llm.md](results/summary_llm.md)（`make summarize`） |
+| [docs/README.md](docs/README.md) | **ドキュメントの索引**（目的別） |
+| [docs/plan.md](docs/plan.md) | 研究計画書 — 背景・問い・実験設計・スケジュール |
+| [docs/experiments.md](docs/experiments.md) | 実験の一覧 — 各実験の問い・結果・**いまその結論は生きているか** |
 
----
+## 研究の内容
 
-### ファインチューニング（QLoRA）
+| | |
+|---|---|
+| [docs/authentication_background.md](docs/authentication_background.md) | 認証とは — 3分類・パスワード認証の限界・チャレンジレスポンス認証 |
+| [docs/hcp_background.md](docs/hcp_background.md) | HCP とは — 記号（σ・C・Z）・関数族 $f_{k_1,k_2}$・安全性パラメータ $s(f)$ |
+| [docs/literature/](docs/literature/) | 先行研究の要約 |
+| [docs/literature/lab_theses.md](docs/literature/lab_theses.md) | 研究室の卒論4本 — MLP → LSTM → BiLSTM → CNN → 本研究 |
 
-torch 系依存は nix develop に含まれないため `.venv/bin/python` を使用します。paradigm `pot` は教師データに秘密鍵がリークするため廃止されました（`docs/refactor_notes.md` 参照）。
+## 実験の道具
 
-```bash
-# 1. ファインチューニングの実行（学習済みアダプターは results/llm_finetune/ に保存）
-.venv/bin/python experiments/train_finetuning.py --model Qwen/Qwen2.5-3B-Instruct \
-    --algorithm func_22 --paradigm rationale --stage 2 --n_train 200
+| | |
+|---|---|
+| [docs/llm_training_basics.md](docs/llm_training_basics.md) | LLM の学習の基礎 — 事前学習・SFT・LoRA・損失・過学習・乱数 |
+| [docs/training_dynamics.md](docs/training_dynamics.md) | 学習率とエポック数 — なぜ固定予算が測定器になるのか |
+| [docs/parameters.md](docs/parameters.md) | 実験パラメータの手引き — 既定値の落とし穴 |
 
-# 2. 共通スクリプトによる評価（学習時と同じ key_seed / stage を指定すること）
-.venv/bin/python experiments/run_eval.py --provider lora \
-    --model results/llm_finetune/qwen2.5_3b/func_22/run_XXXXXXXX_XXXXXX \
-    --algorithm func_22 --stage 2 --key_seeds 0 --n_test 100
+## 実験の記録
+
+| | |
+|---|---|
+| [docs/log.md](docs/log.md) | 日誌（新しい順） |
+| [results/README.md](results/README.md) | 結果の置き場と歩き方 |
+| [results/inventory.md](results/inventory.md) | 学習 run の棚卸し（`make inventory`） |
+| [results/summary_llm.md](results/summary_llm.md) | 評価結果の集計（`make summarize`） |
+| [experiments/batch/README.md](experiments/batch/README.md) | バッチスクリプトの一覧と書き方 |
+
+## 卒業論文
+
+| | |
+|---|---|
+| [docs/thesis/README.md](docs/thesis/README.md) | 章立てと素材の対応表（**本文は書かない**） |
+| [docs/thesis/ch1_contribution.md](docs/thesis/ch1_contribution.md) | 第1章 貢献の主張（下書き） |
+| [docs/reports/](docs/reports/) | 週次報告（Markdown が原本） |
+| [docs/reports/README.md](docs/reports/README.md) | 報告書の書き方 |
+
+## 動かす
+
+| | |
+|---|---|
+| `make help` | コマンド一覧 |
+| `make status` | 走行中バッチと進捗 |
+| `make test` | アルゴリズム自己検証＋文面の非退行検査 |
+| [CLAUDE.md](CLAUDE.md) | このリポジトリで作業するときの約束 |
+| [docs/refactor_notes.md](docs/refactor_notes.md) | コードがいまの形になった経緯（2026-07） |
+
+## 構成
+
+```
+src/hcp/          研究の中核（algorithms.py が全アルゴリズム定義の単一情報源）
+src/baseline_ml/  従来ML（CNN等）ベースライン
+experiments/      実験スクリプト（batch/ に夜間バッチ）
+tools/            補助ツール（status / list_algorithms / read_pdf / migrate）
+tests/            文面の非退行検査
+docs/             ドキュメント（索引: docs/README.md）
+results/          実験結果（歩き方: results/README.md）
+literature/       先行研究の PDF（Git 管理外．実体は Google Drive）
+legacy/           旧実装（参照用，動作保証なし）
 ```
