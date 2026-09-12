@@ -16,15 +16,27 @@ HOURS="${1:-24}"
 LOGDIR=results/logs
 
 echo "===== 走行中のバッチ ====="
+# pgrep -f はコマンドライン全体に対する部分一致なので，スクリプト名を含む
+# 無関係なコマンド（たとえばスクリプト名に言及した git commit）まで拾ってしまう。
+# bash プロセスの引数を /proc から読み，「引数そのものがそのスクリプト」の場合だけ
+# 数える。自分自身と親プロセスは除く。
+self_chain=" $$ $PPID "
 found=0
-for f in experiments/batch/*.sh; do
-    name=$(basename "$f")
-    # pgrep のパターンに自分自身や grep が混ざらないよう，スクリプト名で厳密に引く
-    pids=$(pgrep -f "bash .*${name}" 2>/dev/null | tr '\n' ' ')
-    if [ -n "$pids" ]; then
-        echo "  $name  (PID: ${pids% })"
-        found=1
-    fi
+for pid in $(pgrep -x bash 2>/dev/null); do
+    case "$self_chain" in *" $pid "*) continue ;; esac
+    # プロセスは pgrep の直後に消えうる。リダイレクト失敗はシェル自身が出すので，
+    # tr の stderr ではなくブロック全体を包んで黙らせる。
+    cmdline=$( { tr '\0' '\n' < "/proc/$pid/cmdline"; } 2>/dev/null ) || continue
+    [ -n "$cmdline" ] || continue
+    while IFS= read -r arg; do
+        case "$arg" in
+            */experiments/batch/*.sh|experiments/batch/*.sh)
+                echo "  $(basename "$arg")  (PID: $pid)"
+                found=1
+                break
+                ;;
+        esac
+    done <<< "$cmdline"
 done
 [ "$found" -eq 0 ] && echo "  （なし）"
 
