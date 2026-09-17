@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-09-13 02:54:04）．
-一次データ: `results/summary_llm.csv`（83 実験）
+`experiments/summarize.py` により自動生成（2026-09-14 01:34:19）．
+一次データ: `results/summary_llm.csv`（86 実験）
 
 **この表は「評価1件」が1行**．ファインチューニングもプロンプティングも含む．
 学習条件（件数・エポック・lr）や検証損失，まだ評価していない学習 run を見たいなら
@@ -29,6 +29,8 @@
 | func_22_k10/run_20260823_151707 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 12.20% | - | - | - |
 | func_22_k10/run_20260823_210006 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 12.60% | - | - | - |
 | func_22_k10/run_20260909_195019 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 20.00% | - | - | - |
+| func_22_k10/run_20260913_102443 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 11.40% | - | - | - |
+| func_22_k10/run_20260913_175931 | func_22_k10 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 23.60% | - | - | - |
 | lookup_k10/run_20260716_142731 | lookup_k10 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |
 | lookup_k26/run_20260716_160156 | lookup_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |
 | lookup_k4/run_20260716_125310 | lookup_k4 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |
@@ -83,6 +85,7 @@
 | table_add3_k10/run_20260912_210005 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 100.00% | - | - | - |
 | table_add3_k10/run_20260912_225525 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 3 | 1 | 98.20% | - | - | - |
 | table_add3_k10/run_20260913_004808 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 96.20% | - | - | - |
+| table_add3_k10/run_20260913_032850 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 100.00% | - | - | - |
 | table_add3_k26/run_20260729_041333 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 12.00% | - | - | - |
 | table_add3_k26/run_20260729_055650 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 14.00% | - | - | - |
 | table_add_k10/run_20260716_173814 | table_add_k10 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |
