@@ -507,6 +507,69 @@ def _make_table_add3(k: int) -> Algorithm:
     )
 
 
+def _make_table_addn(n: int, k: int) -> Algorithm:
+    """
+    静的参照の「項数」を振る統制用アルゴリズム（2026-09-19，実験9 段階2）．
+    Z = (X0 + X1 + ... + X[n-1]) mod 10．動的参照を一切含まない．
+
+    【なぜ必要か】経路Bのこれまでの結果は，**答えを決める位置の数**と
+    **動的参照の有無**が完全に相関しており，どちらが壁なのか区別できない．
+
+        narrowptr_k10_m1  位置3（X0, X12, X13）      98.6%（未出 96.2%）
+        narrowptr_k10_m2  位置6（X0, X1, X10..X13）   9.2%
+
+    m を 1 から 2 に上げると動的参照が生まれるが，同時に関数の引数が
+    3個から6個に倍増している。lookup（位置1）・table_add（位置2）・
+    table_add3（位置3）が学習でき，位置6以上が全滅という並びは，
+    「位置数だけ」でも説明できてしまう。
+
+    そこで**動的参照を持たないまま位置数だけを増やす**ラダーを用意する。
+    table_add6_k4 は narrowptr_k4_m2 と位置数6・組み合わせ4096通りが一致し，
+    違いはポインタの有無だけになる。
+
+    【解釈の非対称性】成功すれば「位置6でも静的なら学習できる」＝壁は動的参照，
+    と決まる。失敗した場合は曖昧で，位置数のせいか「n個足す」という算術の重さの
+    せいか分からない（narrowptr m=2 は位置を6個読むが足すのは3個）。
+    そのときは n=4, 5 を刻んで静的の天井を特定する。
+    """
+    if n < 4:
+        raise ValueError(f"n は4以上で指定してください（3以下は table_add/table_add3）: {n}")
+
+    def fn(ch, key):
+        return sum(key[ch[i]] for i in range(n)) % 10
+
+    def explain(ch, key, z):
+        vals = [key[ch[i]] for i in range(n)]
+        refs = ", ".join(f"sgm[{ch[i]}]={vals[i]}" for i in range(n))
+        return (
+            f"1. テーブル値を参照: {refs}\n"
+            f"2. Z = ({' + '.join(str(v) for v in vals)}) mod 10 = {z}"
+        )
+
+    terms = " + ".join(f"SGM_TABLE[X{i}]" for i in range(n))
+    idx = ", ".join(f"X{i}" for i in range(n))
+    return Algorithm(
+        name=f"table_add{n}_k{k}",
+        level=1,
+        key_size=k,
+        fn=fn,
+        rule_text=(
+            f"ルール：Z = ({terms}) mod 10\n"
+            f"（{idx} は 0〜{k - 1} の整数で、秘密のテーブル SGM_TABLE（長さ{k}、各要素0〜9）の"
+            f"インデックスです。X{n}〜X13 は使用しません）\n"
+        ),
+        rationale_text=(
+            f"考え方:\n1. {idx} をインデックスとして秘密のテーブルの値を{n}つ参照する．\n"
+            "2. その和を10で割った余りが答えです．\n"
+        ),
+        code_body=(
+            "    sgm = {key}\n"
+            f"    return ({' + '.join(f'sgm[X[{i}]]' for i in range(n))}) % 10\n"
+        ),
+        explain=explain,
+    )
+
+
 def _make_pointer_chain(k: int, depth: int) -> Algorithm:
     """
     動的参照の「深さ」を振る診断用アルゴリズム（指導教員指示: #pointer chasing）．
@@ -806,6 +869,12 @@ _RANGE_LADDER = [_make_narrowptr(10, m) for m in (1, 2, 3, 5, 10)]
 # m=1（対照）と m=2（測定）は必ず対で回す。
 _MINIMAL_TASK = [_make_narrowptr(4, m) for m in (1, 2)]
 
+# 静的参照の項数ラダー（実験9 段階2）。動的参照を含まないまま位置数だけを増やす。
+# table_add6_k4 は narrowptr_k4_m2 と位置数6・組み合わせ4096通りが一致するため，
+# ポインタの有無だけを変えた対照になる。n=4,5 は table_add6 が失敗したときに
+# 静的の天井を特定するための刻み。設計の経緯は plan.md §3.1.4。
+_STATIC_ARITY = [_make_table_addn(n, 4) for n in (4, 5, 6)]
+
 
 # =============================================================================
 # レジストリ
@@ -813,7 +882,7 @@ _MINIMAL_TASK = [_make_narrowptr(4, m) for m in (1, 2)]
 
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
-    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK,
+    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK, *_STATIC_ARITY,
               _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10, _FUNC_31, _FUNC_POW]
 }
 

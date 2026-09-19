@@ -56,7 +56,8 @@ hcp_finish
 
 | スクリプト | 実験 | 内容 | 結果 |
 |---|---|---|---|
-| `run_minimal_task.sh` | 実験9 | 鍵4マスの最小課題 `narrowptr_k4_m{1,2}`（鍵35） | **未実施** |
+| `run_static_arity.sh` | 実験9 段階2 | 位置数を揃えた静的対照 `table_add6_k4`（鍵35） | **未実施** |
+| `run_minimal_task.sh` | 実験9 段階1 | 鍵4マスの最小課題 `narrowptr_k4_m{1,2}`（鍵35） | **走行中** |
 | `run_range_ladder_budget.sh` | 実験8b | 参照範囲ラダーを予算を外して測る `narrowptr_k10_m{1,2}` | m=1 98.6% / m=2 9.2%。壁は最小の刻みにあった |
 | `run_budget_probe.sh` | 実験8a | 20エポック・定数学習率で静的／動的を測り直す | 静的100.0%／動的 11.4%・23.6%（丸暗記） |
 | `run_seed_variance.sh` | 実験7 | 鍵を固定して data_seed だけ変える（ks=3,6 × ds=1,2） | 鍵6が 10.2%/100.0%/96.2%。測っていたのは離陸の有無 |
