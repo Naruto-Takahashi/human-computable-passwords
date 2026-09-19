@@ -800,6 +800,12 @@ _DEPTH_LADDER = [
 # 「床でない勾配」を測れる見込みの設計である。
 _RANGE_LADDER = [_make_narrowptr(10, m) for m in (1, 2, 3, 5, 10)]
 
+# 鍵を4マスに絞った最小課題（実験9）。記憶の負担を 1/244 に落としても
+# 動的参照が学習されないことを示し，「3B では容量が足りなかった」という
+# 説明を排除する。k=4 が縮小の下限である理由と停止条件は plan.md §3.1.3。
+# m=1（対照）と m=2（測定）は必ず対で回す。
+_MINIMAL_TASK = [_make_narrowptr(4, m) for m in (1, 2)]
+
 
 # =============================================================================
 # レジストリ
@@ -807,7 +813,7 @@ _RANGE_LADDER = [_make_narrowptr(10, m) for m in (1, 2, 3, 5, 10)]
 
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
-    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER,
+    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK,
               _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10, _FUNC_31, _FUNC_POW]
 }
 

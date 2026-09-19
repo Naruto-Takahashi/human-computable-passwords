@@ -56,7 +56,10 @@ hcp_finish
 
 | スクリプト | 実験 | 内容 | 結果 |
 |---|---|---|---|
-| `run_seed_variance.sh` | 実験7 | 鍵を固定して data_seed だけ変える（ks=3,6 × ds=1,2） | 走行中 |
+| `run_minimal_task.sh` | 実験9 | 鍵4マスの最小課題 `narrowptr_k4_m{1,2}`（鍵35） | **未実施** |
+| `run_range_ladder_budget.sh` | 実験8b | 参照範囲ラダーを予算を外して測る `narrowptr_k10_m{1,2}` | m=1 98.6% / m=2 9.2%。壁は最小の刻みにあった |
+| `run_budget_probe.sh` | 実験8a | 20エポック・定数学習率で静的／動的を測り直す | 静的100.0%／動的 11.4%・23.6%（丸暗記） |
+| `run_seed_variance.sh` | 実験7 | 鍵を固定して data_seed だけ変える（ks=3,6 × ds=1,2） | 鍵6が 10.2%/100.0%/96.2%。測っていたのは離陸の有無 |
 | [`done/run_key_effect.sh`](done/run_key_effect.sh) | 実験6 | `func_22_k10` を学習可能な鍵 ks=0 で／`table_add3_k10` を鍵10本で | 同じ鍵で静的99.6% vs 動的20.0%。鍵の分布は二峰性 |
 | [`done/run_static_endpoint_check.sh`](done/run_static_endpoint_check.sh) | 実験5b | `table_add3_k10` を鍵だけ変えて（ks=1,2）＋7月アダプタの再評価 | 99.6% / 26.2% / 10.6%。学習可否は鍵で決まる |
 | [`done/run_range_ladder.sh`](done/run_range_ladder.sh) | 実験5 | 参照範囲ラダー `narrowptr_k10_m{1,2,3,5}` × 鍵2本 | 勾配は出ず。端点の前提が崩れた |
