@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-09-14 01:34:19）．
-一次データ: `results/summary_llm.csv`（86 実験）
+`experiments/summarize.py` により自動生成（2026-09-18 10:30:44）．
+一次データ: `results/summary_llm.csv`（88 実験）
 
 **この表は「評価1件」が1行**．ファインチューニングもプロンプティングも含む．
 学習条件（件数・エポック・lr）や検証損失，まだ評価していない学習 run を見たいなら
@@ -36,8 +36,10 @@
 | lookup_k4/run_20260716_125310 | lookup_k4 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |
 | narrowptr_k10_m1/run_20260902_015225 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.80% | - | - | - |
 | narrowptr_k10_m1/run_20260902_101812 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 13.40% | - | - | - |
+| narrowptr_k10_m1/run_20260917_191647 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 98.60% | - | - | - |
 | narrowptr_k10_m2/run_20260902_035831 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.60% | - | - | - |
 | narrowptr_k10_m2/run_20260902_122450 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 17.40% | - | - | - |
+| narrowptr_k10_m2/run_20260918_025516 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 9.20% | - | - | - |
 | narrowptr_k10_m3/run_20260902_060434 | narrowptr_k10_m3 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.00% | - | - | - |
 | narrowptr_k10_m3/run_20260902_143124 | narrowptr_k10_m3 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 19.80% | - | - | - |
 | narrowptr_k10_m5/run_20260902_081227 | narrowptr_k10_m5 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.80% | - | - | - |
