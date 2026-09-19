@@ -82,6 +82,13 @@ status:
 algorithms:
 	@$(PY) tools/list_algorithms.py
 
+# 評価結果を「学習で既出」と「未出」に分けて正解率を出す。
+# 鍵が小さい課題（実験9 の k=4 など）では学習データが評価を覆うため，
+# 全体の正解率だけでは規則の学習か丸暗記かを区別できない。
+#   make seen-unseen RUN=results/llm_eval/<algo>/predict_pure/<条件>/<seeds>/<run>
+seen-unseen:
+	@$(PY) tools/seen_unseen.py $(RUN)
+
 # 構文を誤ると GitHub 上で図の代わりにエラーが出るため，事前に検査する。
 # 依存は一時ディレクトリに入るのでリポジトリには残らない（初回は取得に時間がかかる）。
 check-mermaid:
