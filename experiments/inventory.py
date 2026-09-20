@@ -12,7 +12,7 @@
 #                   「離陸したエポック」を出す。まだ評価していない学習 run も載る。
 #
 # 出力:
-#   results/inventory.md   人間が読む一覧＋未実施の組み合わせ
+#   results/inventory.md   人間が読む一覧（いま動いている実験だけ詳細）
 #   results/inventory.csv  一次データ
 #
 #   python3 experiments/inventory.py                    # 全部
@@ -56,9 +56,12 @@ STAGES: list[tuple[str, str, str, bool]] = [
     ("20260823", "20260824", "実験3: 構造ラダー（dualptr / recptr）", False),
     ("20260824", "20260901", "実験4: 学習量スイープ", False),
     ("20260901", "20260905", "実験5: 参照範囲ラダー（narrowptr）", False),
-    ("20260905", "20260909", "実験5b: 静的端点の検証", True),
-    ("20260909", "20260912", "実験6: 鍵の交絡", True),
-    ("20260912", "20270101", "実験7: seed ばらつきの検証", True),
+    ("20260905", "20260909", "実験5b: 静的端点の検証", False),
+    ("20260909", "20260912", "実験6: 鍵の交絡", False),
+    ("20260912", "20260913", "実験7: seed ばらつきの検証", False),
+    ("20260913", "20260915", "実験8a: 学習予算の探り", False),
+    ("20260915", "20260919", "実験8b: 参照範囲ラダー", False),
+    ("20260919", "20270101", "実験9: 最小課題と項数", True),
 ]
 
 
@@ -187,7 +190,34 @@ def collect_rows(algorithm_filter: str | None) -> list[dict]:
         })
     rows.sort(key=lambda r: (r["algorithm"], r["key_seed"] or 0, r["data_seed"] or 0,
                              r["n_train"] or 0, r["epochs"] or 0))
+    _mark_active(rows)
     return rows
+
+
+def _mark_active(rows: list[dict]) -> None:
+    """「いま動いている」を絞り込む．
+
+    --tag が付いた run を無条件に active にしていたため，終わった実験も
+    詳細表示に残り続け，一覧が読めなくなっていた（2026-09-20）。
+    人間が知りたいのは「いま何が走っているか」と「直前に何が出たか」だけなので，
+
+    **最も新しい実験だけ**を詳細に出し，残りは要約に畳む．走行中のバッチは
+    必ず最新の実験に属するので，これで「いま何が走っているか」は必ず見える．
+    過去の結果は docs/experiment_index.md で実験単位に読む．
+
+    「未評価だから走行中」という判定にはしない．7月に学習が完走せず放棄された
+    run が16本あり，それらを走行中とみなすと7月の実験が丸ごと詳細表示に
+    戻ってしまうためである．
+    """
+    if not rows:
+        return
+    latest: dict[str, str] = {}
+    for r in rows:
+        st = r["stage"]
+        latest[st] = max(latest.get(st, ""), r["run"])
+    newest = max(latest, key=lambda st: latest[st]) if latest else None
+    for r in rows:
+        r["active"] = r["stage"] == newest
 
 
 def pct(v) -> str:
@@ -241,10 +271,10 @@ def build_md(rows: list[dict], show_all: bool) -> list[str]:
         "`-` は最後まで下回らなかったこと（＝学習が始まっていないこと）を表す．"
         "詳しくは [docs/measurement_audit.md](../docs/measurement_audit.md)．",
         "",
-        "研究の焦点が移ったあとの run を並べ続けると，いま動いている実験が埋もれる．"
-        "そのため**いま関心のある実験だけを詳細に出し，決着済みの実験は要約に畳んでいる**．"
-        "どの run がどの実験に属するかは `experiments/inventory.py` の `STAGES` で決めており，"
-        "実験を追加したらそこに1行足す（今後の run は `--tag` で自動的に記録される）．",
+        "**この表は道具であって，読み物ではない．**「いま何が走っているか」と"
+        "「直前に何が出たか」だけを詳細に出し，残りは要約に畳む．"
+        "過去の結果を実験単位で追うなら [docs/experiment_index.md](../docs/experiment_index.md)，"
+        "指標そのものの分布を見るなら `make corpus` を使うこと．",
         "",
     ]
 
@@ -256,37 +286,6 @@ def build_md(rows: list[dict], show_all: bool) -> list[str]:
     for stage in sorted(by_stage, reverse=True):
         items = by_stage[stage]
         md += [f"### {stage}", "", *detail_table(items), ""]
-
-    # ---- 未実施の組み合わせ（関心のある実験に限る）----
-    md += ["## まだ走らせていない組み合わせ", "",
-           "いま動いている実験に出てくるアルゴリズムについて，**そのアルゴリズムで一度でも"
-           "使った値**の直積のうち実施記録が無いものを挙げる．全条件を埋めるべきという"
-           "意味ではなく，「これは試したか？」を思い出すための一覧である．", ""]
-    by_algo: dict[str, list[dict]] = defaultdict(list)
-    for r in rows:
-        by_algo[r["algorithm"]].append(r)
-    active_algos = sorted({r["algorithm"] for r in active})
-    if not active_algos:
-        md += ["（いま動いている実験がありません）", ""]
-    for algo in active_algos:
-        items = by_algo[algo]
-        miss = missing_combos(items)
-        keys = sorted({r["key_seed"] for r in items if r["key_seed"] is not None})
-        seeds = sorted({r["data_seed"] for r in items if r["data_seed"] is not None})
-        trains = sorted({r["n_train"] for r in items if r["n_train"] is not None})
-        eps = sorted({r["epochs"] for r in items if r["epochs"] is not None})
-        md += [f"### {algo}", "",
-               f"使った値: 鍵={keys} / データ={seeds} / 学習件数={trains} / エポック={eps}", ""]
-        if not miss:
-            md += ["直積はすべて実施済み。", ""]
-        else:
-            md += [f"未実施 {len(miss)} 通り:", "",
-                   "| 鍵 | データ | 学習件数 | エポック |", "|---|---|---|---|"]
-            for k, d, t, e in miss[:20]:
-                md.append(f"| {k} | {d} | {t} | {e} |")
-            if len(miss) > 20:
-                md.append(f"| … | | | 他 {len(miss) - 20} 通り |")
-            md.append("")
 
     # ---- 決着済み ----
     md += ["## 決着済みの実験（要約）", "",
@@ -335,11 +334,24 @@ def main() -> None:
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("\n".join(md) + "\n")
 
-    未評価 = sum(1 for r in rows if r["accuracy"] is None)
+    # 「未評価」には，走行中のものと，学習が完走せず放棄されたものが混ざる。
+    # 一緒に数えると「17本も評価し忘れている」ように見えてしまうので分ける。
+    未評価 = [r for r in rows if r["accuracy"] is None]
+    # history.csv は学習が完走した時点で書かれるので，走行中の run にはまだ無い。
+    # checkpoints があれば少なくとも学習は動いている＝放棄ではない。
+    def _abandoned(r: dict) -> bool:
+        d = os.path.join(REPO_ROOT, r["path"])
+        return not (os.path.isfile(os.path.join(d, "history.csv"))
+                    or os.path.isdir(os.path.join(d, "checkpoints")))
+    放棄 = [r for r in 未評価 if _abandoned(r)]
     print(f"保存完了: {csv_path}")
     print(f"          {md_path}")
-    print(f"学習 run {len(rows)} 本（うち未評価 {未評価} 本） / "
-          f"アルゴリズム {len({r['algorithm'] for r in rows})} 種類")
+    print(f"学習 run {len(rows)} 本 / アルゴリズム "
+          f"{len({r['algorithm'] for r in rows})} 種類")
+    if 未評価:
+        走行中 = len(未評価) - len(放棄)
+        print(f"  未評価 {len(未評価)} 本 = 走行中 {走行中} 本 ＋ "
+              f"放棄 {len(放棄)} 本（7月の，学習が完走しなかった run）")
 
 
 if __name__ == "__main__":
