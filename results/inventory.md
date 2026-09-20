@@ -1,7 +1,7 @@
 # 実験の棚卸し（どのパラメータで走らせたか）
 
-`experiments/inventory.py` により自動生成（2026-09-20 13:54:34）．
-一次データ: `results/inventory.csv`（学習 run 87 本）
+`experiments/inventory.py` により自動生成（2026-09-20 13:57:17）．
+一次データ: `results/inventory.csv`（学習 run 71 本）
 
 **この表は「学習 run」が1行**．学習条件（件数・エポック・lr）と検証損失が見える．まだ評価していない run も載る．
 評価そのものを一覧したいなら [summary_llm.md](summary_llm.md)（`make summarize`）を見ること（プロンプティング評価も含む，評価1件が1行）．
@@ -35,5 +35,5 @@
 | 実験4: 学習量スイープ | 2 | func_22_k10 | 12.2% 〜 12.6% |
 | 実験3: 構造ラダー（dualptr / recptr） | 6 | dualptr_k10, func_22_k10, recptr_k10 | 10.4% 〜 20.0% |
 | 実験2: 深さラダー（pointer_chain） | 8 | pointer_chain_k10_d1, pointer_chain_k10_d2, pointer_chain_k10_d3 | 24.2% 〜 44.0% |
-| 7月: 難易度ラダーの探索（記憶・合成・動的参照） | 38 | func_22, lookup_k10, lookup_k26, lookup_k4 他10種 | 6.5% 〜 100.0% |
+| 7月: 難易度ラダーの探索（記憶・合成・動的参照） | 22 | func_22, lookup_k10, lookup_k26, lookup_k4 他10種 | 6.5% 〜 100.0% |
 
