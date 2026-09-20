@@ -57,7 +57,7 @@ CONVERGED_THRESHOLD = 0.02
 # 移ったあとも全 run を並べ続けると，いま動いている実験が埋もれてしまうため。
 STAGES: list[tuple[str, str, str, bool]] = [
     # (開始, 終了, 実験名, いま関心があるか)
-    ("20260601", "20260801", "7月: 難易度ラダーの探索（記憶・合成・動的参照）", False),
+    ("20260601", "20260801", "実験1: 難易度ラダーの探索（記憶・合成・動的参照）", False),
     ("20260801", "20260823", "実験2: 深さラダー（pointer_chain）", False),
     ("20260823", "20260824", "実験3: 構造ラダー（dualptr / recptr）", False),
     ("20260824", "20260901", "実験4: 学習量スイープ", False),
@@ -253,6 +253,19 @@ def detail_table(items: list[dict]) -> list[str]:
     return md
 
 
+def stage_order(stage: str) -> tuple:
+    """実験名の並び順．新しい順に並べるための鍵．
+
+    文字列の降順だと「実験9」が「実験10」より後ろに来てしまうため，
+    先頭の番号を数として取り出して比べる（`実験8a` `実験8b` のような枝番は
+    番号のあとの文字で比べる）。番号を持たない名前は最後に回す。
+    """
+    m = re.match(r"実験(\d+)([^:：]*)", stage)
+    if not m:
+        return (0, 0, stage)
+    return (1, int(m.group(1)), m.group(2))
+
+
 def result_table(items: list[dict]) -> list[str]:
     """実験ごとの結果表．条件と結末だけに絞る．
 
@@ -324,7 +337,7 @@ def build_md(rows: list[dict], show_all: bool) -> list[str]:
     by_stage: dict[str, list[dict]] = defaultdict(list)
     for r in active:
         by_stage[r["stage"]].append(r)
-    for stage in sorted(by_stage, reverse=True):
+    for stage in sorted(by_stage, key=stage_order, reverse=True):
         items = by_stage[stage]
         md += [f"### {stage}", "", *detail_table(items), ""]
 
@@ -343,12 +356,12 @@ def build_md(rows: list[dict], show_all: bool) -> list[str]:
     st_settled: dict[str, list[dict]] = defaultdict(list)
     for r in settled:
         st_settled[r["stage"]].append(r)
-    for stage in sorted(st_settled, reverse=True):
+    for stage in sorted(st_settled, key=stage_order, reverse=True):
         md += [f"### {stage}", "", *result_table(st_settled[stage]), ""]
 
     if show_all:
         md += ["## 全ハイパーパラメータの明細", ""]
-        for stage in sorted(st_settled, reverse=True):
+        for stage in sorted(st_settled, key=stage_order, reverse=True):
             md += [f"### {stage}", "", *detail_table(st_settled[stage]), ""]
 
     return md
