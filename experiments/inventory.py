@@ -37,6 +37,12 @@ EVAL_DIR = os.path.join(REPO_ROOT, "results", "llm_eval")
 # その中間に取った（2026-09-12 の監査，docs/measurement_audit.md 参照）。
 TAKEOFF_THRESHOLD = 0.15
 
+# 「収束」の判定。2026-09-20 の横断集計（make corpus）で，最小検証損失 0.02 を
+# 境にすると 56件中55件の正解率が正しく分離することが分かった。離陸の 0.15 では
+# 誤分類が7件に増える。正解率は実質この二値をなぞっているだけなので，
+# 表には離陸より収束を出す。詳しくは docs/measurement_audit.md。
+CONVERGED_THRESHOLD = 0.02
+
 # 過去の run がどの実験に属するかの対応表（run ディレクトリ名の時刻で引く）。
 #
 # 段階の定義そのものは docs/experiment_index.md が正本である。ここはツールが日付から
@@ -93,11 +99,11 @@ def stage_of(run_name: str, tag: str) -> tuple[str, bool]:
     return "分類なし", False
 
 
-def read_history(run_dir: str) -> tuple[float | None, int | None, float | None]:
-    """(最終val損失, 離陸エポック, 最小val損失) を返す．"""
+def read_history(run_dir: str) -> tuple[float | None, int | None, float | None, int | None]:
+    """(最終val損失, 離陸エポック, 最小val損失, 収束エポック) を返す．"""
     path = os.path.join(run_dir, "history.csv")
     if not os.path.exists(path):
-        return None, None, None
+        return None, None, None, None
     epochs: list[tuple[float, float]] = []
     with open(path, encoding="utf-8") as f:
         for row in csv.DictReader(f):
@@ -109,10 +115,11 @@ def read_history(run_dir: str) -> tuple[float | None, int | None, float | None]:
                 except ValueError:
                     continue
     if not epochs:
-        return None, None, None
+        return None, None, None, None
     epochs.sort()
     takeoff = next((int(round(e)) for e, v in epochs if v < TAKEOFF_THRESHOLD), None)
-    return epochs[-1][1], takeoff, min(v for _e, v in epochs)
+    conv = next((int(round(e)) for e, v in epochs if v < CONVERGED_THRESHOLD), None)
+    return epochs[-1][1], takeoff, min(v for _e, v in epochs), conv
 
 
 def run_key(path: str) -> str:
@@ -162,7 +169,7 @@ def collect_rows(algorithm_filter: str | None) -> list[dict]:
         data_seed = args.get("data_seed", legacy_seed)
         if algorithm_filter and algo != algorithm_filter:
             continue
-        final_vl, takeoff, min_vl = read_history(run_dir)
+        final_vl, takeoff, min_vl, conv = read_history(run_dir)
         stage, active = stage_of(os.path.basename(run_dir), args.get("tag", ""))
         matched = evals.get(run_key(run_dir), [])
         # 同じ run を複数の n_test で評価している場合は，件数の多い方を代表にする
@@ -173,6 +180,10 @@ def collect_rows(algorithm_filter: str | None) -> list[dict]:
             "data_seed": data_seed,
             "n_train": args.get("n_train"),
             "epochs": args.get("epochs"),
+            # 新形式の run だけが学習シードと学習率スケジュールを持つ。
+            # 旧形式の args["seed"] は鍵・データのシードなので混同しない。
+            "train_seed": args.get("seed") if "key_seed" in args else None,
+            "lr_scheduler": args.get("lr_scheduler"),
             "lr": args.get("lr"),
             "stage": args.get("stage"),
             "paradigm": args.get("paradigm"),
@@ -182,6 +193,7 @@ def collect_rows(algorithm_filter: str | None) -> list[dict]:
             "final_val_loss": final_vl,
             "min_val_loss": min_vl,
             "takeoff_epoch": takeoff,
+            "converged_epoch": conv,
             "legacy_meta": args.get("algorithm") is None,
             "stage": stage,
             "active": active,
@@ -241,6 +253,35 @@ def detail_table(items: list[dict]) -> list[str]:
     return md
 
 
+def result_table(items: list[dict]) -> list[str]:
+    """実験ごとの結果表．条件と結末だけに絞る．
+
+    ハイパーパラメータを全部並べると読めなくなるので，その実験の中で
+    **実際に振った列だけ**を出す。固定だった列は表の外に1行で書く。
+    """
+    varying = [(k, label) for k, label in
+               (("algorithm", "アルゴリズム"), ("key_seed", "鍵"), ("data_seed", "データ"),
+                ("n_train", "学習件数"), ("epochs", "エポック"),
+                ("lr_scheduler", "学習率"), ("train_seed", "シード"))
+               if len({r.get(k) for r in items}) > 1]
+    fixed = [(k, label) for k, label in
+             (("key_seed", "鍵"), ("data_seed", "データ"), ("n_train", "学習件数"),
+              ("epochs", "エポック"))
+             if len({r.get(k) for r in items}) == 1 and items[0].get(k) is not None]
+    md = []
+    if fixed:
+        md += ["（" + " / ".join(f"{label}={items[0][k]}" for k, label in fixed) + " で固定）", ""]
+    cols = varying or [("algorithm", "アルゴリズム")]
+    head = "| " + " | ".join(label for _k, label in cols) + " | 正解率 | 収束ep | 最小val損失 |"
+    md += [head, "|" + "---|" * (len(cols) + 3)]
+    for r in sorted(items, key=lambda x: (x["algorithm"], x["key_seed"] or 0,
+                                          x["epochs"] or 0, x["run"])):
+        cells = " | ".join(str(r.get(k)) for k, _label in cols)
+        md.append(f"| {cells} | {pct(r['accuracy'])} | {r.get('converged_epoch') or '—'} "
+                  f"| {num(r['min_val_loss'])} |")
+    return md
+
+
 def missing_combos(items: list[dict]) -> list[tuple]:
     """そのアルゴリズムで一度でも使った値の直積のうち，実施記録が無いもの．"""
     keys = sorted({r["key_seed"] for r in items if r["key_seed"] is not None})
@@ -287,26 +328,28 @@ def build_md(rows: list[dict], show_all: bool) -> list[str]:
         items = by_stage[stage]
         md += [f"### {stage}", "", *detail_table(items), ""]
 
-    # ---- 決着済み ----
-    md += ["## 決着済みの実験（要約）", "",
-           "`--all` を付けると全 run の明細が出る。", "",
-           "| 実験 | run数 | アルゴリズム | 正解率の幅 |", "|---|---|---|---|"]
+    # ---- 実験ごとの結果 ----
+    # 以前は run数・アルゴリズム・正解率の幅だけを1行に畳んでいたが，
+    # 「6.5% 〜 100.0%」では何も分からず，実験ごとに結果を見られなかった。
+    # 条件と結末に絞った表を実験ごとに出す（2026-09-20）。
+    md += ["## 実験ごとの結果（新しい順）", "",
+           f"条件と結末だけに絞った表．その実験の中で**実際に振った列だけ**を出す．"
+           f"「収束ep」は検証損失が {CONVERGED_THRESHOLD} を下回った最初のエポックで，"
+           f"正解率はほぼこの有無で決まる（`make corpus`）．"
+           f"`—` は最後まで下回らなかったこと．", "",
+           "問い・解釈・いまその結論が生きているかは "
+           "[docs/experiment_index.md](../docs/experiment_index.md) にある．",
+           "", "`--all` を付けると全ハイパーパラメータの明細も出る。", ""]
     st_settled: dict[str, list[dict]] = defaultdict(list)
     for r in settled:
         st_settled[r["stage"]].append(r)
     for stage in sorted(st_settled, reverse=True):
-        items = st_settled[stage]
-        accs = [r["accuracy"] for r in items if r["accuracy"] is not None]
-        span = f"{min(accs):.1%} 〜 {max(accs):.1%}" if accs else "評価なし"
-        algos = sorted({r["algorithm"] for r in items})
-        shown = ", ".join(algos[:4]) + (f" 他{len(algos) - 4}種" if len(algos) > 4 else "")
-        md.append(f"| {stage} | {len(items)} | {shown} | {span} |")
-    md.append("")
+        md += [f"### {stage}", "", *result_table(st_settled[stage]), ""]
 
     if show_all:
-        md += ["### 決着済みの明細", ""]
+        md += ["## 全ハイパーパラメータの明細", ""]
         for stage in sorted(st_settled, reverse=True):
-            md += [f"#### {stage}", "", *detail_table(st_settled[stage]), ""]
+            md += [f"### {stage}", "", *detail_table(st_settled[stage]), ""]
 
     return md
 

@@ -25,7 +25,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
 TAKEOFF = 0.15      # 離陸の判定（検証損失）
-CONVERGED = 0.001   # 収束の判定
+# 収束の判定。この値の妥当性は下の「最小検証損失だけで正解率がほぼ決まる」で
+# 毎回確かめている（2026-09-20 時点では 0.02 が最良で，56件中55件を分離する）。
+CONVERGED = 0.02
 
 
 def load_history(run_dir):
