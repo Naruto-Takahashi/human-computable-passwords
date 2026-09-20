@@ -56,7 +56,8 @@ hcp_finish
 
 | スクリプト | 実験 | 内容 | 結果 |
 |---|---|---|---|
-| `run_case_count_ladder.sh` | 実験10 | 場合の数を揃えて静的と動的の崩壊点を比べる | **未実施** |
+| `run_budget_schedule_2x2.sh` | 実験11 | 予算と学習率スケジュールを分離する（`table_add3_k10` 鍵6） | **未実施** |
+| `run_case_count_ladder.sh` | 実験10 | 場合の数を揃えて静的と動的の収束エポックを比べる | **未実施** |
 | `run_arity_replication.sh` | 実験9 段階3 | 陽性対照＋再現（`table_add6_k4` s1／`narrowptr_k4_m2` s1）＋`table_add5_k4` | **走行中** |
 | `run_static_arity.sh` | 実験9 段階2 | 位置数を揃えた静的対照 `table_add6_k4`（鍵35） | 10.6%。検証損失が20エポック平坦 |
 | `run_minimal_task.sh` | 実験9 段階1 | 鍵4マスの最小課題 `narrowptr_k4_m{1,2}`（鍵35） | 両方 100.0%。m=2 は未出399/399 |
