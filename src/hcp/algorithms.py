@@ -875,6 +875,17 @@ _MINIMAL_TASK = [_make_narrowptr(4, m) for m in (1, 2)]
 # 静的の天井を特定するための刻み。設計の経緯は plan.md §3.1.4。
 _STATIC_ARITY = [_make_table_addn(n, 4) for n in (4, 5, 6)]
 
+# 場合の数ラダー（実験10）。加算の項数を3に揃えたまま，「真の場合の数」を横軸にして
+# 静的と動的の崩壊点を比べる。同じ場合の数で動的のほうが先に壊れるなら動的参照は
+# 難しさに寄与しており，同時に壊れるなら効いているのは規模だけである。
+#
+#   約700  : table_add3_k15（680）  対  narrowptr_k4_m2（740，測定済み 100%）
+#   約3000 : table_add3_k26（3276） 対  narrowptr_k5_m2（3035）
+#
+# 「真の場合の数」は「どの鍵でも同じ答えを与える入力」を同一視した数で，
+# k^位置数 とは違う（対称な関数では大きく下回る）。設計の経緯は plan.md §3.1.5。
+_CASE_COUNT_LADDER = [_make_table_add3(15), _make_narrowptr(5, 2)]
+
 
 # =============================================================================
 # レジストリ
@@ -882,7 +893,7 @@ _STATIC_ARITY = [_make_table_addn(n, 4) for n in (4, 5, 6)]
 
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
-    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK, *_STATIC_ARITY,
+    for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK, *_STATIC_ARITY, *_CASE_COUNT_LADDER,
               _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10, _FUNC_31, _FUNC_POW]
 }
 
