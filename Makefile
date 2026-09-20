@@ -89,6 +89,13 @@ algorithms:
 seen-unseen:
 	@$(PY) tools/seen_unseen.py $(RUN)
 
+# これまでの全 run を横断集計する（GPU 不要）。
+# 個々の実験ではなく「正解率という指標が何を写していたか」を分布で見る。
+#   make corpus            要約
+#   make corpus CSV=out.csv  1行1runで書き出す
+corpus:
+	@$(PY) tools/corpus_analysis.py $(if $(CSV),--csv $(CSV),)
+
 # 構文を誤ると GitHub 上で図の代わりにエラーが出るため，事前に検査する。
 # 依存は一時ディレクトリに入るのでリポジトリには残らない（初回は取得に時間がかかる）。
 check-mermaid:
