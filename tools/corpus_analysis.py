@@ -107,18 +107,60 @@ def summarize(rows):
               f"離陸したのに40%未満 {len(overlap_lo)} 件")
 
     print("\n■ 「収束したか」で分けるとほぼ完全に分離する")
-    conv = [r for r in rows if r["converged_epoch"]]
-    nonc = [r for r in rows if not r["converged_epoch"] and r["accuracy"] is not None]
+    # 学習曲線が残っていない run は「収束せず」ではなく「不明」である。
+    # 7月の旧ディレクトリ（results/finetuned_models/）の run が該当する。
+    curved = [r for r in rows if r["n_epochs_logged"] and r["accuracy"] is not None]
+    unknown = [r for r in rows if not r["n_epochs_logged"] and r["accuracy"] is not None]
+    conv = [r for r in curved if r["converged_epoch"]]
+    nonc = [r for r in curved if not r["converged_epoch"]]
     for label, g in (("収束した", conv), ("収束せず", nonc)):
         if not g:
             continue
         acc = sorted(r["accuracy"] for r in g)
         print(f"  {label:8s} {len(g):3d}件  正解率 {acc[0]*100:5.1f}% 〜 {acc[-1]*100:5.1f}%  "
               f"中央値 {acc[len(acc)//2]*100:5.1f}%")
+    if unknown:
+        acc = sorted(r["accuracy"] for r in unknown)
+        print(f"  {'曲線なし':8s} {len(unknown):3d}件  正解率 {acc[0]*100:5.1f}% 〜 {acc[-1]*100:5.1f}%"
+              f"  ← 7月の旧ディレクトリ。収束の有無は**不明**（集計から除外）")
     if conv:
         bad = sum(1 for r in conv if r["accuracy"] < 0.9)
+        good = sum(1 for r in nonc if r["accuracy"] >= 0.9)
         print(f"  → 収束した {len(conv)} 件で90%未満は {bad} 件")
+        print(f"  → 収束せず {len(nonc)} 件で90%以上は {good} 件")
         print("  → 正解率は『予算内に収束したか』をほぼそのまま写している")
+
+    print("\n■ 正解率は連続量ではない（二峰性）")
+    acc = sorted(r["accuracy"] for r in curved)
+    import collections as _c
+    hist = _c.Counter(min(int(x * 10), 9) for x in acc)
+    for k in range(10):
+        n = hist.get(k, 0)
+        print(f"  {k*10:3d}〜{k*10+9:3d}%  {'#' * n} {n}")
+    gap_lo = max((x for x in acc if x < 0.9), default=None)
+    gap_hi = min((x for x in acc if x >= 0.9), default=None)
+    if gap_lo is not None and gap_hi is not None:
+        print(f"  → {gap_lo*100:.1f}% と {gap_hi*100:.1f}% の間に1件も無い")
+
+    print("\n■ 最小検証損失だけで正解率がほぼ決まる")
+    withloss = [r for r in curved if r["min_eval_loss"] is not None]
+    best = None
+    for th in (0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.15):
+        lo = [r for r in withloss if r["min_eval_loss"] < th]
+        hi = [r for r in withloss if r["min_eval_loss"] >= th]
+        err = sum(1 for r in lo if r["accuracy"] < 0.9) + sum(1 for r in hi if r["accuracy"] >= 0.4)
+        if best is None or err < best[1]:
+            best = (th, err)
+    th, err = best
+    lo = [r for r in withloss if r["min_eval_loss"] < th]
+    hi = [r for r in withloss if r["min_eval_loss"] >= th]
+    print(f"  閾値 {th}: {len(withloss)} 件中 {len(withloss)-err} 件が正しく分離（誤分類 {err} 件）")
+    print(f"    下回る {len(lo):2d}件  正解率 {min(r['accuracy'] for r in lo)*100:5.1f}% 〜 "
+          f"{max(r['accuracy'] for r in lo)*100:5.1f}%")
+    print(f"    上回る {len(hi):2d}件  正解率 {min(r['accuracy'] for r in hi)*100:5.1f}% 〜 "
+          f"{max(r['accuracy'] for r in hi)*100:5.1f}%")
+    print("  → 正解率は『損失が下がりきったか』の二値をなぞっているだけで，")
+    print("     その間の数値（12.2% と 13.0% の違いなど）に意味は無い")
 
     print("\n■ 打ち切りの直接証拠")
     ep20 = [r for r in rows if r["epochs"] == 20 and r["n_epochs_logged"]]
