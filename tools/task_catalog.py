@@ -81,6 +81,29 @@ def true_case_count(algo, key, pos, n_keys=80, cap=40000, seed=0):
     return len(np.unique(sig, axis=0)), exact
 
 
+def shift_symmetries(algo, key, samples=3000, seed=0):
+    """鍵の全マスに同じ値 c を足しても，全チャレンジで答えが変わらない c の個数．
+
+    1 なら鍵は一意に復元しうる。2 以上なら **観測をいくら増やしても
+    その個数まで候補が残る**ので，`recover_key` の完全一致は原理的に不可能である。
+
+    純粋な和（ポインタなし）では $\gcd(\text{足す項数}, 10)$ に一致する。
+    ポインタがあると，鍵をずらすと行き先 $j$ 自体が動くため対称性が壊れ，
+    多くの場合 1 になる。**式で決め打ちせず実測する**のはそのため
+    （2026-09-23 に $\gcd$ だけで判断して誤った）。
+    """
+    rng = np.random.default_rng(seed)
+    n = len(key)
+    ch = rng.integers(0, n, size=(samples, 14))
+    base = [algo.fn(c.tolist(), key) for c in ch]
+    count = 0
+    for c in range(10):
+        shifted = [(v + c) % 10 for v in key]
+        if all(algo.fn(x.tolist(), shifted) == b for x, b in zip(ch, base)):
+            count += 1
+    return count
+
+
 def collision_probability(algo, key, samples=20000, seed=7):
     rng = np.random.default_rng(seed)
     n = len(key)
@@ -126,8 +149,8 @@ def build() -> list[str]:
         "## 一覧",
         "",
         "| 関数 | $`n`$ | $`k_1,k_2`$ | $`s(f)`$ | 足す項数 | 効く位置 |"
-        " 真の場合の数 | 衝突確率 | $`m^*_{\\text{info}}`$ |",
-        "|---|---:|:---:|---:|---:|---:|---:|---:|---:|",
+        " 真の場合の数 | 衝突確率 | 鍵の一意性 | $`m^*_{\\text{info}}`$ |",
+        "|---|---:|:---:|---:|---:|---:|---:|---:|:---:|---:|",
     ]
     for name in CATALOG:
         algo = ALGORITHMS.get(name)
@@ -145,10 +168,12 @@ def build() -> list[str]:
         else:
             tc_s = "—"
         coll = collision_probability(algo, key) * 100
+        sym = shift_symmetries(algo, key)
+        sym_s = "一意" if sym == 1 else f"**{sym}通り**"
         lo, hi = limits.get(name, (None, None))
         lim = str(lo) if lo else (f"> {hi}" if hi else "未測定")
         md.append(f"| `{name}` | {len(key)} | {fam_s} | {s} | {addend_count(name, fam)} "
-                  f"| {len(pos)} | {tc_s} | {coll:.1f}% | {lim} |")
+                  f"| {len(pos)} | {tc_s} | {coll:.1f}% | {sym_s} | {lim} |")
 
     md += [
         "",
@@ -161,8 +186,28 @@ def build() -> list[str]:
         "| **真の場合の数** | 「どの鍵でも同じ答えを与える入力」を同一視した数。"
         "対称な関数では $`n^{\\text{位置数}}`$ を大きく下回る（`table_add6_k4` は 4096 ではなく 84） |",
         "| **衝突確率** | $`\\sum p_i^2`$。**偶然水準の 10% ではなくこれと比べる** |",
+        "| **鍵の一意性** | 鍵の全マスに同じ値を足しても答えが変わらない「ずらし対称性」の数。"
+        "**2通り以上なら `recover_key` の完全一致は原理的に不可能**（観測をいくら増やしても"
+        "その個数まで候補が残る）。予測タスクには影響しない（縮退した鍵は全チャレンジで同じ答えを返す） |",
         "| $`m^*_{\\text{info}}`$ | 鍵が一意に定まる最小の観測数（ソルバーで数え上げ）。"
         "**これ未満では復元は原理的に不可能**で，LLM の失敗は能力の問題ではない |",
+        "",
+        "## 鍵の一意性 — `recover_key` に使える課題の見分け方",
+        "",
+        "純粋な和（ポインタなし）では，ずらし対称性の数は $`\\gcd(\\text{足す項数}, 10)`$ に一致する。",
+        "",
+        "| 足す項数 | 2 | 3 | 4 | 5 | 6 | 7 |",
+        "|---|---|---|---|---|---|---|",
+        "| $`\\gcd(N,10)`$ | 2 | **1** | 2 | 5 | 2 | **1** |",
+        "",
+        "**`table_add3` が一意なのは偶然である。**3 が 10 と互いに素だったからにすぎない。",
+        "2項の `table_add_k*` は以前から2通りに縮退していたが，`recover_key` を"
+        "使っていなかったため表面化しなかった。",
+        "",
+        "> [!WARNING]",
+        "> **$`\\gcd`$ の式だけで判断してはいけない。**ポインタがあると，鍵をずらすと"
+        "行き先 $`j`$ 自体が動くため対称性が壊れる。`func_13`（4項）や `func_31`（2項）は"
+        "式の上では縮退しそうだが，実測では一意である。**この列は実測値である。**",
         "",
         "## $`m^*_{\\text{info}}`$ の読み方",
         "",
