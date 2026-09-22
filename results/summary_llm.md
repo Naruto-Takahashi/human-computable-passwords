@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-09-20 11:41:05）．
-一次データ: `results/summary_llm.csv`（91 実験）
+`experiments/summarize.py` により自動生成（2026-09-21 17:45:36）．
+一次データ: `results/summary_llm.csv`（95 実験）
 
 **この表は「評価1件」が1行**．ファインチューニングもプロンプティングも含む．
 学習条件（件数・エポック・lr）や検証損失，まだ評価していない学習 run を見たいなら
@@ -46,6 +46,7 @@
 | narrowptr_k10_m5/run_20260902_164130 | narrowptr_k10_m5 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 13.60% | - | - | - |
 | narrowptr_k4_m1/run_20260919_130631 | narrowptr_k4_m1 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 100.00% | - | - | - |
 | narrowptr_k4_m2/run_20260919_203553 | narrowptr_k4_m2 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 100.00% | - | - | - |
+| narrowptr_k4_m2/run_20260921_031710 | narrowptr_k4_m2 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 63.80% | - | - | - |
 | pointer_chain_k10_d1/run_20260816_143142 | pointer_chain_k10_d1 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 30.40% | - | - | - |
 | pointer_chain_k10_d1/run_20260816_195925 | pointer_chain_k10_d1 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 24.80% | - | - | - |
 | pointer_chain_k10_d1/run_20260816_235035 | pointer_chain_k10_d1 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 35.80% | - | - | - |
@@ -92,7 +93,10 @@
 | table_add3_k10/run_20260913_032850 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 100.00% | - | - | - |
 | table_add3_k26/run_20260729_041333 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 12.00% | - | - | - |
 | table_add3_k26/run_20260729_055650 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 14.00% | - | - | - |
+| table_add4_k4/run_20260920_125032 | table_add4_k4 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 100.00% | - | - | - |
+| table_add5_k4/run_20260921_104712 | table_add5_k4 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 11.80% | - | - | - |
 | table_add6_k4/run_20260920_040830 | table_add6_k4 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 10.60% | - | - | - |
+| table_add6_k4/run_20260920_194523 | table_add6_k4 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 10.40% | - | - | - |
 | table_add_k10/run_20260716_173814 | table_add_k10 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |
 | table_add_k13/run_20260717_132044 | table_add_k13 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |
 | table_add_k16/run_20260717_150129 | table_add_k16 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 100.00% | - | - | - |

@@ -132,7 +132,7 @@ def summarize(rows):
         print(f"  → 収束せず {len(nonc)} 件で90%以上は {good} 件")
         print("  → 正解率は『予算内に収束したか』をほぼそのまま写している")
 
-    print("\n■ 正解率は連続量ではない（二峰性）")
+    print("\n■ 正解率の分布（二峰だが，中間値は存在しうる）")
     acc = sorted(r["accuracy"] for r in curved)
     import collections as _c
     hist = _c.Counter(min(int(x * 10), 9) for x in acc)
@@ -161,8 +161,10 @@ def summarize(rows):
           f"{max(r['accuracy'] for r in lo)*100:5.1f}%")
     print(f"    上回る {len(hi):2d}件  正解率 {min(r['accuracy'] for r in hi)*100:5.1f}% 〜 "
           f"{max(r['accuracy'] for r in hi)*100:5.1f}%")
-    print("  → 正解率は『損失が下がりきったか』の二値をなぞっているだけで，")
-    print("     その間の数値（12.2% と 13.0% の違いなど）に意味は無い")
+    print("  → 収束の有無は『90%以上か否か』を例外なく予測する。")
+    print("     ただし収束しなかった側には幅があり，正解率が二値なわけではない")
+    print("     （2026-09-21 に 63.8% の中間例が出た）。比較して意味があるのは")
+    print("     『収束したか』であって，床にいる条件どうしの数値の差ではない")
 
     print("\n■ 打ち切りの直接証拠")
     ep20 = [r for r in rows if r["epochs"] == 20 and r["n_epochs_logged"]]
