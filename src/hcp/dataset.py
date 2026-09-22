@@ -68,6 +68,20 @@ def challenges_to_df(
     return pd.DataFrame(rows, columns=COLUMNS)
 
 
+# 観察データ（プロンプトに出すチャレンジ）を引くときに data_seed へ足すオフセット。
+#
+# NumPy の SeedSequence は末尾のゼロを落とすため，`default_rng([d, 0])` が
+# `default_rng(d)` と同じ系列になる。鍵は `default_rng(key_seed)` で引いているので，
+# **key_seed = data_seed = 0 のとき，先頭のチャレンジが鍵そのものと一致する**。
+# 2026-09-23 に経路A の最初の疎通テストで発覚した（観察データの1行目に鍵が
+# 平文で並んでいた）。学習側には TRAIN_SEED_OFFSET という同じ対策が既にあり，
+# 観察側にだけ無かった。
+#
+# 過去の評価 74 件はすべて n_shot=0（観察データを出していない）ため，
+# オフセットを「観察を出すときだけ」掛ければ，過去の結果はビット単位で不変である。
+OBSERVATION_SEED_OFFSET = 2_000_000
+
+
 def generate_dataset(
     algorithm: Algorithm,
     n_shot: int,
@@ -78,12 +92,19 @@ def generate_dataset(
     """
     Few-shot 用（観察データ）とテスト用（採点データ）を生成する．
     両者のチャレンジは互いに素であることを保証する．
+
+    n_shot > 0 のときは data_seed に OBSERVATION_SEED_OFFSET を足す
+    （理由は同定数のコメント）．n_shot = 0 のときは従来どおりで，
+    過去の評価結果との互換性を保つ．
     """
     key = generate_key(algorithm, key_seed)
-    rng = np.random.default_rng([data_seed, key_seed])
+    effective_data_seed = data_seed + (OBSERVATION_SEED_OFFSET if n_shot > 0 else 0)
+    rng = np.random.default_rng([effective_data_seed, key_seed])
     challenges = _draw_unique_challenges(algorithm, n_shot + n_test, rng)
     shot_df = challenges_to_df(algorithm, challenges[:n_shot], key)
     test_df = challenges_to_df(algorithm, challenges[n_shot:], key)
+    if key is not None and n_shot > 0:
+        _assert_key_not_leaked(key, challenges[:n_shot])
     return HCPDataset(
         algorithm=algorithm,
         key=key,
@@ -92,6 +113,23 @@ def generate_dataset(
         key_seed=key_seed,
         data_seed=data_seed,
     )
+
+
+def _assert_key_not_leaked(key: list[int], shots: list[tuple[int, ...]]) -> None:
+    """観察データのどこかに鍵が平文で並んでいないかを点検する．
+
+    2026-09-23 の事故（OBSERVATION_SEED_OFFSET のコメント参照）を二度と
+    起こさないための歯止め．チャレンジは長さ14，鍵は長さ n なので，
+    チャレンジ内の連続する n 要素が鍵と一致していないかを見る．
+    """
+    n = len(key)
+    for shot in shots:
+        for i in range(len(shot) - n + 1):
+            if list(shot[i:i + n]) == key:
+                raise AssertionError(
+                    "観察データに鍵が平文で現れています（生成器のシードが衝突しています）。"
+                    f"鍵={key} が観察 {list(shot)} の位置 {i} に一致しました。"
+                )
 
 
 def extract_challenge_and_response(row: pd.Series) -> tuple[list[int], int]:
