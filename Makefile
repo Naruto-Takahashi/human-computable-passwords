@@ -96,6 +96,11 @@ seen-unseen:
 corpus:
 	@$(PY) tools/corpus_analysis.py $(if $(CSV),--csv $(CSV),)
 
+# 扱っている課題のパラメータと理論値を1枚にまとめ直す（GPU 不要）。
+# 関数を追加したら回すこと。手で数値を書かないための道具。
+catalog:
+	@$(PY) tools/task_catalog.py
+
 # 構文を誤ると GitHub 上で図の代わりにエラーが出るため，事前に検査する。
 # 依存は一時ディレクトリに入るのでリポジトリには残らない（初回は取得に時間がかかる）。
 check-mermaid:
