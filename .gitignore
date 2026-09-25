@@ -25,3 +25,6 @@ results/llm_eval_backup_*/
 
 # 週次報告の生成PDF（元のMarkdownから再生成できる）
 docs/reports/pdf/
+
+# Lean（形式化）の生成物
+/formal/*/.lake/

@@ -1,0 +1,6 @@
+name = "hcp"
+version = "0.1.0"
+defaultTargets = ["Hcp"]
+
+[[lean_lib]]
+name = "Hcp"

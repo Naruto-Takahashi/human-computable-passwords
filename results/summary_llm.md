@@ -1,7 +1,7 @@
 # LLM ベンチマーク実験結果 サマリー
 
-`experiments/summarize.py` により自動生成（2026-09-21 17:45:36）．
-一次データ: `results/summary_llm.csv`（95 実験）
+`experiments/summarize.py` により自動生成（2026-09-24 19:55:42）．
+一次データ: `results/summary_llm.csv`（101 実験）
 
 **この表は「評価1件」が1行**．ファインチューニングもプロンプティングも含む．
 学習条件（件数・エポック・lr）や検証損失，まだ評価していない学習 run を見たいなら
@@ -37,9 +37,13 @@
 | narrowptr_k10_m1/run_20260902_015225 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.80% | - | - | - |
 | narrowptr_k10_m1/run_20260902_101812 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 13.40% | - | - | - |
 | narrowptr_k10_m1/run_20260917_191647 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 98.60% | - | - | - |
+| narrowptr_k10_m1/run_20260923_070802 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 10.20% | - | - | - |
+| narrowptr_k10_m1/run_20260924_045936 | narrowptr_k10_m1 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 11.80% | - | - | - |
 | narrowptr_k10_m2/run_20260902_035831 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.60% | - | - | - |
 | narrowptr_k10_m2/run_20260902_122450 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 17.40% | - | - | - |
 | narrowptr_k10_m2/run_20260918_025516 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 0 | 1 | 9.20% | - | - | - |
+| narrowptr_k10_m2/run_20260923_143933 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.40% | - | - | - |
+| narrowptr_k10_m2/run_20260924_122836 | narrowptr_k10_m2 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 16.60% | - | - | - |
 | narrowptr_k10_m3/run_20260902_060434 | narrowptr_k10_m3 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.00% | - | - | - |
 | narrowptr_k10_m3/run_20260902_143124 | narrowptr_k10_m3 | predict(pure) | 2 | 0 | 0 | 500 | 2 | 1 | 19.80% | - | - | - |
 | narrowptr_k10_m5/run_20260902_081227 | narrowptr_k10_m5 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.80% | - | - | - |
@@ -91,6 +95,8 @@
 | table_add3_k10/run_20260912_225525 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 3 | 1 | 98.20% | - | - | - |
 | table_add3_k10/run_20260913_004808 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 96.20% | - | - | - |
 | table_add3_k10/run_20260913_032850 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 6 | 1 | 100.00% | - | - | - |
+| table_add3_k10/run_20260923_001601 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 1 | 1 | 9.80% | - | - | - |
+| table_add3_k10/run_20260923_221047 | table_add3_k10 | predict(pure) | 2 | 0 | 0 | 500 | 8 | 1 | 97.00% | - | - | - |
 | table_add3_k26/run_20260729_041333 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 12.00% | - | - | - |
 | table_add3_k26/run_20260729_055650 | table_add3_k26 | predict(pure) | 2 | 0 | 0 | 50 | 0 | 1 | 14.00% | - | - | - |
 | table_add4_k4/run_20260920_125032 | table_add4_k4 | predict(pure) | 2 | 0 | 0 | 500 | 35 | 1 | 100.00% | - | - | - |
