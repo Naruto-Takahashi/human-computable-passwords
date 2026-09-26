@@ -55,10 +55,11 @@ def parse_answer_digit(text: str) -> Optional[int]:
     優先順: JSON {"answer": n} → "Answer:"/"答え:"/"Z =" の明示回答．
     回答拒否ワードがある場合や見つからない場合は None．
     """
-    lower = text.lower()
-    if any(kw in lower for kw in _REFUSAL_KEYWORDS):
-        return None
-
+    # **JSON があればそれを最優先する（2026-09-27）。**
+    # 以前は拒否ワード判定を先に置いていたが，経路A では推論過程を本文に
+    # 書かせるため「the unknown values」のような語が必ず現れ，正しい
+    # {"answer": 8} を見る前に None を返していた。追加学習済みモデルは
+    # 短い JSON だけを返すので経路B では露見しなかった。
     for obj in reversed(_find_json_objects(text)):
         if "answer" in obj:
             val = obj["answer"]
@@ -66,6 +67,11 @@ def parse_answer_digit(text: str) -> Optional[int]:
                 return int(val) % 10
             if isinstance(val, str) and val.isdigit():
                 return int(val) % 10
+
+    # JSON が無いときに限り，明示回答の書式を探す。ここで初めて拒否を見る。
+    lower = text.lower()
+    if any(kw in lower for kw in _REFUSAL_KEYWORDS):
+        return None
 
     main = strip_thinking(text)
     main = re.sub(r"[*_`]", "", main)

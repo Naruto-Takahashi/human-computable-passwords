@@ -164,6 +164,10 @@ def run_predict(
                 f.write(prompt)
 
         raw = client.predict(prompt)
+        # recover_key と同じく，打ち切り・サーバ失敗を「不正解」と混同しない
+        gen = getattr(client, "last_meta", None)
+        trunc = bool(gen and gen.get("truncated"))
+        failed = gen is None or raw.startswith("ERROR:")
         if paradigm == "pot":
             predicted = None
             code = executor.extract_python_block(raw)
@@ -179,6 +183,9 @@ def run_predict(
             "predicted": predicted,
             "is_correct": predicted is not None and predicted == correct,
             "raw_response": raw,
+            "generation": gen,
+            "truncated": trunc,
+            "request_failed": failed,
         }
 
     results: list[Optional[dict]] = [None] * n_test
@@ -279,7 +286,19 @@ def run_recover_key(
 
     raw = client.predict(prompt)
     gen = getattr(client, "last_meta", None)
-    recovered = executor.parse_key_table(raw, ds.algorithm.key_size)
+    truncated = bool(gen and gen.get("truncated"))
+    # サーバ側の失敗（VRAM不足など）は last_meta が付かず，本文に ERROR: が入る。
+    # これを「解析不能＝モデルが答えられなかった」と記録してはいけない。
+    # 2026-09-27: num_ctx が 65536 に切り上がり cudaMalloc failed で llama-server が
+    # 落ちたのを PARSE_ERROR と記録しかけた。
+    request_failed = gen is None or raw.startswith("ERROR:")
+    # **打ち切られた出力から答えを解析してはいけない（2026-09-27）。**
+    # 打ち切った出力に「最終回答」は存在しないため，parse_key_table が
+    # 推論途中の言及を答えとして拾う。実際 narrowptr_k4_m1 の鍵0 で，
+    # 記法の実例に出した練習用ダミー鍵 [3,1,4,1] が答えとして採用された
+    # （観測整合 0.00 で発覚）。打ち切りは能力の判定に使えないので無回答とする。
+    parsed = executor.parse_key_table(raw, ds.algorithm.key_size)
+    recovered = None if truncated else parsed
 
     true_key = ds.key
     metrics = {
@@ -288,12 +307,17 @@ def run_recover_key(
         "prompt_level": prompt_level,
         # 生成が上限に当たって切れた run は，能力の判定に使えない（経路Bのエポック予算と同型）
         "generation": gen,
-        "truncated": bool(gen and gen.get("truncated")),
-        "parse_error": recovered is None,
+        "truncated": truncated,
+        # 打ち切り時に「もし解析したら何が取れたか」を診断用に残す（採点には使わない）
+        "parsed_if_truncated": parsed if truncated else None,
+        "request_failed": request_failed,
+        "parse_error": (recovered is None and not truncated and not request_failed),
         "recovered_key": recovered,
         "true_key": true_key,
     }
 
+    if request_failed:
+        recovered = None
     if recovered is not None:
         matches = [int(r == t) for r, t in zip(recovered, true_key)]
         # --- 対称な鍵に対して公平な採点（2026-09-26 追加） ------------------
@@ -360,6 +384,10 @@ def run_recover_key(
             status = "EQUIVALENT"
         else:
             status = "PARTIAL"
+    elif request_failed:
+        status = "REQUEST_FAILED"
+    elif truncated:
+        status = "TRUNCATED"
     else:
         status = "PARSE_ERROR"
 

@@ -910,6 +910,28 @@ _RANGE_LADDER = [_make_narrowptr(10, m) for m in (1, 2, 3, 5, 10)]
 # m=1（対照）と m=2（測定）は必ず対で回す。
 _MINIMAL_TASK = [_make_narrowptr(4, m) for m in (1, 2)]
 
+# 経路A（実験A1）の統制②。**ルール文は動的参照のまま，j は常に 0。**
+# 小川ら(2025) の no-j ablation に対応する統制だが，あちらは j 項を文面から
+# 除くので「文面の複雑さ」も同時に減る。m=1 なら文面を保ったまま動的性だけを
+# 消せるので，「文面が難しいのか，本当に動的参照が難しいのか」を分離できる。
+# 小川らと同じ鍵26マスで揃える（経路Bの n=10 は勾配学習の制約が強いた妥協で，
+# in-context には引き継ぐ理由がない）。
+_PATH_A_CONTROL = [_make_narrowptr(26, 1)]
+
+# 実験A1 の鍵サイズ 4 の段（陽性対照側）。
+#
+# **$n=26$ だけで組むと全条件が床に張り付き，勾配が取れない。**経路Bの実験3・5が
+# それで無効になった（6条件すべて10〜20%）。成功が確認できている下端を必ず含める。
+# narrowptr_k4_m1 は開示なしの recover_key で 3/4 成功しているので，より易しい
+# predict なら陽性対照として機能する見込みである。
+#
+# 3つを同じ鍵サイズで揃えることで「動的参照だけ」を変数にできる:
+#   func_22_k4        … j 項あり（動的参照）
+#   table_add3_k4     … 静的3項（小川らの no-j ablation に対応）
+#   narrowptr_k4_m1   … 文面は動的参照のまま，j は常に 0
+_FUNC_22_K4 = _make_func(2, 2, 4, "func_22_k4")
+_TABLE_ADD3_K4 = _make_table_add3(4)
+
 # 静的参照の項数ラダー（実験9 段階2）。動的参照を含まないまま位置数だけを増やす。
 # table_add6_k4 は narrowptr_k4_m2 と位置数6・組み合わせ4096通りが一致するため，
 # ポインタの有無だけを変えた対照になる。n=4,5 は table_add6 が失敗したときに
@@ -935,6 +957,7 @@ _CASE_COUNT_LADDER = [_make_table_add3(15), _make_narrowptr(5, 2)]
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
     for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK, *_STATIC_ARITY, *_CASE_COUNT_LADDER,
+              *_PATH_A_CONTROL, _FUNC_22_K4, _TABLE_ADD3_K4,
               _FUNC_13, _FUNC_13_K10, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10,
               _FUNC_31, _FUNC_31_K10, _FUNC_POW]
 }
