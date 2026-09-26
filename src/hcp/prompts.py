@@ -144,6 +144,49 @@ def _notation_example_section(
     )
 
 
+# 解き方の指示を段階的に与える水準（2026-09-26 追加）。
+#
+# **プロンプトは明示的な独立変数として扱う。**調整して成績が上がるまで直すと，
+# 測っているのはモデルではなくプロンプトの書き手になる（経路Bで学習予算が
+# 隠れた変数だったのと同型）。水準を先に決めて全部報告する。
+#
+# 水準 A は現行と**バイト単位で同一**に保つこと（過去との比較のため）。
+#
+# 水準 B の狙い: 2026-09-26 の試走で，モデルは16件中2件だけ検算して
+# 「すべてのデータに整合する唯一の解」と述べ，実際の整合率は 4/16 だった。
+# 失敗は「探索を早く止めた」ではなく「確認せずに確信した」である。
+# 効いたかどうかは shot_consistency で直接測れる。
+#
+# 水準 C の狙い: 鍵空間は 10^n（n=10 で100億）なので総当りは不可能だが，
+# 各観測は mod 10 の一次方程式（ポインタ系は j で場合分け）なので
+# 系統的に解ける。ソルバーは数千ノードでやっている。
+PROMPT_LEVELS = ("A", "B", "C")
+
+_VERIFY_INSTRUCTION = (
+    "候補となる SGM_TABLE を作ったら，**提示された観察データすべて**に当てはめて\n"
+    "確認してください．1件でも合わなければ，その候補を捨てて考え直してください．\n"
+)
+
+_METHOD_INSTRUCTION = (
+    "総当りで列挙しようとしないでください（鍵の候補は膨大です）．\n"
+    "各観察データは SGM_TABLE の要素についての mod 10 の一次方程式とみなせます．\n"
+    "未知の要素が1つに絞れる式から順に確定させ，確定した値を他の式へ代入して\n"
+    "いく，という手順で系統的に解いてください．\n"
+)
+
+
+def recover_key_instruction(key_size: int, level: str = "A") -> str:
+    """復元課題の指示文を水準つきで組み立てる．"""
+    if level not in PROMPT_LEVELS:
+        raise ValueError(f"prompt_level は {PROMPT_LEVELS} のいずれかです: {level}")
+    text = _RECOVER_KEY_INSTRUCTION.format(key_size=key_size)
+    if level in ("B", "C"):
+        text += _VERIFY_INSTRUCTION
+    if level == "C":
+        text += _METHOD_INSTRUCTION
+    return text
+
+
 def _observation_section(
     algorithm: Algorithm,
     shot_df: pd.DataFrame,
@@ -179,6 +222,7 @@ def build_prompt(
     test_challenge: Optional[list[int]] = None,
     paradigm: str = "pure",
     include_rationale: bool = False,
+    prompt_level: str = "A",
 ) -> str:
     """
     プロンプトを構築する．
@@ -221,6 +265,6 @@ def build_prompt(
             template = _CODE_INSTRUCTION if paradigm == "pot" else _ANSWER_INSTRUCTION
         prompt += template.format(challenge=test_challenge)
     else:
-        prompt += _RECOVER_KEY_INSTRUCTION.format(key_size=algorithm.key_size)
+        prompt += recover_key_instruction(algorithm.key_size, prompt_level)
 
     return prompt

@@ -81,6 +81,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--thinking_budget", type=int, default=1024,
                         help="Gemini の思考トークン予算")
     # ---- 出力・制御 ----
+    parser.add_argument("--prompt_level", type=str, default="A", choices=["A", "B", "C"],
+                        help="recover_key の指示の水準（A=素 / B=全観測で検算 / C=B+解法の明示）")
     parser.add_argument("--output_base_dir", type=str, default=DEFAULT_OUTPUT)
     parser.add_argument("--overwrite", action="store_true",
                         help="完了済み条件（metrics.json あり）も再実行する")
@@ -89,7 +91,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def task_label(args) -> str:
-    return f"predict_{args.paradigm}" if args.task == "predict" else "recover_key"
+    if args.task == "predict":
+        return f"predict_{args.paradigm}"
+    # 水準ごとに保存先を分ける（同一条件を上書きしないため）
+    return "recover_key" if args.prompt_level == "A" else f"recover_key_{args.prompt_level}"
 
 
 def run_one(client, args, key_seed: int, data_seed: int) -> dict | None:
@@ -130,7 +135,7 @@ def run_one(client, args, key_seed: int, data_seed: int) -> dict | None:
         )
     return run_recover_key(
         client, ds, stage=args.stage, k_disclosed=args.k_disclosed,
-        run_dir=run_dir, config=config,
+        run_dir=run_dir, config=config, prompt_level=args.prompt_level,
     )
 
 

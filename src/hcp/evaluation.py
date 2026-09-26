@@ -252,6 +252,7 @@ def run_recover_key(
     k_disclosed: int,
     run_dir: str,
     config: dict,
+    prompt_level: str = "A",
 ) -> dict:
     """
     観察データから秘密鍵テーブルを逆推定させ，以下を測定する:
@@ -271,6 +272,7 @@ def run_recover_key(
         stage=stage,
         k_disclosed=k_disclosed,
         key=ds.key,
+        prompt_level=prompt_level,
     )
     with open(os.path.join(run_dir, "prompt.txt"), "w", encoding="utf-8") as f:
         f.write(prompt)
@@ -283,6 +285,7 @@ def run_recover_key(
     metrics = {
         **_base_metrics(config),
         "task": "recover_key",
+        "prompt_level": prompt_level,
         # 生成が上限に当たって切れた run は，能力の判定に使えない（経路Bのエポック予算と同型）
         "generation": gen,
         "truncated": bool(gen and gen.get("truncated")),
