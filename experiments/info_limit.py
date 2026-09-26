@@ -55,6 +55,10 @@ def main():
     parser.add_argument("--node_budget", type=int, default=2_000_000,
                         help="探索ノード数の上限．中間領域（func_22/31 の N≈30〜60）は"
                              "厳密数え上げが重く，上限到達時は下限値として報告される")
+    parser.add_argument("--uniqueness_only", action="store_true",
+                        help="一意性だけを判定し，解が2個見つかった時点で打ち切る。"
+                             "閾値の探索では解の総数は要らないので，重い関数"
+                             "（func_22 など）の測定が現実的な時間で終わる")
     parser.add_argument("--output_dir", type=str, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
 
@@ -80,6 +84,7 @@ def main():
         result = count_consistent_keys(
             algorithm, observations, known_cells=known,
             solution_cap=args.solution_cap, node_budget=args.node_budget,
+            stop_at=2 if args.uniqueness_only else None,
         )
         elapsed = time.time() - t0
 
