@@ -932,6 +932,21 @@ _PATH_A_CONTROL = [_make_narrowptr(26, 1)]
 _FUNC_22_K4 = _make_func(2, 2, 4, "func_22_k4")
 _TABLE_ADD3_K4 = _make_table_add3(4)
 
+# 実験A1 の鍵サイズの刻みを埋める（2026-09-27）。
+#
+# **$n=26$ は in-context では測定範囲外である。**鍵26マスを自然言語で1つずつ
+# 確定させる作業は数万トークンでは書き切れず，予算 12288 / 32768 / 32768 の
+# 3回すべてで打ち切られた（統制②＝最も甘い条件で，ソルバー閾値が最小の鍵でも）。
+# 経路B では $n=26$ が床に張り付き，経路A では推論が終わらない。
+#
+# そこで上端を $n=13$ に下げ，代わりに刻みを細かくして遷移を捉える。
+# $n=13$ は既存の `table_add_k13` と同じ鍵サイズである。
+_PATH_A_LADDER = [
+    _make_func(2, 2, 6, "func_22_k6"), _make_table_add3(6), _make_narrowptr(6, 1),
+    _make_func(2, 2, 8, "func_22_k8"), _make_table_add3(8), _make_narrowptr(8, 1),
+    _make_func(2, 2, 13, "func_22_k13"), _make_table_add3(13), _make_narrowptr(13, 1),
+]
+
 # 静的参照の項数ラダー（実験9 段階2）。動的参照を含まないまま位置数だけを増やす。
 # table_add6_k4 は narrowptr_k4_m2 と位置数6・組み合わせ4096通りが一致するため，
 # ポインタの有無だけを変えた対照になる。n=4,5 は table_add6 が失敗したときに
@@ -957,7 +972,7 @@ _CASE_COUNT_LADDER = [_make_table_add3(15), _make_narrowptr(5, 2)]
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
     for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK, *_STATIC_ARITY, *_CASE_COUNT_LADDER,
-              *_PATH_A_CONTROL, _FUNC_22_K4, _TABLE_ADD3_K4,
+              *_PATH_A_CONTROL, _FUNC_22_K4, _TABLE_ADD3_K4, *_PATH_A_LADDER,
               _FUNC_13, _FUNC_13_K10, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10,
               _FUNC_31, _FUNC_31_K10, _FUNC_POW]
 }
