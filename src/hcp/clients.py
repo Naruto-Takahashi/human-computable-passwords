@@ -104,6 +104,7 @@ class OllamaClient(BaseLLMClient):
         num_predict: int = 4096,
         num_ctx: Optional[int] = None,
         num_gpu: Optional[int] = None,
+        think: Optional[bool] = None,
     ):
         self.model_name = model_name
         self.api_url = api_url
@@ -120,7 +121,14 @@ class OllamaClient(BaseLLMClient):
         env_np = os.environ.get("HCP_OLLAMA_NUM_PREDICT")
         if env_np:
             self.num_predict = int(env_np)
+        # 思考モデル（qwen3.5 など）は生成の大半を thinking 側へ出す。
+        # thinking も num_predict を消費するため，本文が始まる前に上限へ当たりうる。
+        # HCP_OLLAMA_THINK=0 で思考を切れる（CoT の有無を独立変数にできる）。
+        env_think = os.environ.get("HCP_OLLAMA_THINK")
+        self.think = think if think is not None else (
+            None if env_think is None else env_think not in ("0", "false", "False"))
         self.last_meta = None
+        self.last_thinking = ""
         logger.info(f"OllamaClient 初期化完了: model={self.model_name}, endpoint={self.api_url}")
 
     def _auto_num_ctx(self, prompt: str) -> int:
@@ -154,11 +162,15 @@ class OllamaClient(BaseLLMClient):
             "stream": True,
             "options": options,
         }
+        if self.think is not None:
+            payload["think"] = self.think
 
         max_retries = 3
         for attempt in range(max_retries):
             full_text: list[str] = []
+            thinking_text: list[str] = []
             self.last_meta = None
+            self.last_thinking = ""
             try:
                 response = requests.post(self.api_url, json=payload, timeout=1800, stream=True)
                 response.raise_for_status()
@@ -172,7 +184,14 @@ class OllamaClient(BaseLLMClient):
                     delta = chunk.get("response") or chunk.get("message", {}).get("content")
                     if delta:
                         full_text.append(delta)
+                    # 思考モデルは本文の前に thinking を延々と出す。捨てると
+                    # 「何も返さなかった」と誤読するので必ず拾う。
+                    think_delta = (chunk.get("thinking")
+                                   or chunk.get("message", {}).get("thinking"))
+                    if think_delta:
+                        thinking_text.append(think_delta)
                     if chunk.get("done"):
+                        self.last_thinking = "".join(thinking_text)
                         self.last_meta = {
                             # "length" なら num_predict に当たって途中で切れた
                             "done_reason": chunk.get("done_reason"),
@@ -181,10 +200,17 @@ class OllamaClient(BaseLLMClient):
                             "output_tokens": chunk.get("eval_count"),
                             "num_predict": options["num_predict"],
                             "num_ctx": options["num_ctx"],
+                            "think": self.think,
+                            "thinking_chars": len(self.last_thinking),
+                            "answer_chars": sum(len(x) for x in full_text),
+                            # 本文が空で thinking だけが出ている＝思考の途中で
+                            # 上限に当たった。能力の判定に使ってはいけない。
+                            "answer_empty": not any(full_text),
                         }
                         break
                 return "".join(full_text)
             except Exception as e:
+                self.last_thinking = "".join(thinking_text)
                 if full_text:
                     logger.warning(f"推論の途中で接続エラーが発生（受信済み内容で継続）: {e}")
                     return "".join(full_text)

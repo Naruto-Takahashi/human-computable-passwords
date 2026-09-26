@@ -306,9 +306,15 @@ def run_recover_key(
     else:
         status = "PARSE_ERROR"
 
+    thinking = getattr(client, "last_thinking", "") or ""
+    if thinking:
+        with open(os.path.join(run_dir, "thinking.txt"), "w", encoding="utf-8") as f:
+            f.write(thinking)
     _save_response_log(
         run_dir, 0, status, raw,
-        {"TrueKey": true_key, "Recovered": recovered},
+        {"TrueKey": true_key, "Recovered": recovered,
+         "Truncated": metrics.get("truncated"),
+         "ThinkingChars": len(thinking)},
     )
     _write_json(os.path.join(run_dir, METRICS_FILENAME), metrics)
 
