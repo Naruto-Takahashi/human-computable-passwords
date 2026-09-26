@@ -97,6 +97,53 @@ def _key_section(key: Sequence[int], stage: int, k_disclosed: int) -> str:
     return ""
 
 
+# 記法の曖昧さを実例で潰すためのダミー鍵（円周率の数字を並べたもの）。
+# 本物の鍵と一致しないことを呼び出し側で必ず確認する。
+_EXAMPLE_KEY_DIGITS = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3,
+                       2, 3, 8, 4, 6, 2, 6, 4, 3, 3]
+
+
+def _notation_example_section(
+    algorithm: Algorithm, key: Optional[Sequence[int]]
+) -> str:
+    """ルール文の記法を，実装から生成した実例1つで確定させる（recover_key 専用）．
+
+    **なぜ必要か（2026-09-26）**: ルール文の記法が関数間で逆になっている。
+
+    | 関数 | 書き方 | `X0` / `X[i]` の意味 |
+    |---|---|---|
+    | `table_add3` | `Z = (SGM_TABLE[X0] + ...) mod 10` | 入力の値そのもの（表の添字） |
+    | `narrowptr` / `func_*` | `X[i] = SGM_TABLE[入力のi番目の値]` | 変換後の値 |
+
+    さらに `narrowptr` の第1項は「SGM_TABLE のインデックスに**対応する値**です
+    （X[i] = SGM_TABLE[入力のi番目の値]）」と，散文と括弧内で意味が食い違う。
+    qwen3.5:9b は出力の大半をこの解釈に費やし「この記述は矛盾しています」と述べた。
+
+    ルール文そのものは `algorithms.py` にあり，過去82件の学習結果と紐づくため
+    変更できない（CLAUDE.md）。そこで**文章で言い換えるのではなく**，
+    `fn` / `explain` から生成した計算例を1つ添える。実装から作るので定義上正しい。
+
+    鍵は本物とは別のダミーなので，観測を1件増やすことにはならない。
+    """
+    n = algorithm.key_size
+    if n == 0:
+        return ""
+    dummy = [_EXAMPLE_KEY_DIGITS[i % len(_EXAMPLE_KEY_DIGITS)] for i in range(n)]
+    if key is not None and list(key) == dummy:
+        # 万一一致したら例が本物の観測になってしまうので崩す
+        dummy = [(v + 1) % 10 for v in dummy]
+    domain = algorithm.challenge_domain()
+    challenge = [(i * 3 + 1) % domain for i in range(algorithm.challenge_len)]
+    z = algorithm.fn(challenge, dummy)
+    return (
+        "\n【記法の確認（この例の鍵は本物とは無関係のダミーです）】\n"
+        f"仮に SGM_TABLE = {dummy} だとします．\n"
+        f"入力が {challenge} のとき，上のルールは次のように適用され Z = {z} になります．\n"
+        f"{algorithm.explain(challenge, dummy, z)}\n"
+        "この対応関係と同じ読み方で，以下の観察データを解釈してください．\n"
+    )
+
+
 def _observation_section(
     algorithm: Algorithm,
     shot_df: pd.DataFrame,
@@ -160,6 +207,10 @@ def build_prompt(
         prompt += _rule_section(algorithm)
     if key is not None:
         prompt += _key_section(key, stage, k_disclosed)
+    if task == "recover_key":
+        # ルール文の記法が関数間で逆なので，実例で意味を確定させる。
+        # predict 側（過去82件の評価が使った経路）には足さない。
+        prompt += _notation_example_section(algorithm, key)
     prompt += _observation_section(algorithm, shot_df, include_rationale, key, stage)
 
     prompt += "\n【予測課題】\n" if task == "predict" else "\n【復元課題】\n"

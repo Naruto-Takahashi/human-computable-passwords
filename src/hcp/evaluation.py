@@ -16,6 +16,8 @@ import csv
 import json
 import logging
 import os
+
+import numpy as np
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -93,6 +95,11 @@ def is_run_completed(run_dir: str) -> bool:
 def _write_json(path: str, data: dict) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+# 機能的等価の判定に使う固定標本（評価用の test_df とは独立にする）
+EQUIV_SEED = 9_000_003
+EQUIV_SAMPLES = 2000
 
 
 def _save_response_log(
@@ -286,6 +293,28 @@ def run_recover_key(
 
     if recovered is not None:
         matches = [int(r == t) for r, t in zip(recovered, true_key)]
+        # --- 対称な鍵に対して公平な採点（2026-09-26 追加） ------------------
+        #
+        # ずらし対称性が2通り以上ある関数では **key_exact_match は構造上ゼロに
+        # しかならない**。鍵の全マスに c を足しても N 項和は Nc mod 10 ずれる
+        # だけなので，gcd(N,10) 個の c で出力が完全に一致する。該当は
+        # table_add_k10/k13/k16/k20/k26・table_add4/5/6_k4・dualptr・recptr・
+        # func_pow の12個で，plan.md §3.2 が経路Aの「②合成」段に挙げている
+        # table_add_k10 / table_add_k26 がまさにこれである。
+        #
+        # 対称な鍵は**全チャレンジで同一の出力**を与えるため，公平な軸は
+        # 「機能的に等価か」である。十分大きな標本で一致を見る。
+        eq_rng = np.random.default_rng([EQUIV_SEED, len(true_key)])
+        eq_domain = ds.algorithm.challenge_domain()
+        eq_agree = 0
+        for _ in range(EQUIV_SAMPLES):
+            ch = [int(v) for v in eq_rng.integers(0, eq_domain, ds.algorithm.challenge_len)]
+            if ds.algorithm.compute(ch, recovered) == ds.algorithm.compute(ch, true_key):
+                eq_agree += 1
+        functionally_equivalent = (eq_agree == EQUIV_SAMPLES)
+        # 純粋なずらしなら，その量を記録しておく（診断用）
+        offsets = {(r - t) % 10 for r, t in zip(recovered, true_key)}
+        shift_offset = offsets.pop() if len(offsets) == 1 else None
         undisclosed = matches[k_disclosed:] if stage == 3 else matches
         heldout_correct = 0
         n_heldout = len(ds.test_df)
@@ -299,10 +328,20 @@ def run_recover_key(
                 round(sum(undisclosed) / len(undisclosed), 4) if undisclosed else None
             ),
             key_exact_match=all(matches),
+            # 対称性を許した等価判定。対称性が2通り以上ある関数ではこちらを主指標にする
+            key_functionally_equivalent=functionally_equivalent,
+            equivalence_agreement=round(eq_agree / EQUIV_SAMPLES, 4),
+            equivalence_samples=EQUIV_SAMPLES,
+            key_shift_offset=shift_offset,
             heldout_accuracy=round(heldout_correct / n_heldout, 4) if n_heldout else None,
             n_heldout=n_heldout,
         )
-        status = "EXACT" if all(matches) else "PARTIAL"
+        if all(matches):
+            status = "EXACT"
+        elif functionally_equivalent:
+            status = "EQUIVALENT"
+        else:
+            status = "PARTIAL"
     else:
         status = "PARSE_ERROR"
 
