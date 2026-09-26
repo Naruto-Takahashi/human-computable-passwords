@@ -290,6 +290,20 @@ _FUNC_13_K26 = _make_func(1, 3, 26, "func_13_k26", rationale_period="。")
 _FUNC_22     = _make_func(2, 2, 26, "func_22")
 _FUNC_31     = _make_func(3, 1, 26, "func_31")
 
+_FUNC_13_K10 = _make_func(1, 3, 10, "func_13_k10")
+_FUNC_31_K10 = _make_func(3, 1, 10, "func_31_k10")
+"""func_13 / func_31 の鍵10マス版（2026-09-26 追加）．
+
+**経路Aの基準線を $s(f)$ の3点で揃えるために追加した．** $s(f)$ と
+$m^*_{info}$ の対応を見るには `func_13`（2.0）・`func_22`（1.5）・
+`func_31`（1.0）の3点が要るが，$n=26$ ではソルバーが一意性を証明できない
+（ノード上限200万に当たる。真の鍵自体は見つかる）。$n=10$ なら
+`func_22_k10` が $m^*_{info} = 15$ と実測できているため，同じ鍵サイズに
+揃えた3点で比較する．
+
+鍵サイズ以外は $n=26$ 版と同一の実装・同一のルール文生成である．
+"""
+
 _FUNC_22_K10 = _make_func(2, 2, 10, "func_22_k10")
 """func_22 の鍵10マス版．
 
@@ -894,7 +908,8 @@ _CASE_COUNT_LADDER = [_make_table_add3(15), _make_narrowptr(5, 2)]
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
     for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK, *_STATIC_ARITY, *_CASE_COUNT_LADDER,
-              _FUNC_13, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10, _FUNC_31, _FUNC_POW]
+              _FUNC_13, _FUNC_13_K10, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10,
+              _FUNC_31, _FUNC_31_K10, _FUNC_POW]
 }
 
 
