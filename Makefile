@@ -5,7 +5,7 @@
 
 PY ?= python3
 
-.PHONY: test smoke summarize inventory status algorithms check-mermaid migrate-eval-paths sync info-limit clean-pycache help
+.PHONY: test smoke summarize inventory status algorithms index catalog check-mermaid migrate-eval-paths sync info-limit clean-pycache help
 
 help:
 	@echo "── 日々の確認 ───────────────────────────────────────"
@@ -13,6 +13,8 @@ help:
 	@echo "make inventory      # どのパラメータで学習したかの棚卸し（results/inventory.md）"
 	@echo "make summarize      # 評価結果を集計して summary_llm.{md,csv} を生成"
 	@echo "make algorithms     # 登録アルゴリズムを難易度の分解にそって一覧"
+	@echo "make index          # 結果を実験ごとに索引（results/INDEX.md と by_experiment/）"
+	@echo "make catalog        # 課題のパラメータと理論値を1枚に（docs/task_catalog.md）"
 	@echo ""
 	@echo "  results/ の歩き方         : results/README.md"
 	@echo "  過去のバッチ実験の一覧     : experiments/batch/README.md"
@@ -100,6 +102,11 @@ corpus:
 # 関数を追加したら回すこと。手で数値を書かないための道具。
 catalog:
 	@$(PY) tools/task_catalog.py
+
+# 結果を実験ごとに索引し直す（GPU 不要）。run を追加したら回すこと。
+# 実体は動かさず，ラベルとシンボリックリンクだけを張り直す。
+index:
+	@$(PY) tools/build_index.py
 
 # 構文を誤ると GitHub 上で図の代わりにエラーが出るため，事前に検査する。
 # 依存は一時ディレクトリに入るのでリポジトリには残らない（初回は取得に時間がかかる）。

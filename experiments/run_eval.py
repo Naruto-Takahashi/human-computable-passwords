@@ -81,6 +81,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--thinking_budget", type=int, default=1024,
                         help="Gemini の思考トークン予算")
     # ---- 出力・制御 ----
+    parser.add_argument("--experiment", type=str, default=None,
+                        help="実験ラベル（例: A14）。results/INDEX.md の分類に使う。"
+                             "接頭辞 A=経路A（in-context）/ B=経路B（重み格納型）")
     parser.add_argument("--prompt_level", type=str, default="A", choices=["A", "B", "C"],
                         help="recover_key の指示の水準（A=素 / B=全観測で検算 / C=B+解法の明示）")
     parser.add_argument("--output_base_dir", type=str, default=DEFAULT_OUTPUT)

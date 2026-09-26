@@ -23,6 +23,16 @@ import pandas as pd
 from .algorithms import Algorithm
 from .dataset import extract_challenge_and_response
 
+# recover_key 用の冒頭。**predict 用の文面を使い回してはいけない。**
+# 2026-09-26 まで「新しい入力に対する出力を予測する専門家です」と書いたまま
+# 鍵の復元をさせていた。冒頭で別の仕事を宣言してから末尾で復元を求める形になる。
+RECOVER_SYSTEM_INSTRUCTION = (
+    "あなたは入出力ペアを観察し，その背後にある秘密のテーブルを逆推定する専門家です．\n"
+    "計算のルール自体は与えられます．あなたの仕事は，ルールに現れる秘密のテーブルの\n"
+    "中身を，観察データと矛盾しないように決定することです．\n"
+    "注意深く推論し，思考過程を述べた後，必ず最後に回答を提示してください．\n\n"
+)
+
 SYSTEM_INSTRUCTION = (
     "あなたは入出力ペアを観察し，隠れたルールを特定して新しい入力に対する出力を予測する専門家です．\n"
     "提示されるデータには，シンプルかつ論理的な算術ルールが存在します．\n"
@@ -85,12 +95,15 @@ def _key_section(key: Sequence[int], stage: int, k_disclosed: int) -> str:
             "例: 入力が 5 の場合，実際の計算には SGM_TABLE[5] の値を使用してください．\n\n"
         )
     if stage == 3:
-        masked = list(key[:k_disclosed]) + ["?"] * (len(key) - k_disclosed)
+        # Python の repr だと '?' とクォートが付いて文字列リテラルに見えるため
+        # 手で組み立てる（2026-09-26）。説明文の引用符とも表記を揃える。
+        masked = ", ".join([str(v) for v in key[:k_disclosed]]
+                           + ["?"] * (len(key) - k_disclosed))
         return (
             "【秘密の鍵テーブル（部分公開）】\n"
-            f"SGM_TABLE = {masked}\n"
+            f"SGM_TABLE = [{masked}]\n"
             f"テーブルの最初の {k_disclosed} 要素のみが公開されています。"
-            "残りの要素は \"?\" で表されており、未知です。\n"
+            "残りの要素は ? で表されており、未知です。\n"
             "公開されているインデックスに対しては SGM_TABLE[idx] の値を使用して計算できますが、"
             "未知のインデックスについては入出力関係から逆推定する必要があります。\n\n"
         )
@@ -136,11 +149,14 @@ def _notation_example_section(
     challenge = [(i * 3 + 1) % domain for i in range(algorithm.challenge_len)]
     z = algorithm.fn(challenge, dummy)
     return (
-        "\n【記法の確認（この例の鍵は本物とは無関係のダミーです）】\n"
-        f"仮に SGM_TABLE = {dummy} だとします．\n"
-        f"入力が {challenge} のとき，上のルールは次のように適用され Z = {z} になります．\n"
+        "\n【記法の確認（ここだけの練習用の例です．この鍵は本物ではありません）】\n"
+        f"練習用に SGM_TABLE = {dummy} だとしてみます（**本物の鍵とは無関係です**）．\n"
+        f"入力 C = {challenge} のとき，上のルールは次のように適用され Z = {z} になります．\n"
         f"{algorithm.explain(challenge, dummy, z)}\n"
-        "この対応関係と同じ読み方で，以下の観察データを解釈してください．\n"
+        # 実例はルールの直後・鍵の公開より前に置くので，「以下の観察データ」と
+        # 書いてはいけない（次に来るのは鍵の公開である）。
+        "この対応関係と同じ読み方をしてください．観察データの Input が C にあたります．\n"
+        "**練習用の鍵はここで忘れてください。以降の SGM_TABLE は本物です．**\n\n"
     )
 
 
@@ -246,15 +262,21 @@ def build_prompt(
     # n_shot=0（重み格納型・CNN類比条件）では観察・思考を促さない最小プロンプトにする
     minimal = len(shot_df) == 0 and task == "predict" and paradigm == "pure"
 
-    prompt = MINIMAL_INSTRUCTION if minimal else SYSTEM_INSTRUCTION
+    if minimal:
+        prompt = MINIMAL_INSTRUCTION
+    elif task == "recover_key":
+        prompt = RECOVER_SYSTEM_INSTRUCTION
+    else:
+        prompt = SYSTEM_INSTRUCTION
     if stage in (2, 3):
         prompt += _rule_section(algorithm)
+    if task == "recover_key":
+        # **記法の実例は，本物の鍵の公開より前に置くこと。**
+        # 逆にすると「本物の部分公開鍵 → 同じ長さのダミー鍵」と並び，
+        # モデルがダミーを本物の続きと取り違える危険がある（2026-09-26）。
+        prompt += _notation_example_section(algorithm, key)
     if key is not None:
         prompt += _key_section(key, stage, k_disclosed)
-    if task == "recover_key":
-        # ルール文の記法が関数間で逆なので，実例で意味を確定させる。
-        # predict 側（過去82件の評価が使った経路）には足さない。
-        prompt += _notation_example_section(algorithm, key)
     prompt += _observation_section(algorithm, shot_df, include_rationale, key, stage)
 
     prompt += "\n【予測課題】\n" if task == "predict" else "\n【復元課題】\n"

@@ -13,10 +13,38 @@
 |---|---|
 | どのパラメータで学習したか，未実施の組み合わせ | `inventory.md`（`make inventory`）— **学習 run が1行** |
 | 評価結果の一覧（鍵・評価件数つき） | `summary_llm.md`（`make summarize`）— **評価1件が1行** |
+| **どの実験の結果か** | **`INDEX.md`（`make index`）— 実験ごとに run を一覧** |
 | いま何が走っているか | `make status` |
 | 生の数値をプロットしたい | `inventory.csv` / `summary_llm.csv` |
 
 手でディレクトリを掘る前に，まず `inventory.md` を見ると早い．
+
+## 実験ごとに辿りたいとき
+
+`results/by_experiment/<ラベル>/` にシンボリックリンクが張ってある（`make index` で再生成）。
+接頭辞 `B` が経路B（重み格納型学習），`A` が経路A（in-context 推論）である。
+
+```
+results/by_experiment/B12/table_add3_k10_6_0 -> ../../llm_eval/table_add3_k10/…/ks6_ds0/…
+```
+
+> [!IMPORTANT]
+> **実体は実験ごとに分けていない。**保存場所は条件アドレス
+> （`llm_eval/<関数>/<タスク>/<条件>/<モデル>/`）のままで，実験はラベルとして与える。
+> 理由は3つあり，どれも実際に依存している。
+>
+> | 性質 | 依存している箇所 |
+> |---|---|
+> | 重複排除 | 実験12 は実験8a の run を再利用して8条件を作った |
+> | 再開・スキップ | `is_run_completed` は「そのパスに metrics.json があるか」だけを見る |
+> | 横断集計 | `corpus_analysis` が `llm_eval` を全 walk して60run から診断を出した |
+>
+> 実験ごとに実体を分けると，同じ条件が複製され，実験番号が違うだけで GPU を
+> 再消費し，実験をまたぐ分析が壊れる。
+
+新しい run には `--experiment A14` のようにラベルを付ける。
+それ以前の run は [tools/experiment_map.py](../tools/experiment_map.py) の
+規則で日付・エポック数・学習量から遡って割り当てている。
 
 ## ディレクトリ
 
