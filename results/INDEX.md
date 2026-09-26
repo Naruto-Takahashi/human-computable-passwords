@@ -21,6 +21,7 @@
 
 | 実験 | 題 | run 数 | 関数 |
 |---|---|---:|---|
+| **A1** | 動的参照は in-context 推論でも壁になるか（小川ら CNN の3世代目） | 47 | `func_22_k13`，`func_22_k4`，`func_22_k6`，`func_22_k8`ほか |
 | **A13** | 経路Aの基準線: m*_info の確定 | 8 | `func_13_k10`，`func_22_k10`，`func_31_k10`，`lookup_k10`ほか |
 | **B1** | 難易度ラダーの探索（記憶・合成・動的参照） | 27 | `func_13`，`func_13_k26`，`func_22`，`func_31`ほか |
 | **B12** | 素朴な手順の誤判定はどれだけ起きるか | 9 | `func_22_k10`，`narrowptr_k10_m1`，`narrowptr_k10_m2`，`table_add3_k10` |
@@ -34,6 +35,58 @@
 | **B8a** | 予算を外せば動的参照は離陸するか | 3 | `func_22_k10`，`table_add3_k10` |
 | **B8b** | 参照範囲のどこで学習できなくなるか | 2 | `narrowptr_k10_m1`，`narrowptr_k10_m2` |
 | **B9** | 課題を極小にしても動的参照は学習されないか | 7 | `narrowptr_k4_m1`，`narrowptr_k4_m2`，`table_add4_k4`，`table_add5_k4`ほか |
+
+## A1 — 動的参照は in-context 推論でも壁になるか（小川ら CNN の3世代目）
+
+| 関数 | タスク | 鍵 | 引 | 観測 | Stage | ep | 水準 | 結果 | 場所 |
+|---|---|---:|---:|---:|---:|---:|:-:|---|---|
+| `func_22_k13` | info_limit | — | — | — | — | — | — | — | `results/solver/func_22_k13_info_limit.csv` |
+| `func_22_k4` | recover_key | 0 | 0 | 9 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k4/recover_key/n9_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `func_22_k4` | recover_key | 1 | 0 | 9 | 2 | — | A | 打切 | `results/llm_eval/func_22_k4/recover_key/n9_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `func_22_k4` | recover_key | 2 | 0 | 9 | 2 | — | A | 打切 | `results/llm_eval/func_22_k4/recover_key/n9_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `func_22_k4` | info_limit | — | — | — | — | — | — | — | `results/solver/func_22_k4_info_limit.csv` |
+| `func_22_k6` | recover_key | 0 | 0 | 11 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `func_22_k6` | recover_key | 1 | 0 | 11 | 2 | — | A | 打切 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `func_22_k6` | recover_key | 2 | 0 | 11 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `func_22_k6` | info_limit | — | — | — | — | — | — | — | `results/solver/func_22_k6_info_limit.csv` |
+| `func_22_k8` | recover_key | 0 | 0 | 16 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k8/recover_key/n16_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `func_22_k8` | recover_key | 1 | 0 | 16 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k8/recover_key/n16_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `func_22_k8` | recover_key | 2 | 0 | 16 | 2 | — | A | 打切 | `results/llm_eval/func_22_k8/recover_key/n16_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `func_22_k8` | info_limit | — | — | — | — | — | — | — | `results/solver/func_22_k8_info_limit.csv` |
+| `narrowptr_k10_m1` | recover_key | 0 | 0 | 18 | 2 | — | A | 打切 | `results/llm_eval/narrowptr_k10_m1/recover_key/n18_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `narrowptr_k10_m1` | recover_key | 1 | 0 | 18 | 2 | — | A | 不正解 | `results/llm_eval/narrowptr_k10_m1/recover_key/n18_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `narrowptr_k10_m1` | recover_key | 2 | 0 | 18 | 2 | — | A | 不正解 | `results/llm_eval/narrowptr_k10_m1/recover_key/n18_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `narrowptr_k10_m1` | info_limit | — | — | — | — | — | — | — | `results/solver/narrowptr_k10_m1_info_limit.csv` |
+| `narrowptr_k13_m1` | recover_key | 0 | 0 | 27 | 2 | — | A | 不正解 | `results/llm_eval/narrowptr_k13_m1/recover_key/n27_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `narrowptr_k13_m1` | recover_key | 1 | 0 | 27 | 2 | — | A | 打切 | `results/llm_eval/narrowptr_k13_m1/recover_key/n27_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `narrowptr_k13_m1` | recover_key | 2 | 0 | 27 | 2 | — | A | 打切 | `results/llm_eval/narrowptr_k13_m1/recover_key/n27_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `narrowptr_k13_m1` | info_limit | — | — | — | — | — | — | — | `results/solver/narrowptr_k13_m1_info_limit.csv` |
+| `narrowptr_k26_m1` | info_limit | — | — | — | — | — | — | — | `results/solver/narrowptr_k26_m1_info_limit.csv` |
+| `narrowptr_k4_m1` | recover_key | 0 | 0 | 12 | 2 | — | A | 完全一致 | `results/llm_eval/narrowptr_k4_m1/recover_key/n12_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `narrowptr_k4_m1` | recover_key | 1 | 0 | 12 | 2 | — | A | 完全一致 | `results/llm_eval/narrowptr_k4_m1/recover_key/n12_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `narrowptr_k4_m1` | recover_key | 2 | 0 | 12 | 2 | — | A | 不正解 | `results/llm_eval/narrowptr_k4_m1/recover_key/n12_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `narrowptr_k4_m1` | info_limit | — | — | — | — | — | — | — | `results/solver/narrowptr_k4_m1_info_limit.csv` |
+| `narrowptr_k6_m1` | recover_key | 0 | 0 | 14 | 2 | — | A | 完全一致 | `results/llm_eval/narrowptr_k6_m1/recover_key/n14_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `narrowptr_k6_m1` | recover_key | 1 | 0 | 14 | 2 | — | A | 完全一致 | `results/llm_eval/narrowptr_k6_m1/recover_key/n14_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `narrowptr_k6_m1` | recover_key | 2 | 0 | 14 | 2 | — | A | 不正解 | `results/llm_eval/narrowptr_k6_m1/recover_key/n14_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `narrowptr_k6_m1` | info_limit | — | — | — | — | — | — | — | `results/solver/narrowptr_k6_m1_info_limit.csv` |
+| `narrowptr_k8_m1` | recover_key | 0 | 0 | 13 | 2 | — | A | 完全一致 | `results/llm_eval/narrowptr_k8_m1/recover_key/n13_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `narrowptr_k8_m1` | recover_key | 1 | 0 | 13 | 2 | — | A | 完全一致 | `results/llm_eval/narrowptr_k8_m1/recover_key/n13_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `narrowptr_k8_m1` | recover_key | 2 | 0 | 13 | 2 | — | A | 不正解 | `results/llm_eval/narrowptr_k8_m1/recover_key/n13_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `narrowptr_k8_m1` | info_limit | — | — | — | — | — | — | — | `results/solver/narrowptr_k8_m1_info_limit.csv` |
+| `table_add3_k13` | info_limit | — | — | — | — | — | — | — | `results/solver/table_add3_k13_info_limit.csv` |
+| `table_add3_k4` | recover_key | 0 | 0 | 10 | 2 | — | A | 完全一致 | `results/llm_eval/table_add3_k4/recover_key/n10_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `table_add3_k4` | recover_key | 1 | 0 | 10 | 2 | — | A | 打切 | `results/llm_eval/table_add3_k4/recover_key/n10_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `table_add3_k4` | recover_key | 2 | 0 | 10 | 2 | — | A | 完全一致 | `results/llm_eval/table_add3_k4/recover_key/n10_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `table_add3_k4` | info_limit | — | — | — | — | — | — | — | `results/solver/table_add3_k4_info_limit.csv` |
+| `table_add3_k6` | recover_key | 0 | 0 | 14 | 2 | — | A | 完全一致 | `results/llm_eval/table_add3_k6/recover_key/n14_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `table_add3_k6` | recover_key | 1 | 0 | 14 | 2 | — | A | 完全一致 | `results/llm_eval/table_add3_k6/recover_key/n14_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `table_add3_k6` | recover_key | 2 | 0 | 14 | 2 | — | A | 完全一致 | `results/llm_eval/table_add3_k6/recover_key/n14_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `table_add3_k6` | info_limit | — | — | — | — | — | — | — | `results/solver/table_add3_k6_info_limit.csv` |
+| `table_add3_k8` | recover_key | 0 | 0 | 22 | 2 | — | A | 不正解 | `results/llm_eval/table_add3_k8/recover_key/n22_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `table_add3_k8` | recover_key | 1 | 0 | 22 | 2 | — | A | 打切 | `results/llm_eval/table_add3_k8/recover_key/n22_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
+| `table_add3_k8` | recover_key | 2 | 0 | 22 | 2 | — | A | 不正解 | `results/llm_eval/table_add3_k8/recover_key/n22_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `table_add3_k8` | info_limit | — | — | — | — | — | — | — | `results/solver/table_add3_k8_info_limit.csv` |
 
 ## A13 — 経路Aの基準線: m*_info の確定
 

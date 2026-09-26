@@ -47,6 +47,14 @@ SOLVER_EXPERIMENTS = {
     "func_13_k10": "A13", "func_22_k10": "A13", "func_31_k10": "A13",
     "table_add3_k10": "A13", "table_add3_k15": "A13", "table_add3_k26": "A13",
     "narrowptr_k10_m2": "A13", "lookup_k10": "A13",
+    # 実験A1 のはしご（2026-09-27 追加）。5サイズ × 3役の基準線。
+    "func_22_k4": "A1", "table_add3_k4": "A1", "narrowptr_k4_m1": "A1",
+    "func_22_k6": "A1", "table_add3_k6": "A1", "narrowptr_k6_m1": "A1",
+    "func_22_k8": "A1", "table_add3_k8": "A1", "narrowptr_k8_m1": "A1",
+    "narrowptr_k10_m1": "A1",
+    "func_22_k13": "A1", "table_add3_k13": "A1", "narrowptr_k13_m1": "A1",
+    # n=26 は in-context では測定範囲外と判明したが，基準線自体は測れている
+    "narrowptr_k26_m1": "A1",
     "func_22": "B1", "func_31": "B1", "func_13": "B1", "func_13_k26": "B1",
 }
 
@@ -78,6 +86,7 @@ def all_labels(run: dict) -> list[str]:
 
 TITLES = {label: title for label, title, *_ in EXPERIMENTS}
 TITLES["A13"] = "経路Aの基準線: m*_info の確定"
+TITLES["A1"] = "動的参照は in-context 推論でも壁になるか（小川ら CNN の3世代目）"
 TITLES["?"] = "未割り当て"
 
 
