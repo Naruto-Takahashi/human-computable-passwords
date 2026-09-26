@@ -8,6 +8,7 @@
 """
 import argparse
 import collections
+import statistics
 import csv
 import glob
 import itertools
@@ -26,13 +27,15 @@ from seen_unseen import relevant_positions            # noqa: E402
 
 # f_{k1,k2} 族のパラメータ（それ以外の関数は族の外なので s(f) が定義されない）
 FAMILY = {"func_13": (1, 3), "func_13_k26": (1, 3), "func_22": (2, 2),
-          "func_22_k10": (2, 2), "func_31": (3, 1)}
+          "func_22_k10": (2, 2), "func_31": (3, 1),
+          "func_13_k10": (1, 3), "func_31_k10": (3, 1)}
 
 # 一覧に出す課題（研究で実際に使っているもの）
 CATALOG = [
     "narrowptr_k4_m1", "narrowptr_k4_m2",
     "table_add4_k4", "table_add5_k4", "table_add6_k4",
-    "table_add3_k10", "narrowptr_k10_m1", "narrowptr_k10_m2", "func_22_k10",
+    "table_add3_k10", "narrowptr_k10_m1", "narrowptr_k10_m2",
+    "func_13_k10", "func_22_k10", "func_31_k10",
     "narrowptr_k5_m2", "table_add3_k15", "table_add3_k26",
     "func_22", "func_31", "func_13_k26", "func_13",
 ]
@@ -44,16 +47,37 @@ def security_parameter(k1: int, k2: int) -> float:
 
 
 def info_limits() -> dict:
-    """ソルバーの測定結果から，一意特定率100%になった最小の観測数 m を拾う．"""
+    """ソルバーの測定結果から，鍵ごとの m*_info を求め，中央値と最悪値を返す．
+
+    **「鍵10本すべてが一意になる最小の m」を使ってはいけない。**それは最大値統計
+    であり，頑固な鍵1本に引きずられる（2026-09-26: func_13_k10 は中央値11 に対し
+    最悪16，func_31_k10 は中央値12 に対し最悪18 だった）。先行研究の
+    「エポック最大値で語る」集計を本研究が批判しているのと同じ誤りになる。
+
+    戻り値は (中央値, 最悪値, 測定した最大の m)。鍵ごとの閾値は「その m 以降ずっと
+    一意であり続ける最小の m」とする（単発の一致を拾わない）。
+    """
     out = {}
     for path in glob.glob(os.path.join(ROOT, "results", "solver", "*_info_limit.csv")):
         name = os.path.basename(path).replace("_info_limit.csv", "")
-        by = collections.defaultdict(list)
+        by_key = collections.defaultdict(dict)
         with open(path, encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                by[int(row["n_shot"])].append(row["unique"] == "True")
-        uniq = [m for m, flags in sorted(by.items()) if all(flags)]
-        out[name] = (min(uniq) if uniq else None, max(by) if by else None)
+                by_key[int(row["key_seed"])][int(row["n_shot"])] = (row["unique"] == "True")
+        ms = sorted({m for d in by_key.values() for m in d})
+        thresholds = []
+        for d in by_key.values():
+            for i, m in enumerate(ms):
+                if all(d.get(later, False) for later in ms[i:]):
+                    thresholds.append(m)
+                    break
+        if thresholds:
+            med = statistics.median(thresholds)
+            med = int(med) if float(med).is_integer() else med
+            out[name] = (med, max(thresholds),
+                         max(ms) if ms else None)
+        else:
+            out[name] = (None, None, max(ms) if ms else None)
     return out
 
 
@@ -170,8 +194,13 @@ def build() -> list[str]:
         coll = collision_probability(algo, key) * 100
         sym = shift_symmetries(algo, key)
         sym_s = "一意" if sym == 1 else f"**{sym}通り**"
-        lo, hi = limits.get(name, (None, None))
-        lim = str(lo) if lo else (f"> {hi}" if hi else "未測定")
+        med, worst, top = limits.get(name, (None, None, None))
+        if med is None:
+            lim = f"> {top}" if top else "未測定"
+        elif worst == med:
+            lim = str(med)
+        else:
+            lim = f"{med}（最悪 {worst}）"
         md.append(f"| `{name}` | {len(key)} | {fam_s} | {s} | {addend_count(name, fam)} "
                   f"| {len(pos)} | {tc_s} | {coll:.1f}% | {sym_s} | {lim} |")
 
@@ -219,9 +248,21 @@ def build() -> list[str]:
         "| $`m \\approx m^*_{\\text{info}}`$ | 鍵によって分かれる | 情報限界そのものを測れる |",
         "| $`m \\ge m^*_{\\text{info}}`$ | 一意。ソルバーが1秒未満で復元 | **純粋な推論の欠損** |",
         "",
-        "`func_22_k10` では $`m^*_{\\text{info}} = 15`$ である"
-        "（$`m=10`$ では鍵の 2/3 でしか一意にならない）。",
-        "鍵26マス系は $`m=26`$ でもまだ一意化しておらず，より大きな $`m`$ の測定が要る。",
+        "**$`n=10`$ の3点（2026-09-26 測定，鍵10本）では，$`s(f)`$ が 1.0 / 1.5 / 2.0 と"
+        "変わっても $`m^*_{\\text{info}}`$ の中央値は 11〜12 で変わらない。**"
+        "$`\\approx 1.1\\text{〜}1.2n`$ であり，「1観測が10進1桁を与えるので $`m \\ge n`$ が必要」"
+        "という数え上げの下限に 10〜20% 上乗せしただけの値である。"
+        "$`s(f)`$ は統計的攻撃者の標本量 $`m = \\tilde{\\Omega}(n^{s(f)})`$ を支配する指数で，"
+        "識別可能性とは別の量だという読みと整合する。",
+        "",
+        "差が出るのは**中央ではなく裾**である。最悪の鍵は `func_31_k10` で 18，"
+        "`func_13_k10` で 16，`func_22_k10` では 13 に留まる。"
+        "したがって「鍵をすべて一意化する最小の $`m`$」で語ると見かけの差が出るが，"
+        "それは最大値統計であり，本研究が先行研究に対して立てた批判がそのまま当てはまる。",
+        "",
+        "鍵26マス系は未測定のままである。$`N`$ を増やしても届かない——"
+        "ソルバーが**ノード上限200万に当たって数え切れない**（`func_31` の $`m=50`$・"
+        "鍵1本で869秒かけて打ち切り。真の鍵自体は見つかる）。そのため $`n=10`$ に揃えた。",
         "",
         "## 次に読む",
         "",
