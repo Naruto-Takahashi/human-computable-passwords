@@ -35,7 +35,7 @@
 |---|---|
 | [llm_training_basics.md](llm_training_basics.md) | **LLM の学習の基礎** — 事前学習・SFT・LoRA・損失・過学習・乱数。**学習の話が出てきたらまずここ** |
 | [llm_inference_basics.md](llm_inference_basics.md) | **推論時の計算と思考過程** — なぜ計算できるのか・CoT は何をしているのか・思考過程はどこまで信用できるか。**経路A の設計判断の根拠** |
-| [measurement_audit.md](measurement_audit.md) | **測定系の監査** — 5エポックという予算が測定値を作っていた。検証損失の読み方 |
+| [measurement_audit.md](measurement_audit.md) | **測定系の監査** — 測定器の都合が「能力」として記録された**7つの機構**（経路B の学習予算＋経路A の5件）。検証損失の読み方 |
 | [cli_reference.md](cli_reference.md) | **コマンドライン引数** — 既定値が現行の条件と違う点、`--paradigm` の語彙が学習と評価で違う点 |
 | [../experiments/batch/README.md](../experiments/batch/README.md) | **バッチの一覧と書き方** — 過去の実験がどのファイルか引ける |
 
