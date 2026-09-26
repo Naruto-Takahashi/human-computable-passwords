@@ -129,8 +129,8 @@ _SIMPLE_ADD = Algorithm(
     key_size=0,
     fn=_fn_simple_add,
     rule_text=(
-        "ルール：Z = (X0 + X1 + X2) mod 10\n"
-        "（入力リスト X の最初の3つの要素を合計し、10で割った余りを求めます）\n"
+        "ルール：Z = (C[0] + C[1] + C[2]) mod 10\n"
+        "（入力の最初の3つの値を合計し、10で割った余りを求めます。秘密の鍵はありません）\n"
     ),
     rationale_text=(
         "考え方:\n"
@@ -165,9 +165,10 @@ _SECRET_ADD = Algorithm(
     domain=10,
     fn=_fn_secret_add,
     rule_text=(
-        "ルール：Z = (X0 + SGM_TABLE[0]) mod 10\n"
-        "（入力リスト X の最初の要素に秘密の値 SGM_TABLE[0]（0〜9の整数1個）を加え、"
-        "10で割った余りを求めます。X1〜X13 は使用しません）\n"
+        "ルール：Z = (C[0] + SGM_TABLE[0]) mod 10\n"
+        "（入力の最初の値 C[0] に秘密の値 SGM_TABLE[0]（0〜9の整数1個）を加え、"
+        "10で割った余りを求めます。この関数だけは表を引かず C[0] をそのまま足します。"
+        "C[1]〜C[13] は使用しません）\n"
     ),
     rationale_text=(
         "考え方:\n"
@@ -182,10 +183,39 @@ _SECRET_ADD = Algorithm(
 )
 
 
-_KEYED_RULE_PREFIX = (
-    "1. 入力リストの各値 X[i] (0 <= i <= 13) は、SGM_TABLE のインデックスに対応する値です"
-    "（X[i] = SGM_TABLE[入力のi番目の値]）。\n"
-)
+def _index_header(k: int) -> str:
+    """入力の値（添字）と，変換後の値の区別を1文で確定させる．
+
+    **2026-09-26 に記法を統一した（経路A へ移るのに合わせて）。**
+    統一前は族によって `X` の意味が逆だった：
+
+    | 族 | 統一前の `X` |
+    |---|---|
+    | `lookup` / `table_add*` | 入力の値（テーブルの添字） |
+    | `pointer` / `narrowptr` / `func_*` | 変換後の値 |
+
+    さらに後者の第1文は「SGM_TABLE のインデックスに**対応する値**です
+    （X[i] = SGM_TABLE[入力のi番目の値]）」と散文と括弧内で食い違っていた。
+    qwen3.5:9b は出力の大半をこの解釈に費やし「この記述は矛盾しています」と
+    述べ，答えに到達する前に生成上限へ達した。
+
+    統一後は **`C[i]` が入力の値（添字），`X[i]` が変換後の値**である。
+
+    > [!WARNING]
+    > 経路B（QLoRA，全82件）のアダプタは統一前の文面で学習している。
+    > 保存済みアダプタを再評価するときは
+    > `tests/algorithm_texts_pathB_frozen.json` の文面を使うこと。
+    """
+    return (
+        f"入力は14個の整数 C[0], C[1], …, C[13] です。"
+        f"各 C[i] は 0〜{k - 1} の整数で、"
+        f"秘密のテーブル SGM_TABLE（長さ{k}、各要素0〜9）の添字です。\n"
+        f"変換後の値を X[i] = SGM_TABLE[C[i]] と書きます（X[i] は 0〜9 の整数）。\n"
+    )
+
+
+def _keyed_rule_prefix(k: int) -> str:
+    return "1. " + _index_header(k)
 _KEYED_RATIONALE_PREFIX = (
     "1. 入力 X の各値は秘密の鍵テーブルのインデックスに対応しており，"
     "鍵テーブルを介して実際の計算用の値に変換される．\n"
@@ -266,7 +296,7 @@ def _make_func(k1: int, k2: int, key_size: int, name: str,
         key_size=key_size,
         fn=fn,
         rule_text=(
-            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "ルール：\n" + _keyed_rule_prefix(key_size) +
             f"2. j = {j_expr} mod 10 を計算します。\n"
             f"3. Z = ({z_expr}) mod 10 を計算します。\n"
         ),
@@ -342,7 +372,7 @@ _FUNC_POW = Algorithm(
     key_size=26,
     fn=_fn_func_pow,
     rule_text=(
-        "ルール：\n" + _KEYED_RULE_PREFIX +
+        "ルール：\n" + _keyed_rule_prefix(26) +
         "2. Z = (1 * X[10]^4 + 2 * X[11]^3 + 3 * X[12]^2 + 4 * X[13]^1) mod 10 を計算します。\n"
     ),
     rationale_text=(
@@ -383,9 +413,8 @@ def _make_lookup(k: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            f"ルール：Z = SGM_TABLE[X0]\n"
-            f"（X0 は 0〜{k - 1} の整数で、秘密のテーブル SGM_TABLE（長さ{k}、各要素0〜9）の"
-            "インデックスです。X1〜X13 は使用しません）\n"
+            "ルール：\n" + _index_header(k) +
+            "Z = X[0] を計算します。（C[1]〜C[13] は使用しません）\n"
         ),
         rationale_text=(
             "考え方:\n1. X[0] をインデックスとして秘密のテーブルの値を参照する．その値が答えです．\n"
@@ -415,9 +444,8 @@ def _make_table_add(k: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            f"ルール：Z = (SGM_TABLE[X0] + SGM_TABLE[X1]) mod 10\n"
-            f"（X0, X1 は 0〜{k - 1} の整数で、秘密のテーブル SGM_TABLE（長さ{k}、各要素0〜9）の"
-            "インデックスです。X2〜X13 は使用しません）\n"
+            "ルール：\n" + _index_header(k) +
+            "Z = (X[0] + X[1]) mod 10 を計算します。（C[2]〜C[13] は使用しません）\n"
         ),
         rationale_text=(
             "考え方:\n1. X[0], X[1] をインデックスとして秘密のテーブルの値を2つ参照する．\n"
@@ -462,7 +490,7 @@ def _make_pointer(k: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "ルール：\n" + _keyed_rule_prefix(k) +
             "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
             "3. Z = X[j] とします（そのまま出力します。加算はありません）。\n"
         ),
@@ -505,9 +533,8 @@ def _make_table_add3(k: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            f"ルール：Z = (SGM_TABLE[X0] + SGM_TABLE[X1] + SGM_TABLE[X2]) mod 10\n"
-            f"（X0, X1, X2 は 0〜{k - 1} の整数で、秘密のテーブル SGM_TABLE（長さ{k}、各要素0〜9）の"
-            "インデックスです。X3〜X13 は使用しません）\n"
+            "ルール：\n" + _index_header(k) +
+            "Z = (X[0] + X[1] + X[2]) mod 10 を計算します。（C[3]〜C[13] は使用しません）\n"
         ),
         rationale_text=(
             "考え方:\n1. X[0], X[1], X[2] をインデックスとして秘密のテーブルの値を3つ参照する．\n"
@@ -560,7 +587,7 @@ def _make_table_addn(n: int, k: int) -> Algorithm:
             f"2. Z = ({' + '.join(str(v) for v in vals)}) mod 10 = {z}"
         )
 
-    terms = " + ".join(f"SGM_TABLE[X{i}]" for i in range(n))
+    terms = " + ".join(f"X[{i}]" for i in range(n))
     idx = ", ".join(f"X{i}" for i in range(n))
     return Algorithm(
         name=f"table_add{n}_k{k}",
@@ -568,9 +595,8 @@ def _make_table_addn(n: int, k: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            f"ルール：Z = ({terms}) mod 10\n"
-            f"（{idx} は 0〜{k - 1} の整数で、秘密のテーブル SGM_TABLE（長さ{k}、各要素0〜9）の"
-            f"インデックスです。X{n}〜X13 は使用しません）\n"
+            "ルール：\n" + _index_header(k) +
+            f"Z = ({terms}) mod 10 を計算します。（C[{n}]〜C[13] は使用しません）\n"
         ),
         rationale_text=(
             f"考え方:\n1. {idx} をインデックスとして秘密のテーブルの値を{n}つ参照する．\n"
@@ -649,7 +675,7 @@ def _make_pointer_chain(k: int, depth: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "ルール：\n" + _keyed_rule_prefix(k) +
             "2. j = (X[10] + X[11]) mod 10 を計算します。\n"
             + chase_rule
         ),
@@ -705,7 +731,7 @@ def _make_dualptr(k: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "ルール：\n" + _keyed_rule_prefix(k) +
             "2. j1 = (X[10] + X[11]) mod 10 と j2 = (X[12] + X[13]) mod 10 を，"
             "互いに独立に計算します。\n"
             "3. Z = (X[j1] + X[j2]) mod 10 を計算します。\n"
@@ -764,7 +790,7 @@ def _make_recptr(k: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            "ルール：\n" + _KEYED_RULE_PREFIX +
+            "ルール：\n" + _keyed_rule_prefix(k) +
             "2. j1 = (X[10] + X[11]) mod 10 を計算します。\n"
             "3. j2 = (X[j1] + X[12]) mod 10 を計算します"
             "（j1 の参照結果を使う点に注意）。\n"
@@ -837,8 +863,9 @@ def _make_narrowptr(k: int, m: int) -> Algorithm:
         key_size=k,
         fn=fn,
         rule_text=(
-            "ルール：\n" + _KEYED_RULE_PREFIX +
-            f"2. j = (X[10] + X[11]) mod {m} を計算します。\n"
+            "ルール：\n" + _keyed_rule_prefix(k) +
+            f"2. j = (X[10] + X[11]) mod {m} を計算します"
+            f"（j の取りうる値は 0〜{m - 1} の {m} 通りです）。\n"
             "3. Z = (X[j] + X[12] + X[13]) mod 10 を計算します。\n"
         ),
         rationale_text=(

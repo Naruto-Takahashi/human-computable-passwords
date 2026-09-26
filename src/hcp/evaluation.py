@@ -312,6 +312,19 @@ def run_recover_key(
             if ds.algorithm.compute(ch, recovered) == ds.algorithm.compute(ch, true_key):
                 eq_agree += 1
         functionally_equivalent = (eq_agree == EQUIV_SAMPLES)
+        # --- 提示した観測そのものを満たしているか -------------------------
+        #
+        # 解が一意な条件なら，観測 m 件すべてに整合する鍵は真の鍵しかありえない。
+        # したがって shot_consistency < 1 は「**自分に与えられたデータすら
+        # 満たしていない**」ことの証明であり，「筋は通っているが外した」とは
+        # 別の失敗様式である。2026-09-26 の試走では，モデルが16件中2件だけ
+        # 検算して「すべてのデータに整合する唯一の解」と述べる例が出た。
+        shot_ok = 0
+        for _, srow in ds.shot_df.iterrows():
+            sch, sz = extract_challenge_and_response(srow)
+            if ds.algorithm.compute(sch, recovered) == sz:
+                shot_ok += 1
+        n_shots_seen = len(ds.shot_df)
         # 純粋なずらしなら，その量を記録しておく（診断用）
         offsets = {(r - t) % 10 for r, t in zip(recovered, true_key)}
         shift_offset = offsets.pop() if len(offsets) == 1 else None
@@ -330,6 +343,8 @@ def run_recover_key(
             key_exact_match=all(matches),
             # 対称性を許した等価判定。対称性が2通り以上ある関数ではこちらを主指標にする
             key_functionally_equivalent=functionally_equivalent,
+            shot_consistency=(round(shot_ok / n_shots_seen, 4) if n_shots_seen else None),
+            n_shots_seen=n_shots_seen,
             equivalence_agreement=round(eq_agree / EQUIV_SAMPLES, 4),
             equivalence_samples=EQUIV_SAMPLES,
             key_shift_offset=shift_offset,
