@@ -23,6 +23,13 @@ logger = logging.getLogger(__name__)
 
 
 class BaseLLMClient:
+    #: 直近の推論のメタ情報（打ち切りの検出用）。対応しないクライアントでは None。
+    #:
+    #: **経路A では生成トークンの上限が，経路B のエポック予算と同じ交絡になる。**
+    #: 上限に当たって途中で切れた出力を「モデルが解けなかった」と読むと，
+    #: 測っているのは自分の設定であってモデルの能力ではない（実験5b〜12 の教訓）。
+    #: そのため done_reason を必ず記録し，"length" の run は能力の判定に使わない。
+    last_meta: Optional[dict] = None
     model_name: str = "unknown"
 
     def predict(self, prompt: str) -> str:
@@ -96,11 +103,24 @@ class OllamaClient(BaseLLMClient):
         api_url: str = "http://localhost:11434/api/generate",
         num_predict: int = 4096,
         num_ctx: Optional[int] = None,
+        num_gpu: Optional[int] = None,
     ):
         self.model_name = model_name
         self.api_url = api_url
         self.num_predict = num_predict
         self.num_ctx_override = num_ctx
+        # GPU に載せる層数。ollama の自動見積もりは保守的で，8GB でも 9b が
+        # 29/34 層しか載らず 5 層が CPU に残って倍近く遅くなる（2026-09-26 実測）。
+        # 環境変数 HCP_OLLAMA_NUM_GPU で上書きできる（99 で全層）。
+        env_gpu = os.environ.get("HCP_OLLAMA_NUM_GPU")
+        self.num_gpu = num_gpu if num_gpu is not None else (
+            int(env_gpu) if env_gpu else None)
+        # 生成上限も環境変数で上書きできる。**打ち切りは経路Bのエポック予算と同型の
+        # 交絡**なので，能力を測るときは自然停止するまで伸ばす（実験8a と同じ手順）。
+        env_np = os.environ.get("HCP_OLLAMA_NUM_PREDICT")
+        if env_np:
+            self.num_predict = int(env_np)
+        self.last_meta = None
         logger.info(f"OllamaClient 初期化完了: model={self.model_name}, endpoint={self.api_url}")
 
     def _auto_num_ctx(self, prompt: str) -> int:
@@ -126,6 +146,8 @@ class OllamaClient(BaseLLMClient):
             "num_ctx": self.num_ctx_override or self._auto_num_ctx(prompt),
             "num_batch": 512,
         }
+        if self.num_gpu is not None:
+            options["num_gpu"] = self.num_gpu
         payload = {
             "model": self.model_name,
             "prompt": prompt,
@@ -136,6 +158,7 @@ class OllamaClient(BaseLLMClient):
         max_retries = 3
         for attempt in range(max_retries):
             full_text: list[str] = []
+            self.last_meta = None
             try:
                 response = requests.post(self.api_url, json=payload, timeout=1800, stream=True)
                 response.raise_for_status()
@@ -150,6 +173,15 @@ class OllamaClient(BaseLLMClient):
                     if delta:
                         full_text.append(delta)
                     if chunk.get("done"):
+                        self.last_meta = {
+                            # "length" なら num_predict に当たって途中で切れた
+                            "done_reason": chunk.get("done_reason"),
+                            "truncated": chunk.get("done_reason") == "length",
+                            "prompt_tokens": chunk.get("prompt_eval_count"),
+                            "output_tokens": chunk.get("eval_count"),
+                            "num_predict": options["num_predict"],
+                            "num_ctx": options["num_ctx"],
+                        }
                         break
                 return "".join(full_text)
             except Exception as e:

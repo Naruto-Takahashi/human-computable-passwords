@@ -269,12 +269,16 @@ def run_recover_key(
         f.write(prompt)
 
     raw = client.predict(prompt)
+    gen = getattr(client, "last_meta", None)
     recovered = executor.parse_key_table(raw, ds.algorithm.key_size)
 
     true_key = ds.key
     metrics = {
         **_base_metrics(config),
         "task": "recover_key",
+        # 生成が上限に当たって切れた run は，能力の判定に使えない（経路Bのエポック予算と同型）
+        "generation": gen,
+        "truncated": bool(gen and gen.get("truncated")),
         "parse_error": recovered is None,
         "recovered_key": recovered,
         "true_key": true_key,

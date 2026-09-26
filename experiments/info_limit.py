@@ -83,8 +83,20 @@ def main():
         )
         elapsed = time.time() - t0
 
-        # ソルバーが復元した鍵の正しさ（一意なら真の鍵と一致するはず）
-        solver_exact = bool(result.solutions) and result.solutions[0] == ds.key
+        # 真の鍵が解集合に含まれるか。判定できないときは None にする。
+        #
+        # 誤報を2つ踏んだので，どちらも避ける形にしてある（2026-09-26）:
+        #   1. 以前は result.solutions[0] == ds.key と先頭だけを見ていた。整合鍵が
+        #      複数あって真の鍵が2番目だと「取り落とした」と誤報する
+        #      （table_add3_k10 の鍵2・引き1 で発覚。ソルバーは正しかった）。
+        #   2. 制約されていない鍵マスがあると，ソルバーは 10**自由マス数 通りを
+        #      **数える**一方，保存するのは自由マスを0で埋めた代表1つだけである。
+        #      この代表は真の鍵と一致しないので，集合の要素判定にしても誤報が残る。
+        # したがって「保存した解が解集合をすべて表している」ときだけ判定する。
+        fully_enumerated = (not result.capped
+                            and result.solution_count == len(result.solutions))
+        solver_exact = (any(sol == ds.key for sol in result.solutions)
+                        if fully_enumerated else None)
         unique = (not result.capped) and result.solution_count == 1
 
         count_str = f">={result.solution_count}" if result.capped else str(result.solution_count)
@@ -121,8 +133,15 @@ def main():
         f"ソルバー: 厳密数え上げ（solution_cap={args.solution_cap}）",
         f"シード: 鍵 {args.key_seeds} × データ {args.data_seeds}",
         "",
-        "| N | K | 整合鍵数（中央値） | 一意特定率 | ソルバー復元成功率 |",
-        "|---|---|---|---|---|",
+        "> [!WARNING]",
+        "> **打ち切り率が 0% でない行の一意特定率は信用できない。**",
+        "> `unique` は「打ち切っていない かつ 整合鍵数 == 1」と定義しているため，",
+        "> ノード予算が尽きた条件は自動的に「非一意」に落ちる。その結果",
+        "> $`m^*_{\\text{info}}`$ は**必ず過大に出る**。閾値付近が最も探索が重いので，",
+        "> ここで打ち切ると閾値そのものを取り違える。",
+        "",
+        "| N | K | 整合鍵数（中央値） | 一意特定率 | **打ち切り率** | 真の鍵が解集合に含まれた率 |",
+        "|---|---|---|---|---|---|",
     ]
     for n_shot, k in itertools.product(args.n_shots, args.k_values):
         group = [r for r in rows if r["n_shot"] == n_shot and r["k_disclosed"] == k]
@@ -130,8 +149,14 @@ def main():
         capped_any = any(r["capped"] for r in group)
         med_str = f">={med:g}" if capped_any else f"{med:g}"
         uniq_rate = sum(r["unique"] for r in group) / len(group)
-        solver_rate = sum(r["solver_recovered_true_key"] for r in group) / len(group)
-        md_lines.append(f"| {n_shot} | {k} | {med_str} | {uniq_rate:.0%} | {solver_rate:.0%} |")
+        judged = [r for r in group if r["solver_recovered_true_key"] is not None]
+        solver_rate = (sum(r["solver_recovered_true_key"] for r in judged) / len(judged)
+                       if judged else None)
+        cap_rate = sum(r["capped"] for r in group) / len(group)
+        cap_str = "0%" if cap_rate == 0 else f"**{cap_rate:.0%}**"
+        solver_str = "—" if solver_rate is None else f"{solver_rate:.0%}"
+        md_lines.append(f"| {n_shot} | {k} | {med_str} | {uniq_rate:.0%} | {cap_str} "
+                        f"| {solver_str} |")
 
     md_path = os.path.join(args.output_dir, f"{args.algorithm}_info_limit.md")
     with open(md_path, "w", encoding="utf-8") as f:
