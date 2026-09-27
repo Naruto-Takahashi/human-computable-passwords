@@ -3,6 +3,7 @@ import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.layers import (
     LSTM,
+    Add,
     Bidirectional,
     Concatenate,
     Conv1D,
@@ -10,10 +11,31 @@ from tensorflow.keras.layers import (
     Dropout,
     Embedding,
     Flatten,
+    GlobalAveragePooling1D,
     Input,
     Layer,
+    LayerNormalization,
+    MultiHeadAttention,
 )
 from tensorflow.keras.models import Model, Sequential
+
+
+class PositionalEmbedding(Layer):
+    """位置埋め込み（学習可能）．
+
+    self-attention は順序を持たないので，位置情報を足さないと
+    「10番目の値」「12番目の値」を区別できない。HCP は位置が本質的
+    （$j$ は位置10, 11 から作り，位置12, 13 を足す）なので必須である。
+    """
+
+    def __init__(self, length: int, dim: int, **kwargs):
+        super().__init__(**kwargs)
+        self.pos = Embedding(input_dim=length, output_dim=dim)
+        self.length = length
+
+    def call(self, x):
+        positions = tf.range(self.length)
+        return x + self.pos(positions)
 
 
 class SqueezeLayer(Layer):
@@ -119,6 +141,62 @@ class Models:
         dense = Dense(30, activation="relu")(dense)
         dense = Dense(30, activation="relu")(dense)
         outputs = Dense(10, activation="softmax")(dense)
+        model = Model(inputs=inputs, outputs=outputs)
+        model.compile(
+            loss="categorical_crossentropy", optimizer="Adam", metrics=["accuracy"]
+        )
+        model.summary()
+        return model
+
+    @staticmethod
+    # 埋め込み層と Transformer エンコーダを組み合わせたモデル（2026-09-27 追加）
+    def embed_transformer(
+        n_images: int = 26,
+        d_model: int = 64,
+        num_heads: int = 4,
+        num_layers: int = 2,
+        ff_dim: int = 128,
+    ) -> Model:
+        """**小川ら(2025) §5.4 の第一の将来課題に対応するモデル。**
+
+        原文: "A particularly important next step is to evaluate attention-based
+        and Transformer-style models. **Self-attention is naturally suited to
+        content-dependent selection**, and therefore provides a direct way to test
+        whether a model can learn to attend to the input-dependent referenced position."
+
+        $`j`$ 項はまさに「内容依存の参照位置の選択」であり，self-attention は
+        その機構そのものである。したがって本モデルは著者らの予想を直接検証する。
+
+        **既存の LLM 実験（経路A・経路B）との違い**: あちらは事前学習済みモデルを
+        使うので，self-attention の効果と事前学習の効果が分離できない。
+        ゼロから学習する本モデルは**アーキテクチャの効果だけ**を取り出す。
+
+        | 道 | self-attention | 事前学習 | 重み更新 |
+        |---|---|---|---|
+        | 本モデル | ○ | **✗** | ○ |
+        | 経路B（LLM追加学習） | ○ | ○ | ○ |
+        | 経路A（LLM in-context） | ○ | ○ | **✗** |
+
+        規模は小川らの CNN（数万パラメータ）と揃える意図で小さく取る。
+        """
+        inputs = Input(shape=(14,))
+        x = Embedding(input_dim=n_images, output_dim=d_model)(inputs)
+        x = PositionalEmbedding(14, d_model)(x)
+
+        for _ in range(num_layers):
+            # self-attention ブロック（残差 ＋ 層正規化）
+            attn = MultiHeadAttention(num_heads=num_heads, key_dim=d_model // num_heads)(
+                x, x
+            )
+            x = LayerNormalization(epsilon=1e-6)(Add()([x, attn]))
+            # 位置ごとの全結合ブロック
+            ff = Dense(ff_dim, activation="relu")(x)
+            ff = Dense(d_model)(ff)
+            x = LayerNormalization(epsilon=1e-6)(Add()([x, ff]))
+
+        x = GlobalAveragePooling1D()(x)
+        x = Dense(64, activation="relu")(x)
+        outputs = Dense(10, activation="softmax")(x)
         model = Model(inputs=inputs, outputs=outputs)
         model.compile(
             loss="categorical_crossentropy", optimizer="Adam", metrics=["accuracy"]
