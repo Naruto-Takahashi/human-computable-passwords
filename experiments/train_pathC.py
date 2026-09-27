@@ -49,6 +49,10 @@ def make_dataset(algorithm, datasize: int, seed: int):
 
     小川らも「$\\sigma$ は実行ごとに独立生成」としている（多対一写像であり
     全単射ではない）．旧実装は seed=42 固定で，鍵が1本しか出てこなかった．
+
+    **この seed は鍵の seed であり，重みの初期化とは分けてある**（2026-09-27）．
+    分ける前は離陸した run の seed が2つに偏っており，「この鍵が易しい」のか
+    「この初期値が当たり」なのかを切り分けられなかった（実験5b・7 と同じ穴）．
     """
     rng = np.random.default_rng(seed)
     key = rng.integers(0, 10, algorithm.key_size).tolist()
@@ -79,17 +83,59 @@ def majority_baseline(y_train, y_eval) -> float:
     return float((y_eval == most).mean())
 
 
+class _KeepBestWeights:
+    """検証正解率が最良だったエポックの重みを覚えておく．
+
+    Keras の `restore_best_weights` は EarlyStopping に付いているが，打ち切りは
+    したくない（予算を run ごとに変えると測定値に混ざる）．重みだけ保持する．
+    """
+
+    def __init__(self):
+        self.best = -1.0
+        self.best_weights = None
+        self.model = None
+
+    def set_model(self, model):
+        self.model = model
+
+    def set_params(self, params):
+        pass
+
+    def on_epoch_end(self, epoch, logs=None):
+        acc = (logs or {}).get("val_accuracy")
+        if acc is not None and acc > self.best:
+            self.best = acc
+            self.best_weights = self.model.get_weights()
+
+    def __getattr__(self, name):
+        # 上で定義していないコールバックメソッドは何もしない
+        if name.startswith("on_") or name in ("_implements_train_batch_hooks",):
+            return lambda *a, **k: False if name.startswith("_implements") else None
+        raise AttributeError(name)
+
+
 def one_run(args, algorithm, run_index: int) -> dict:
+    """1 run ＝ 1つの鍵 × 1つの初期値．
+
+    `--runs R` は「鍵 `--n_keys` 本 × 初期値 R/n_keys 通り」に展開する．
+    離陸率だけでなく，ばらつきのどれだけが鍵由来でどれだけが初期化由来かを
+    分解できる（実験7 は「離陸したか」までしか言えなかった）．
+    """
     import keras
 
     from baseline_ml.models import Models
 
-    seed = args.seed_base + run_index
-    # 重みの初期化と shuffle も run ごとに変える（run のばらつきを測るため）
-    keras.utils.set_random_seed(seed)
+    key_index = run_index % args.n_keys
+    init_index = run_index // args.n_keys
+    key_seed = args.key_seed_base + key_index
+    init_seed = args.init_seed_base + init_index
 
-    x, y, key = make_dataset(algorithm, args.datasize, seed)
-    (xtr, ytr), (xva, yva), (xte, yte) = split_8_1_1(x, y, seed)
+    x, y, key = make_dataset(algorithm, args.datasize, key_seed)
+    (xtr, ytr), (xva, yva), (xte, yte) = split_8_1_1(x, y, key_seed)
+
+    # 鍵とデータを引き終えてから初期化の seed を置く（順序を変えると
+    # 初期値が鍵に依存してしまう）
+    keras.utils.set_random_seed(init_seed)
 
     model = Models.embed_transformer(          # 欠陥1: run ごとに新規構築
         n_images=algorithm.challenge_domain(),
@@ -103,6 +149,7 @@ def one_run(args, algorithm, run_index: int) -> dict:
     n_params = int(model.count_params())
 
     to_cat = keras.utils.to_categorical
+    keep_best = _KeepBestWeights()
     start = time.time()
     hist = model.fit(
         xtr, to_cat(ytr, 10),
@@ -110,20 +157,28 @@ def one_run(args, algorithm, run_index: int) -> dict:
         epochs=args.epochs,
         verbose=2 if args.verbose else 0,
         validation_data=(xva, to_cat(yva, 10)),
+        callbacks=[keep_best],
     ).history
     elapsed = time.time() - start
 
     val_acc = hist["val_accuracy"]
     best_epoch = int(np.argmax(val_acc))
 
-    # 検証最大のエポックの重みは保持していないので，最終重みでの試験正解率と
-    # 併せて「最終エポックの検証」も残す．最大値だけで語らないための材料．
+    # 検証最良エポックの重みで試験集合を測る（2026-09-27 に修正）．
+    # それまでは最終エポックの重みで測っており，離陸後に劣化した run で
+    # 試験正解率を過小評価していた．最終重みでの値も残して差を見る．
+    test_acc_last = float(model.evaluate(xte, to_cat(yte, 10), verbose=0)[1])
+    if keep_best.best_weights is not None:
+        model.set_weights(keep_best.best_weights)
     test_acc_final = float(model.evaluate(xte, to_cat(yte, 10), verbose=0)[1])
 
     return {
         "algorithm": algorithm.name,
         "run_index": run_index,
-        "seed": seed,
+        "key_seed": key_seed,
+        "init_seed": init_seed,
+        "key_index": key_index,
+        "init_index": init_index,
         "n_images": algorithm.challenge_domain(),
         "key": key,
         "datasize": args.datasize,
@@ -144,6 +199,7 @@ def one_run(args, algorithm, run_index: int) -> dict:
         "train_accuracy_max": float(max(hist["accuracy"])),
         "train_accuracy_final": float(hist["accuracy"][-1]),
         "test_accuracy_final": test_acc_final,
+        "test_accuracy_last_epoch": test_acc_last,
         # 鍵ごとの基準線
         "baseline_majority_val": majority_baseline(ytr, yva),
         "baseline_majority_test": majority_baseline(ytr, yte),
@@ -158,7 +214,10 @@ def main():
     ap.add_argument("--epochs", type=int, default=30)
     ap.add_argument("--batch_size", type=int, default=64)
     ap.add_argument("--runs", type=int, default=3, help="反復数（1条件1run にしない）")
-    ap.add_argument("--seed_base", type=int, default=20260927)
+    ap.add_argument("--key_seed_base", type=int, default=20260927)
+    ap.add_argument("--init_seed_base", type=int, default=700)
+    ap.add_argument("--n_keys", type=int, default=5,
+                    help="鍵の本数．--runs はこれで割って初期値の通り数になる")
     ap.add_argument("--d_model", type=int, default=64)
     ap.add_argument("--num_heads", type=int, default=4)
     ap.add_argument("--num_layers", type=int, default=2)
