@@ -17,6 +17,18 @@
 > | 扱う関数は3つ | $`f_{1,3}, f_{2,2}, f_{3,1}`$ | ○ |
 > | `in-context` の語が現れない | 全文確認済み | ○ |
 >
+> **§5.4 の将来課題は経路B（教師あり学習）である。**原文を精読すると全体が
+> 学習の文脈である:
+>
+> - "whether a model can **learn to attend** to the input-dependent referenced position"
+> - "large pretrained or **fine-tuned** sequence models"
+> - "Transformer encoders, small decoder-only models ... could provide stronger
+>   future baselines **for learning $`f \circ \sigma`$ from leaked challenge-response pairs**"
+>
+> 2026-09-27 に「論文が経路A を名指しで将来課題に挙げている」と書きかけたが，
+> **これは 2026-08-18 に一度訂正した誤りの再発**である（下記 §6.2 の注記を参照）。
+> 経路A は依然として論文の枠組みの外側にある。
+>
 > **手元の卒論（`R7_小川.pdf`，日本語，2025年2月）とは別の研究である。**
 > 卒論は $`f_{2,2}, f_{1,3}`$ の2関数・CNN のみで最大 60.84%，英語論文は3関数に
 > 池田さんの Bi-LSTM も統合した査読付き論文で最大 68.58%。数値の食い違いは
