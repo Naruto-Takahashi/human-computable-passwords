@@ -80,8 +80,7 @@ def majority_baseline(y_train, y_eval) -> float:
 
 
 def one_run(args, algorithm, run_index: int) -> dict:
-    import tensorflow as tf
-    from tensorflow import keras
+    import keras
 
     from baseline_ml.models import Models
 
@@ -164,7 +163,7 @@ def main():
     ap.add_argument("--num_heads", type=int, default=4)
     ap.add_argument("--num_layers", type=int, default=2)
     ap.add_argument("--ff_dim", type=int, default=128)
-    ap.add_argument("--readout", default="flatten", choices=("flatten", "mean", "cls"))
+    ap.add_argument("--readout", default="mean", choices=("flatten", "mean", "cls"))
     ap.add_argument("--learning_rate", type=float, default=1e-3)
     ap.add_argument("--experiment", default="C1pre0", help="results/ の仕分け用ラベル")
     ap.add_argument("--verbose", action="store_true")

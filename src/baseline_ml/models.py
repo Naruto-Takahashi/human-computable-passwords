@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-from tensorflow.keras.layers import (
+import keras
+from keras import ops
+from keras.layers import (
     LSTM,
     Add,
     Bidirectional,
@@ -17,8 +18,8 @@ from tensorflow.keras.layers import (
     LayerNormalization,
     MultiHeadAttention,
 )
-from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras.optimizers import Adam
+from keras.models import Model, Sequential
+from keras.optimizers import Adam
 
 
 class PositionalEmbedding(Layer):
@@ -35,7 +36,7 @@ class PositionalEmbedding(Layer):
         self.length = length
 
     def call(self, x):
-        positions = tf.range(self.length)
+        positions = ops.arange(self.length)
         return x + self.pos(positions)
 
 
@@ -57,8 +58,8 @@ class PrependClsToken(Layer):
         super().build(input_shape)
 
     def call(self, x):
-        batch = tf.shape(x)[0]
-        return tf.concat([tf.tile(self.cls, [batch, 1, 1]), x], axis=1)
+        batch = ops.shape(x)[0]
+        return ops.concatenate([ops.tile(self.cls, [batch, 1, 1]), x], axis=1)
 
 
 class SliceFirstToken(Layer):
@@ -71,7 +72,7 @@ class SliceFirstToken(Layer):
 class SqueezeLayer(Layer):
     # テンソルからサイズが1の次元を削除するカスタムレイヤー (最後の次元を削除)
     def call(self, inputs):
-        return tf.squeeze(inputs, axis=-1)
+        return ops.squeeze(inputs, axis=-1)
 
 
 class Models:
@@ -186,7 +187,7 @@ class Models:
         num_heads: int = 4,
         num_layers: int = 2,
         ff_dim: int = 128,
-        readout: str = "flatten",
+        readout: str = "mean",
         learning_rate: float = 1e-3,
     ) -> Model:
         """**小川ら(2025) §5.4 の第一の将来課題に対応するモデル。**
@@ -218,16 +219,25 @@ class Models:
 
         ## `readout` — 14位置をどう1つのベクトルに畳むか
 
-        **ここは結果を左右する。**$`Z`$ は「位置 $`j`$ の値」に依存するので，
-        位置をまたいで平均すると読み出しの時点で必要な情報が消えうる。
-        小川らの CNN は `Flatten` で全位置を残しているため，
-        既定は公平を期して `flatten` とする。
+        **ここは結果を左右する。実測で確かめた（2026-09-27，`table_add3_k26`，
+        10,000件，30エポック）。**
 
-        | 値 | 畳み方 | 位置情報 |
-        |---|---|---|
-        | `flatten` | 14×d_model をそのまま連結（既定・CNN と同じ） | 保つ |
-        | `mean` | 14位置の平均（`GlobalAveragePooling1D`） | 失う |
-        | `cls` | 先頭に学習可能な1トークンを足しその出力だけ使う | attention 経由で集める |
+        | 値 | 畳み方 | 統制の検証最大 | パラメータ |
+        |---|---|---|---|
+        | `mean` | 14位置の平均（既定） | **1.0000** | 75,850 |
+        | `cls` | 先頭に学習可能な1トークンを足しその出力だけ使う | **1.0000** | 75,978 |
+        | `flatten` | 14×d_model を連結（小川らの CNN と同じ） | **0.1210**（床） | 129,098 |
+
+        > [!WARNING]
+        > **`flatten` は統制すら学習できない。**「平均は位置情報を潰すから
+        > `Flatten` の方が公平だろう」と考えて既定にしたが，実測は逆だった。
+        > パラメータは最多（129,098）なので容量の問題ではない。
+        > 位置ごとに `LayerNormalization` を通したあと 896 次元を一度に
+        > 全結合へ渡す形が最適化を壊していると見られる。
+        >
+        > したがって既定は `mean` に戻した。**この軸は実験C1 の予備実験4 で
+        > 3値すべてを回す**（読み出しを変えるとパラメータ数も動くので，
+        > 規模の軸と合わせて読む）。
         """
         if readout not in ("flatten", "mean", "cls"):
             raise ValueError(f"readout は flatten / mean / cls のいずれか: {readout}")
