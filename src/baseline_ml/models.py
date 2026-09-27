@@ -18,6 +18,7 @@ from tensorflow.keras.layers import (
     MultiHeadAttention,
 )
 from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.optimizers import Adam
 
 
 class PositionalEmbedding(Layer):
@@ -36,6 +37,35 @@ class PositionalEmbedding(Layer):
     def call(self, x):
         positions = tf.range(self.length)
         return x + self.pos(positions)
+
+
+class PrependClsToken(Layer):
+    """系列の先頭に学習可能な1トークンを挿入する（`readout="cls"` 用）．
+
+    平均プーリングは位置をまたいで潰すので，「位置 $j$ の値」を読み出しにくい。
+    CLS トークンなら，どの位置を見るかを attention 自身に決めさせられる。
+    """
+
+    def __init__(self, dim: int, **kwargs):
+        super().__init__(**kwargs)
+        self.dim = dim
+
+    def build(self, input_shape):
+        self.cls = self.add_weight(
+            name="cls", shape=(1, 1, self.dim), initializer="random_normal"
+        )
+        super().build(input_shape)
+
+    def call(self, x):
+        batch = tf.shape(x)[0]
+        return tf.concat([tf.tile(self.cls, [batch, 1, 1]), x], axis=1)
+
+
+class SliceFirstToken(Layer):
+    """CLS トークン（先頭位置）の出力だけを取り出す．"""
+
+    def call(self, x):
+        return x[:, 0, :]
 
 
 class SqueezeLayer(Layer):
@@ -156,6 +186,8 @@ class Models:
         num_heads: int = 4,
         num_layers: int = 2,
         ff_dim: int = 128,
+        readout: str = "flatten",
+        learning_rate: float = 1e-3,
     ) -> Model:
         """**小川ら(2025) §5.4 の第一の将来課題に対応するモデル。**
 
@@ -177,11 +209,36 @@ class Models:
         | 経路B（LLM追加学習） | ○ | ○ | ○ |
         | 経路A（LLM in-context） | ○ | ○ | **✗** |
 
-        規模は小川らの CNN（数万パラメータ）と揃える意図で小さく取る。
+        > [!WARNING]
+        > **規模は小川らの CNN と揃っていない。**既定値（d_model=64, 4ヘッド,
+        > 2層, ff=128）では 74,314 パラメータで，CNN の 28,006 の約2.7倍である。
+        > 「揃えた」とは書けない。容量で負けていない方が
+        > 「Transformer でも解けない」の主張には安全だが，**既定値は根拠なく
+        > 選んだ値であり，実験C1 の予備実験4 で決める**。
+
+        ## `readout` — 14位置をどう1つのベクトルに畳むか
+
+        **ここは結果を左右する。**$`Z`$ は「位置 $`j`$ の値」に依存するので，
+        位置をまたいで平均すると読み出しの時点で必要な情報が消えうる。
+        小川らの CNN は `Flatten` で全位置を残しているため，
+        既定は公平を期して `flatten` とする。
+
+        | 値 | 畳み方 | 位置情報 |
+        |---|---|---|
+        | `flatten` | 14×d_model をそのまま連結（既定・CNN と同じ） | 保つ |
+        | `mean` | 14位置の平均（`GlobalAveragePooling1D`） | 失う |
+        | `cls` | 先頭に学習可能な1トークンを足しその出力だけ使う | attention 経由で集める |
         """
+        if readout not in ("flatten", "mean", "cls"):
+            raise ValueError(f"readout は flatten / mean / cls のいずれか: {readout}")
+
         inputs = Input(shape=(14,))
         x = Embedding(input_dim=n_images, output_dim=d_model)(inputs)
-        x = PositionalEmbedding(14, d_model)(x)
+        length = 14
+        if readout == "cls":
+            x = PrependClsToken(d_model)(x)
+            length = 15
+        x = PositionalEmbedding(length, d_model)(x)
 
         for _ in range(num_layers):
             # self-attention ブロック（残差 ＋ 層正規化）
@@ -194,14 +251,21 @@ class Models:
             ff = Dense(d_model)(ff)
             x = LayerNormalization(epsilon=1e-6)(Add()([x, ff]))
 
-        x = GlobalAveragePooling1D()(x)
+        if readout == "mean":
+            x = GlobalAveragePooling1D()(x)
+        elif readout == "flatten":
+            x = Flatten()(x)
+        else:  # cls
+            x = SliceFirstToken()(x)
+
         x = Dense(64, activation="relu")(x)
         outputs = Dense(10, activation="softmax")(x)
         model = Model(inputs=inputs, outputs=outputs)
         model.compile(
-            loss="categorical_crossentropy", optimizer="Adam", metrics=["accuracy"]
+            loss="categorical_crossentropy",
+            optimizer=Adam(learning_rate=learning_rate),
+            metrics=["accuracy"],
         )
-        model.summary()
         return model
 
 

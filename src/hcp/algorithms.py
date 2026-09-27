@@ -366,13 +366,29 @@ def _explain_func_pow(ch, key, z):
     )
 
 
-_FUNC_POW = Algorithm(
-    name="func_pow",
+def _make_func_pow(k: int, name: Optional[str] = None) -> Algorithm:
+    """小川ら(2025) Table 6 の no-j ablation 関数 $h$（鍵サイズを振れる形）．
+
+        Z = (1*X[10]^4 + 2*X[11]^3 + 3*X[12]^2 + 4*X[13]) mod 10
+
+    **これが小川らの統制実験そのものである。**答えを決める位置が 10〜13 に
+    固定されており，$`j`$ 項（内容依存の参照）を持たない。あちらは
+    $`N \in \lbrace 26, 50, 100 \rbrace`$・50,000件で
+    最大 0.9987 / 1.0000 / 0.2118 を報告している。
+
+    実験C1（1から学習する Transformer）で**数字を直接ぶつける統制**として使う。
+    `table_add3` では「関数が違うから」で終わってしまう。
+
+    $`k=26`$ 版は既存の `func_pow` で，文面・計算を1文字も変えていない
+    （`tests/check_algorithm_texts.py` が基準と照合する）。
+    """
+    return Algorithm(
+    name=name or f"func_pow_k{k}",
     level=3,
-    key_size=26,
+    key_size=k,
     fn=_fn_func_pow,
     rule_text=(
-        "ルール：\n" + _keyed_rule_prefix(26) +
+        "ルール：\n" + _keyed_rule_prefix(k) +
         "2. Z = (1 * X[10]^4 + 2 * X[11]^3 + 3 * X[12]^2 + 4 * X[13]^1) mod 10 を計算します。\n"
     ),
     rationale_text=(
@@ -387,7 +403,10 @@ _FUNC_POW = Algorithm(
         " + 3 * pow(X_val[12], 2) + 4 * pow(X_val[13], 1)) % 10\n"
     ),
     explain=_explain_func_pow,
-)
+    )
+
+
+_FUNC_POW = _make_func_pow(26, "func_pow")
 
 
 # =============================================================================
@@ -965,6 +984,33 @@ _STATIC_ARITY = [_make_table_addn(n, 4) for n in (4, 5, 6)]
 _CASE_COUNT_LADDER = [_make_table_add3(15), _make_narrowptr(5, 2)]
 
 
+# 実験C1（1から学習する Transformer）の格子（2026-09-27）。
+#
+# 小川ら(2025) は $N \in \lbrace 26, 50, 100 \rbrace$ で実験しており，数字を
+# 直接比べるにはこの3点が要る。既存は $N=26$ までだったので 50・100 を足す。
+#
+#   j 項あり   : func_22 / func_13 / func_31（Table 5 に対応）
+#   統制① 多項式: func_pow（**Table 6 の関数そのもの**）
+#   統制② 静的和: table_add3（本研究独自。位置数3で揃える）
+#   統制③ 文面 : narrowptr_m1（文面は動的のまま j ≡ 0。本研究独自）
+#
+# > [!NOTE]
+# > $N=100$ では統制①も落ちる（小川ら Table 6 で最大 0.2118）。大きい $N$ では
+# > 「$j$ 項が難しい」ではなく**データ密度**が効いている。主結論は統制が天井に
+# > 届く $N=26$ で述べ，$N=50, 100$ は密度の効果として別に読む。
+#
+# func_13 は既存の無印が $k=100$，func_31 の無印が $k=26$ であるため，
+# 重複しない鍵サイズだけを足している。
+_PATH_C_GRID = [
+    _make_func(2, 2, 50, "func_22_k50"), _make_func(2, 2, 100, "func_22_k100"),
+    _make_func(1, 3, 50, "func_13_k50"),
+    _make_func(3, 1, 50, "func_31_k50"), _make_func(3, 1, 100, "func_31_k100"),
+    _make_func_pow(50), _make_func_pow(100),
+    _make_table_add3(50), _make_table_add3(100),
+    _make_narrowptr(50, 1), _make_narrowptr(100, 1),
+]
+
+
 # =============================================================================
 # レジストリ
 # =============================================================================
@@ -972,7 +1018,7 @@ _CASE_COUNT_LADDER = [_make_table_add3(15), _make_narrowptr(5, 2)]
 ALGORITHMS: dict[str, Algorithm] = {
     a.name: a
     for a in [_SIMPLE_ADD, _SECRET_ADD, *_LADDER, *_DEPTH_LADDER, *_RANGE_LADDER, *_MINIMAL_TASK, *_STATIC_ARITY, *_CASE_COUNT_LADDER,
-              *_PATH_A_CONTROL, _FUNC_22_K4, _TABLE_ADD3_K4, *_PATH_A_LADDER,
+              *_PATH_A_CONTROL, *_PATH_C_GRID, _FUNC_22_K4, _TABLE_ADD3_K4, *_PATH_A_LADDER,
               _FUNC_13, _FUNC_13_K10, _FUNC_13_K26, _FUNC_22, _FUNC_22_K10,
               _FUNC_31, _FUNC_31_K10, _FUNC_POW]
 }
