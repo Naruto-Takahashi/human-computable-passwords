@@ -21,7 +21,7 @@
 
 | 実験 | 題 | run 数 | 関数 |
 |---|---|---:|---|
-| **A1** | 動的参照は in-context 推論でも壁になるか（小川ら CNN の3世代目） | 53 | `func_22_k13`，`func_22_k4`，`func_22_k6`，`func_22_k8`ほか |
+| **A1** | 動的参照は in-context 推論でも壁になるか（小川ら CNN の3世代目） | 57 | `func_22_k13`，`func_22_k4`，`func_22_k6`，`func_22_k8`ほか |
 | **A13** | 経路Aの基準線: m*_info の確定 | 8 | `func_13_k10`，`func_22_k10`，`func_31_k10`，`lookup_k10`ほか |
 | **B1** | 難易度ラダーの探索（記憶・合成・動的参照） | 27 | `func_13`，`func_13_k26`，`func_22`，`func_31`ほか |
 | **B12** | 素朴な手順の誤判定はどれだけ起きるか | 9 | `func_22_k10`，`narrowptr_k10_m1`，`narrowptr_k10_m2`，`table_add3_k10` |
@@ -42,13 +42,17 @@
 |---|---|---:|---:|---:|---:|---:|:-:|---|---|
 | `func_22_k13` | info_limit | — | — | — | — | — | — | — | `results/solver/func_22_k13_info_limit.csv` |
 | `func_22_k4` | recover_key | 0 | 0 | 9 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k4/recover_key/n9_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `func_22_k4` | recover_key | 0 | 0 | 9 | 2 | — | B | 不正解 | `results/llm_eval/func_22_k4/recover_key_B/n9_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
 | `func_22_k4` | recover_key | 1 | 0 | 9 | 2 | — | A | 打切 | `results/llm_eval/func_22_k4/recover_key/n9_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
 | `func_22_k4` | recover_key | 2 | 0 | 9 | 2 | — | A | 打切 | `results/llm_eval/func_22_k4/recover_key/n9_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
 | `func_22_k4` | info_limit | — | — | — | — | — | — | — | `results/solver/func_22_k4_info_limit.csv` |
 | `func_22_k6` | recover_key | 0 | 0 | 11 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
+| `func_22_k6` | recover_key | 0 | 0 | 11 | 2 | — | B | 不正解 | `results/llm_eval/func_22_k6/recover_key_B/n11_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
 | `func_22_k6` | recover_key | 1 | 0 | 11 | 2 | — | A | 打切 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks1_ds0/qwen3.5_4b` |
 | `func_22_k6` | recover_key | 2 | 0 | 11 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
+| `func_22_k6` | recover_key | 2 | 0 | 11 | 2 | — | B | 不正解 | `results/llm_eval/func_22_k6/recover_key_B/n11_t500_stage2_k0/ks2_ds0/qwen3.5_4b` |
 | `func_22_k6` | recover_key | 3 | 0 | 11 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks3_ds0/qwen3.5_4b` |
+| `func_22_k6` | recover_key | 3 | 0 | 11 | 2 | — | B | 打切 | `results/llm_eval/func_22_k6/recover_key_B/n11_t500_stage2_k0/ks3_ds0/qwen3.5_4b` |
 | `func_22_k6` | recover_key | 4 | 0 | 11 | 2 | — | A | 打切 | `results/llm_eval/func_22_k6/recover_key/n11_t500_stage2_k0/ks4_ds0/qwen3.5_4b` |
 | `func_22_k6` | info_limit | — | — | — | — | — | — | — | `results/solver/func_22_k6_info_limit.csv` |
 | `func_22_k8` | recover_key | 0 | 0 | 16 | 2 | — | A | 不正解 | `results/llm_eval/func_22_k8/recover_key/n16_t500_stage2_k0/ks0_ds0/qwen3.5_4b` |
