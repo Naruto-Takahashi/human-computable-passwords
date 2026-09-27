@@ -121,6 +121,15 @@ class OllamaClient(BaseLLMClient):
         env_np = os.environ.get("HCP_OLLAMA_NUM_PREDICT")
         if env_np:
             self.num_predict = int(env_np)
+        # 文脈長を明示的に抑える手段（2026-09-27）。
+        # _auto_num_ctx は「プロンプト長 + num_predict」を2の冪へ切り上げるため，
+        # 大きな num_predict を与えると num_ctx が跳ね上がり VRAM 8GB を超える。
+        # 実際 deepseek-r1:8b（5.2GB）で num_predict=24576 → num_ctx=32768 となり
+        # cudaMalloc failed で llama-server が落ちた。モデルごとに上限が違うので
+        # 外から抑えられるようにする。
+        env_ctx = os.environ.get("HCP_OLLAMA_NUM_CTX")
+        if env_ctx:
+            self.num_ctx_override = int(env_ctx)
         # 思考モデル（qwen3.5 など）は生成の大半を thinking 側へ出す。
         # thinking も num_predict を消費するため，本文が始まる前に上限へ当たりうる。
         # HCP_OLLAMA_THINK=0 で思考を切れる（CoT の有無を独立変数にできる）。
