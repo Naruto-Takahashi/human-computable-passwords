@@ -10,6 +10,7 @@
 import glob
 import json
 import os
+import sys
 
 import matplotlib
 matplotlib.use("Agg")
@@ -21,27 +22,17 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(REPO, "docs/reports/figures")
 THRESHOLD = 0.5
 
-# パステル配色（2026-09-28）。dataviz スキルの検証器を通してある:
-#   node scripts/validate_palette.js "#7FA9E8,#F0946A,#41C2A8,#A98CE0" --mode light
-#     明度帯 PASS / 彩度下限 PASS / 色覚異常の隣接分離 ΔE 9.4（目標8以上）PASS /
-#     通常視の隣接分離 ΔE 21.5（下限15）PASS / 地色とのコントラストは 3:1 未満 WARN
-#   WARN は「直接ラベルか表を必ず添える」という条件つきで許容される（relief 規則）。
-#   本報告の図はすべて直接ラベルを持ち，同じ数値が本文の表にもある。
-BLUE, ORANGE, AQUA, VIOLET = "#7FA9E8", "#F0946A", "#41C2A8", "#A98CE0"
-# 連続値（ヒートマップ）は単一色相で明→暗。上のパステル青を最濃に置く
-SEQ = ["#F2F7FE", "#E1EDFC", "#CBDFF8", "#AEC9F0", "#93B6EB", "#7FA9E8"]
-INK, INK2, INK3 = "#1b1b1a", "#5c5b57", "#94928a"
-GRID = "#ebeae4"
+# 配色は docs/palette.md が正本（tools/palette.py が機械可読版）。
+# ここで色を選び直さない。
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from palette import LIGHT, SEQ_BLUE, INK, INK2, AXIS, GRID, matplotlib_rc  # noqa: E402
 
-plt.rcParams.update({
-    # Typst(resvg) は可変フォントを扱えず，SVG 内のフォント名解決も環境依存になる．
-    # 文字をパスに落として埋め込む（svg.fonttype="path"）ので，字形は確実に出る．
-    "font.family": ["Noto Sans CJK JP", "sans-serif"],
-    "font.size": 9, "axes.edgecolor": INK3, "axes.linewidth": 0.6,
-    "text.color": INK, "axes.labelcolor": INK2, "xtick.color": INK2,
-    "ytick.color": INK2, "xtick.labelsize": 8.5, "ytick.labelsize": 8.5,
-    "svg.fonttype": "path", "figure.facecolor": "white", "axes.facecolor": "white",
-})
+BLUE, ORANGE, AQUA, VIOLET = LIGHT          # 系列1〜4
+# 枡の中に数値を書くので，濃いインクが 4.5:1 を保てる Blue 400 までに止める
+SEQ = SEQ_BLUE[:3]
+INK3 = AXIS
+
+plt.rcParams.update(matplotlib_rc())
 
 LABEL = {"func_pow": "$h$（統制・$j$項なし）", "func_22": "$f_{2,2}$  $s$=1.5",
          "func_13_k26": "$f_{1,3}$  $s$=2.0", "func_31": "$f_{3,1}$  $s$=1.0"}
