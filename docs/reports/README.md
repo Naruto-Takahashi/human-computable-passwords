@@ -179,16 +179,27 @@ pipe table の2行目のハイフンの本数が，そのまま列幅の比率�
 
 `:---` は左揃え，`:---:` は中央揃え。数値の列は中央，数式や長い文の列は左が読みやすい。
 
-### 7. 図は `figures/` に置く
+### 7. 図は `figures/` に置き，**リポジトリのルートからのパス**で参照する
 
 SVG ならベクタのまま埋め込まれる（matplotlib なら `plt.savefig("...svg")`）。
 
 ```markdown
-![深さごとの正解率](figures/depth_accuracy.svg)
+![深さごとの正解率](docs/reports/figures/depth_accuracy.svg)
 ```
 
-図の実体は `docs/reports/figures/` に置く（上のファイル名は書き方の例）．
-`results/figures/` にある図を使うときはコピーするか相対パスで参照する．
+> [!IMPORTANT]
+> **`figures/...` と書くと «file not found» でビルドが落ちる。**
+> pandoc の `--resource-path` は Typst の `image()` には効かず，Typst は
+> リポジトリのルート（pandoc を起動した場所）を基準に探す。
+> 2026-09-28 の報告で最初に図を入れたときに判明した。
+
+図の実体は `docs/reports/figures/` に置く。`results/figures/` にある図を使うときは
+コピーする。
+
+**和文を含む図は，文字をパスに落として書き出す**（matplotlib なら
+`rcParams["svg.fonttype"] = "path"`）。Typst の SVG 描画は可変フォントを扱えず，
+フォント名での解決も環境に依存するため，名前で参照すると和文が消えることがある。
+図の生成は `tools/pathC_figures.py` を参考にする。
 
 ### 8. 体裁を変えたいときは `template.typ` を触る
 

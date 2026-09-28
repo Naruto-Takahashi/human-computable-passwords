@@ -161,7 +161,11 @@ report: $(REPORT_PDFS) report-link
 
 report-latest: $(REPORT_LATEST_PDF) report-link
 
-$(REPORT_OUT)/%.pdf: $(REPORT_DIR)/%.md $(REPORT_TPL)
+# 図も依存に入れる。入れないと図だけ描き直したときに make が「最新」と判断して
+# PDF を作り直さない（2026-09-28 に実際に踏んだ）。
+REPORT_FIGS := $(wildcard $(REPORT_DIR)/figures/*)
+
+$(REPORT_OUT)/%.pdf: $(REPORT_DIR)/%.md $(REPORT_TPL) $(REPORT_FIGS)
 	@mkdir -p $(REPORT_OUT)
 	pandoc $< -o $@ $(REPORT_FLAGS)
 	@echo "[OK] $@"
