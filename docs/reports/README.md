@@ -241,6 +241,7 @@ Source Han を指定している（同一設計なので見え方はほぼ変わ
 
 | 日付 | 報告 | 主題 |
 |---|---|---|
+| 2026-09-28 | [weekly_report_20260928.md](weekly_report_20260928.md) | **経路C を新設。1から学習した Transformer が $`f_{2,2}`$（$`N=26`$）を解いた** |
 | 2026-09-13 | [weekly_report_20260913.md](weekly_report_20260913.md) | **測定系の交絡を2つ特定。前回の結論を撤回** |
 | 2026-08-23 | [weekly_report_20260823.md](weekly_report_20260823.md) | 構造ラダー（dualptr / recptr）。全条件が床で識別できず |
 | 2026-08-19 | [weekly_report_20260819.md](weekly_report_20260819.md) | 深さラダーの再評価。不動点による自明化を特定 |
