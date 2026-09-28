@@ -37,9 +37,9 @@ L 23.627969 20.56
 z
 " style="fill: #ffffff"/>
    </g>
-   <g clip-path="url(#p91eb9f44fe)">
+   <g clip-path="url(#pcb82850723)">
     <image xlink:href="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAABaklEQVR4nO3SMQHAIADAMEDFXKEOvZuLcixR0KPz2ecdEFi3A/gPs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkfkAW78DATzqe+kAAAAASUVORK5CYII=" id="image19f1e6f0e2" transform="scale(1 -1) translate(0 -94.32)" x="23.76" y="-20.51875" width="111.6" height="94.32"/>
+iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAABaklEQVR4nO3SMQHAIADAMMD49OAMF5uLcixR0KPz2ecdEFi3A/gPs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkTEbGbORMRsZs5ExGxmzkfkACFAEFWkjDz4AAAAASUVORK5CYII=" id="imagecc23804a4c" transform="scale(1 -1) translate(0 -94.32)" x="23.76" y="-20.51875" width="111.6" height="94.32"/>
    </g>
    <g id="patch_3">
     <path d="M 23.627969 20.56 
@@ -48,7 +48,7 @@ L 51.511719 39.36775
 L 23.627969 39.36775 
 L 23.627969 20.56 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 51.511719 20.56 
@@ -57,7 +57,7 @@ L 79.395469 39.36775
 L 51.511719 39.36775 
 L 51.511719 20.56 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 79.395469 20.56 
@@ -66,7 +66,7 @@ L 107.279219 39.36775
 L 79.395469 39.36775 
 L 79.395469 20.56 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 107.279219 20.56 
@@ -75,7 +75,7 @@ L 135.162969 39.36775
 L 107.279219 39.36775 
 L 107.279219 20.56 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
     <path d="M 23.627969 39.36775 
@@ -84,7 +84,7 @@ L 51.511719 58.1755
 L 23.627969 58.1755 
 L 23.627969 39.36775 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_8">
     <path d="M 51.511719 39.36775 
@@ -93,7 +93,7 @@ L 79.395469 58.1755
 L 51.511719 58.1755 
 L 51.511719 39.36775 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_9">
     <path d="M 79.395469 39.36775 
@@ -102,7 +102,7 @@ L 107.279219 58.1755
 L 79.395469 58.1755 
 L 79.395469 39.36775 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_10">
     <path d="M 107.279219 39.36775 
@@ -111,7 +111,7 @@ L 135.162969 58.1755
 L 107.279219 58.1755 
 L 107.279219 39.36775 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_11">
     <path d="M 23.627969 58.1755 
@@ -120,7 +120,7 @@ L 51.511719 76.98325
 L 23.627969 76.98325 
 L 23.627969 58.1755 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_12">
     <path d="M 51.511719 58.1755 
@@ -129,7 +129,7 @@ L 79.395469 76.98325
 L 51.511719 76.98325 
 L 51.511719 58.1755 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_13">
     <path d="M 79.395469 58.1755 
@@ -138,7 +138,7 @@ L 107.279219 76.98325
 L 79.395469 76.98325 
 L 79.395469 58.1755 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_14">
     <path d="M 107.279219 58.1755 
@@ -147,7 +147,7 @@ L 135.162969 76.98325
 L 107.279219 76.98325 
 L 107.279219 58.1755 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_15">
     <path d="M 23.627969 76.98325 
@@ -156,7 +156,7 @@ L 51.511719 95.791
 L 23.627969 95.791 
 L 23.627969 76.98325 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_16">
     <path d="M 51.511719 76.98325 
@@ -165,7 +165,7 @@ L 79.395469 95.791
 L 51.511719 95.791 
 L 51.511719 76.98325 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_17">
     <path d="M 79.395469 76.98325 
@@ -174,7 +174,7 @@ L 107.279219 95.791
 L 79.395469 95.791 
 L 79.395469 76.98325 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_18">
     <path d="M 107.279219 76.98325 
@@ -183,7 +183,7 @@ L 135.162969 95.791
 L 107.279219 95.791 
 L 107.279219 76.98325 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_19">
     <path d="M 23.627969 95.791 
@@ -192,7 +192,7 @@ L 51.511719 114.59875
 L 23.627969 114.59875 
 L 23.627969 95.791 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_20">
     <path d="M 51.511719 95.791 
@@ -201,7 +201,7 @@ L 79.395469 114.59875
 L 51.511719 114.59875 
 L 51.511719 95.791 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_21">
     <path d="M 79.395469 95.791 
@@ -210,7 +210,7 @@ L 107.279219 114.59875
 L 79.395469 114.59875 
 L 79.395469 95.791 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_22">
     <path d="M 107.279219 95.791 
@@ -219,14 +219,14 @@ L 135.162969 114.59875
 L 107.279219 114.59875 
 L 107.279219 95.791 
 z
-" clip-path="url(#p91eb9f44fe)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcb82850723)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1"/>
      <g id="text_1">
       <!-- 1 -->
-      <g style="fill: #52514e" transform="translate(35.355859 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(35.355859 125.57875) scale(0.085 -0.085)">
        <defs>
         <path id="NotoSansCJKjp-Thin-12" d="M 608 0 
 L 2899 0 
@@ -251,7 +251,7 @@ z
      <g id="line2d_2"/>
      <g id="text_2">
       <!-- 2 -->
-      <g style="fill: #52514e" transform="translate(63.239609 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(63.239609 125.57875) scale(0.085 -0.085)">
        <defs>
         <path id="NotoSansCJKjp-Thin-13" d="M 294 0 
 L 3014 0 
@@ -277,7 +277,7 @@ z
      <g id="line2d_3"/>
      <g id="text_3">
       <!-- 3 -->
-      <g style="fill: #52514e" transform="translate(91.123359 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(91.123359 125.57875) scale(0.085 -0.085)">
        <defs>
         <path id="NotoSansCJKjp-Thin-14" d="M 1619 -83 
 C 2387 -83 2970 422 2970 1222 
@@ -307,7 +307,7 @@ z
      <g id="line2d_4"/>
      <g id="text_4">
       <!-- 4 -->
-      <g style="fill: #52514e" transform="translate(119.007109 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(119.007109 125.57875) scale(0.085 -0.085)">
        <defs>
         <path id="NotoSansCJKjp-Thin-15" d="M 2195 0 
 L 2419 0 
@@ -332,7 +332,7 @@ z
     </g>
     <g id="text_5">
      <!-- 初期値 -->
-     <g style="fill: #52514e" transform="translate(67.395469 137.63875) scale(0.08 -0.08)">
+     <g style="fill: #5c5b57" transform="translate(67.395469 137.63875) scale(0.08 -0.08)">
       <defs>
        <path id="NotoSansCJKjp-Thin-2ba3" d="M 2650 4627 
 L 2650 4442 
@@ -557,7 +557,7 @@ z
      <g id="line2d_5"/>
      <g id="text_6">
       <!-- 鍵1 -->
-      <g style="fill: #52514e" transform="translate(7.2 33.703875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(7.2 33.703875) scale(0.085 -0.085)">
        <defs>
         <path id="NotoSansCJKjp-Thin-a436" d="M 2400 4928 
 L 2400 4742 
@@ -701,7 +701,7 @@ z
      <g id="line2d_6"/>
      <g id="text_7">
       <!-- 鍵2 -->
-      <g style="fill: #52514e" transform="translate(7.2 52.511625) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(7.2 52.511625) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-a436"/>
        <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(100 0)"/>
       </g>
@@ -711,7 +711,7 @@ z
      <g id="line2d_7"/>
      <g id="text_8">
       <!-- 鍵3 -->
-      <g style="fill: #52514e" transform="translate(7.2 71.319375) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(7.2 71.319375) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-a436"/>
        <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(100 0)"/>
       </g>
@@ -721,7 +721,7 @@ z
      <g id="line2d_8"/>
      <g id="text_9">
       <!-- 鍵4 -->
-      <g style="fill: #52514e" transform="translate(7.2 90.127125) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(7.2 90.127125) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-a436"/>
        <use xlink:href="#NotoSansCJKjp-Thin-15" transform="translate(100 0)"/>
       </g>
@@ -731,7 +731,7 @@ z
      <g id="line2d_9"/>
      <g id="text_10">
       <!-- 鍵5 -->
-      <g style="fill: #52514e" transform="translate(7.2 108.934875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(7.2 108.934875) scale(0.085 -0.085)">
        <defs>
         <path id="NotoSansCJKjp-Thin-16" d="M 1581 -83 
 C 2285 -83 2995 480 2995 1478 
@@ -760,7 +760,7 @@ z
    </g>
    <g id="text_11">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(33.369562 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(33.369562 32.471875) scale(0.066 -0.066)">
      <defs>
       <path id="NotoSansCJKjp-Thin-f" d="M 736 -83 
 C 870 -83 998 19 998 192 
@@ -790,7 +790,7 @@ z
    </g>
    <g id="text_12">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(61.253312 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(61.253312 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -798,7 +798,7 @@ z
    </g>
    <g id="text_13">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(89.137062 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(89.137062 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -806,7 +806,7 @@ z
    </g>
    <g id="text_14">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(117.020812 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(117.020812 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -814,7 +814,7 @@ z
    </g>
    <g id="text_15">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(33.369562 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(33.369562 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -822,7 +822,7 @@ z
    </g>
    <g id="text_16">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(61.253312 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(61.253312 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -830,7 +830,7 @@ z
    </g>
    <g id="text_17">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(89.137062 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(89.137062 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -838,7 +838,7 @@ z
    </g>
    <g id="text_18">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(117.020812 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(117.020812 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -846,7 +846,7 @@ z
    </g>
    <g id="text_19">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(33.369562 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(33.369562 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -854,7 +854,7 @@ z
    </g>
    <g id="text_20">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(61.253312 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(61.253312 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -862,7 +862,7 @@ z
    </g>
    <g id="text_21">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(89.137062 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(89.137062 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -870,7 +870,7 @@ z
    </g>
    <g id="text_22">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(117.020812 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(117.020812 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -878,7 +878,7 @@ z
    </g>
    <g id="text_23">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(33.369562 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(33.369562 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -886,7 +886,7 @@ z
    </g>
    <g id="text_24">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(61.253312 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(61.253312 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -894,7 +894,7 @@ z
    </g>
    <g id="text_25">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(89.137062 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(89.137062 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -902,7 +902,7 @@ z
    </g>
    <g id="text_26">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(117.020812 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(117.020812 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -910,7 +910,7 @@ z
    </g>
    <g id="text_27">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(33.369562 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(33.369562 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -918,7 +918,7 @@ z
    </g>
    <g id="text_28">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(61.253312 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(61.253312 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -926,7 +926,7 @@ z
    </g>
    <g id="text_29">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(89.137062 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(89.137062 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -934,7 +934,7 @@ z
    </g>
    <g id="text_30">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(117.020812 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(117.020812 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -942,7 +942,7 @@ z
    </g>
    <g id="text_31">
     <!-- $h$（統制・$j$項なし） -->
-    <g style="fill: #0b0b0b" transform="translate(37.025469 15.56) scale(0.095 -0.095)">
+    <g style="fill: #1b1b1a" transform="translate(37.025469 15.56) scale(0.095 -0.095)">
      <defs>
       <path id="DejaVuSans-Oblique-4b" d="M 3566 2113 
 L 3156 0 
@@ -1310,9 +1310,9 @@ L 144.882969 20.56
 z
 " style="fill: #ffffff"/>
    </g>
-   <g clip-path="url(#p0898cb01a8)">
+   <g clip-path="url(#p920748c358)">
     <image xlink:href="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAAB+UlEQVR4nO3bMU6UQQCGYRdIMJGE0lhxJltjaOyItWfwChTYUVLS2HsYS4gohGWXC+x05J0/+Dwn+JJ5Z7pZ/fj1Z/tmoR4eN7MnDH2/+Dl7wk6P/25nTxjamz2A/4fYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjczqw8fzxf6I327WsyfwgrxsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRG5mC1t9zezr58mj1h6PzyevaEndZ/b2ZPGFpuabw6YiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyB5un9ewNQ0dvl3sXnu7vZk/Y6dvXz7MnDC33NHl1xEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkVienV9vZI0b2D9/NnjD0cPN79oSdDo/fz54w5GUjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIj8wyUjyOD6vSvggAAAABJRU5ErkJggg==" id="image8fb78e4021" transform="scale(1 -1) translate(0 -94.32)" x="144.72" y="-20.51875" width="111.6" height="94.32"/>
+iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAAB6klEQVR4nO3cMS5sYRyH4TPMpVCxHYU9aO3IJmxAIXqlxDaUEm5uozDGsAGnUbzny/U8K/jl5M3X/c/q8WX7OQ1quxt22nR9/3fpCd/avI/7zfaWHsDvITYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjs766e156w6zPcY+7+QEvGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkVnvrZaeMO/89HjpCbNuH/4tPeFbb9tx/1nhZSMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiOz3u2WnjDvYH/cc/3Nx5iX5xdnJ0tPmOVlIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiI7O6vHka87R7mqY/A1/Ev76N+SuBo8Nx349xl/HfERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGR+QLWiiM4cIoBdAAAAABJRU5ErkJggg==" id="imagef98b22209d" transform="scale(1 -1) translate(0 -94.32)" x="144.72" y="-20.51875" width="111.6" height="94.32"/>
    </g>
    <g id="patch_24">
     <path d="M 144.882969 20.56 
@@ -1321,7 +1321,7 @@ L 172.766719 39.36775
 L 144.882969 39.36775 
 L 144.882969 20.56 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_25">
     <path d="M 172.766719 20.56 
@@ -1330,7 +1330,7 @@ L 200.650469 39.36775
 L 172.766719 39.36775 
 L 172.766719 20.56 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_26">
     <path d="M 200.650469 20.56 
@@ -1339,7 +1339,7 @@ L 228.534219 39.36775
 L 200.650469 39.36775 
 L 200.650469 20.56 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_27">
     <path d="M 228.534219 20.56 
@@ -1348,7 +1348,7 @@ L 256.417969 39.36775
 L 228.534219 39.36775 
 L 228.534219 20.56 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_28">
     <path d="M 144.882969 39.36775 
@@ -1357,7 +1357,7 @@ L 172.766719 58.1755
 L 144.882969 58.1755 
 L 144.882969 39.36775 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_29">
     <path d="M 172.766719 39.36775 
@@ -1366,7 +1366,7 @@ L 200.650469 58.1755
 L 172.766719 58.1755 
 L 172.766719 39.36775 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_30">
     <path d="M 200.650469 39.36775 
@@ -1375,7 +1375,7 @@ L 228.534219 58.1755
 L 200.650469 58.1755 
 L 200.650469 39.36775 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_31">
     <path d="M 228.534219 39.36775 
@@ -1384,7 +1384,7 @@ L 256.417969 58.1755
 L 228.534219 58.1755 
 L 228.534219 39.36775 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_32">
     <path d="M 144.882969 58.1755 
@@ -1393,7 +1393,7 @@ L 172.766719 76.98325
 L 144.882969 76.98325 
 L 144.882969 58.1755 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_33">
     <path d="M 172.766719 58.1755 
@@ -1402,7 +1402,7 @@ L 200.650469 76.98325
 L 172.766719 76.98325 
 L 172.766719 58.1755 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_34">
     <path d="M 200.650469 58.1755 
@@ -1411,7 +1411,7 @@ L 228.534219 76.98325
 L 200.650469 76.98325 
 L 200.650469 58.1755 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_35">
     <path d="M 228.534219 58.1755 
@@ -1420,7 +1420,7 @@ L 256.417969 76.98325
 L 228.534219 76.98325 
 L 228.534219 58.1755 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_36">
     <path d="M 144.882969 76.98325 
@@ -1429,7 +1429,7 @@ L 172.766719 95.791
 L 144.882969 95.791 
 L 144.882969 76.98325 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_37">
     <path d="M 172.766719 76.98325 
@@ -1438,7 +1438,7 @@ L 200.650469 95.791
 L 172.766719 95.791 
 L 172.766719 76.98325 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_38">
     <path d="M 200.650469 76.98325 
@@ -1447,7 +1447,7 @@ L 228.534219 95.791
 L 200.650469 95.791 
 L 200.650469 76.98325 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_39">
     <path d="M 228.534219 76.98325 
@@ -1456,7 +1456,7 @@ L 256.417969 95.791
 L 228.534219 95.791 
 L 228.534219 76.98325 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_40">
     <path d="M 144.882969 95.791 
@@ -1465,7 +1465,7 @@ L 172.766719 114.59875
 L 144.882969 114.59875 
 L 144.882969 95.791 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_41">
     <path d="M 172.766719 95.791 
@@ -1474,7 +1474,7 @@ L 200.650469 114.59875
 L 172.766719 114.59875 
 L 172.766719 95.791 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_42">
     <path d="M 200.650469 95.791 
@@ -1483,7 +1483,7 @@ L 228.534219 114.59875
 L 200.650469 114.59875 
 L 200.650469 95.791 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_43">
     <path d="M 228.534219 95.791 
@@ -1492,14 +1492,14 @@ L 256.417969 114.59875
 L 228.534219 114.59875 
 L 228.534219 95.791 
 z
-" clip-path="url(#p0898cb01a8)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#p920748c358)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_3">
     <g id="xtick_5">
      <g id="line2d_10"/>
      <g id="text_32">
       <!-- 1 -->
-      <g style="fill: #52514e" transform="translate(156.610859 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(156.610859 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-12"/>
       </g>
      </g>
@@ -1508,7 +1508,7 @@ z
      <g id="line2d_11"/>
      <g id="text_33">
       <!-- 2 -->
-      <g style="fill: #52514e" transform="translate(184.494609 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(184.494609 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-13"/>
       </g>
      </g>
@@ -1517,7 +1517,7 @@ z
      <g id="line2d_12"/>
      <g id="text_34">
       <!-- 3 -->
-      <g style="fill: #52514e" transform="translate(212.378359 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(212.378359 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-14"/>
       </g>
      </g>
@@ -1526,14 +1526,14 @@ z
      <g id="line2d_13"/>
      <g id="text_35">
       <!-- 4 -->
-      <g style="fill: #52514e" transform="translate(240.262109 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(240.262109 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-15"/>
       </g>
      </g>
     </g>
     <g id="text_36">
      <!-- 初期値 -->
-     <g style="fill: #52514e" transform="translate(188.650469 137.63875) scale(0.08 -0.08)">
+     <g style="fill: #5c5b57" transform="translate(188.650469 137.63875) scale(0.08 -0.08)">
       <use xlink:href="#NotoSansCJKjp-Thin-2ba3"/>
       <use xlink:href="#NotoSansCJKjp-Thin-50ff" transform="translate(100 0)"/>
       <use xlink:href="#NotoSansCJKjp-Thin-2841" transform="translate(200 0)"/>
@@ -1559,7 +1559,7 @@ z
    </g>
    <g id="text_37">
     <!-- .88 -->
-    <g style="fill: #ffffff" transform="translate(154.624562 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(154.624562 32.471875) scale(0.066 -0.066)">
      <defs>
       <path id="NotoSansCJKjp-Thin-19" d="M 1696 -83 
 C 2496 -83 3040 435 3040 1082 
@@ -1594,7 +1594,7 @@ z
    </g>
    <g id="text_38">
     <!-- .83 -->
-    <g style="fill: #ffffff" transform="translate(182.508312 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(182.508312 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(75.1875 0)"/>
@@ -1602,7 +1602,7 @@ z
    </g>
    <g id="text_39">
     <!-- .94 -->
-    <g style="fill: #ffffff" transform="translate(210.392063 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(210.392063 32.471875) scale(0.066 -0.066)">
      <defs>
       <path id="NotoSansCJKjp-Thin-1a" d="M 1370 -83 
 C 2189 -83 2957 602 2957 2618 
@@ -1629,7 +1629,7 @@ z
    </g>
    <g id="text_40">
     <!-- .83 -->
-    <g style="fill: #ffffff" transform="translate(238.275813 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(238.275813 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(75.1875 0)"/>
@@ -1637,7 +1637,7 @@ z
    </g>
    <g id="text_41">
     <!-- .99 -->
-    <g style="fill: #ffffff" transform="translate(154.624562 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(154.624562 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -1645,7 +1645,7 @@ z
    </g>
    <g id="text_42">
     <!-- .26 -->
-    <g style="fill: #0b0b0b" transform="translate(182.508312 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(182.508312 51.279625) scale(0.066 -0.066)">
      <defs>
       <path id="NotoSansCJKjp-Thin-17" d="M 1837 -83 
 C 2483 -83 3040 538 3040 1382 
@@ -1672,7 +1672,7 @@ z
    </g>
    <g id="text_43">
     <!-- .98 -->
-    <g style="fill: #ffffff" transform="translate(210.392063 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(210.392063 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(75.1875 0)"/>
@@ -1680,7 +1680,7 @@ z
    </g>
    <g id="text_44">
     <!-- .26 -->
-    <g style="fill: #0b0b0b" transform="translate(238.275813 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(238.275813 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-17" transform="translate(75.1875 0)"/>
@@ -1688,7 +1688,7 @@ z
    </g>
    <g id="text_45">
     <!-- .97 -->
-    <g style="fill: #ffffff" transform="translate(154.624562 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(154.624562 70.087375) scale(0.066 -0.066)">
      <defs>
       <path id="NotoSansCJKjp-Thin-18" d="M 1344 0 
 L 1606 0 
@@ -1708,7 +1708,7 @@ z
    </g>
    <g id="text_46">
     <!-- .31 -->
-    <g style="fill: #0b0b0b" transform="translate(182.508312 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(182.508312 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -1716,7 +1716,7 @@ z
    </g>
    <g id="text_47">
     <!-- .92 -->
-    <g style="fill: #ffffff" transform="translate(210.392063 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(210.392063 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(75.1875 0)"/>
@@ -1724,7 +1724,7 @@ z
    </g>
    <g id="text_48">
     <!-- .99 -->
-    <g style="fill: #ffffff" transform="translate(238.275813 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(238.275813 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -1732,7 +1732,7 @@ z
    </g>
    <g id="text_49">
     <!-- .98 -->
-    <g style="fill: #ffffff" transform="translate(154.624562 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(154.624562 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(75.1875 0)"/>
@@ -1740,7 +1740,7 @@ z
    </g>
    <g id="text_50">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(182.508312 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(182.508312 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -1748,7 +1748,7 @@ z
    </g>
    <g id="text_51">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(210.392063 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(210.392063 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -1756,7 +1756,7 @@ z
    </g>
    <g id="text_52">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(238.275813 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(238.275813 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -1764,7 +1764,7 @@ z
    </g>
    <g id="text_53">
     <!-- .20 -->
-    <g style="fill: #0b0b0b" transform="translate(154.624562 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(154.624562 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -1772,7 +1772,7 @@ z
    </g>
    <g id="text_54">
     <!-- .23 -->
-    <g style="fill: #0b0b0b" transform="translate(182.508312 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(182.508312 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(75.1875 0)"/>
@@ -1780,7 +1780,7 @@ z
    </g>
    <g id="text_55">
     <!-- .89 -->
-    <g style="fill: #ffffff" transform="translate(210.392063 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(210.392063 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -1788,7 +1788,7 @@ z
    </g>
    <g id="text_56">
     <!-- .96 -->
-    <g style="fill: #ffffff" transform="translate(238.275813 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(238.275813 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-17" transform="translate(75.1875 0)"/>
@@ -1796,7 +1796,7 @@ z
    </g>
    <g id="text_57">
     <!-- $f_{2,2}$ -->
-    <g style="fill: #0b0b0b" transform="translate(192.907969 15.56) scale(0.095 -0.095)">
+    <g style="fill: #1b1b1a" transform="translate(192.907969 15.56) scale(0.095 -0.095)">
      <defs>
       <path id="DejaVuSans-Oblique-49" d="M 3059 4863 
 L 2969 4384 
@@ -1869,9 +1869,9 @@ L 266.137969 20.56
 z
 " style="fill: #ffffff"/>
    </g>
-   <g clip-path="url(#p160f460bcb)">
+   <g clip-path="url(#pd8c77f94b2)">
     <image xlink:href="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAABsElEQVR4nO3dsW1CMRRAUcwUbJUdEGtQMUO6KEtEYpCIXSg/BfUv0lxbyjkTPFlXr7M9fn6f22FBxzF7gn3bkie2vuPsAfg/xEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxunj0/3uP/q6nWePsOty/Z49wi6bjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyHh+gYzNRkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERmbcH88lb8RvS071NsbsCfatfG42GxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxl/xJOx2ciIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2Mi8AJNkFu2fvX/+AAAAAElFTkSuQmCC" id="imageac16cf3347" transform="scale(1 -1) translate(0 -94.32)" x="266.4" y="-20.51875" width="111.6" height="94.32"/>
+iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAABsElEQVR4nO3cwU0CURhGUYZMCRZlLfYjlqIlEWWDawxuXIIrct8jnFPBl3k3/3KW/fF03kxoGT2Am9uOHsDjEBsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRWd8+DqM33J2X56fRE67aTfyeLhsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZFZRw+4RzP/4mBmLhsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERuZ5fP75zx6xCVTjvqzjB7wj5m/m8tGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGZn19/xq9gQfhspERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZH5BZ5lFGO7eUJjAAAAAElFTkSuQmCC" id="imagee8f2c6d33d" transform="scale(1 -1) translate(0 -94.32)" x="266.4" y="-20.51875" width="111.6" height="94.32"/>
    </g>
    <g id="patch_45">
     <path d="M 266.137969 20.56 
@@ -1880,7 +1880,7 @@ L 294.021719 39.36775
 L 266.137969 39.36775 
 L 266.137969 20.56 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_46">
     <path d="M 294.021719 20.56 
@@ -1889,7 +1889,7 @@ L 321.905469 39.36775
 L 294.021719 39.36775 
 L 294.021719 20.56 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_47">
     <path d="M 321.905469 20.56 
@@ -1898,7 +1898,7 @@ L 349.789219 39.36775
 L 321.905469 39.36775 
 L 321.905469 20.56 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_48">
     <path d="M 349.789219 20.56 
@@ -1907,7 +1907,7 @@ L 377.672969 39.36775
 L 349.789219 39.36775 
 L 349.789219 20.56 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_49">
     <path d="M 266.137969 39.36775 
@@ -1916,7 +1916,7 @@ L 294.021719 58.1755
 L 266.137969 58.1755 
 L 266.137969 39.36775 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_50">
     <path d="M 294.021719 39.36775 
@@ -1925,7 +1925,7 @@ L 321.905469 58.1755
 L 294.021719 58.1755 
 L 294.021719 39.36775 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_51">
     <path d="M 321.905469 39.36775 
@@ -1934,7 +1934,7 @@ L 349.789219 58.1755
 L 321.905469 58.1755 
 L 321.905469 39.36775 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_52">
     <path d="M 349.789219 39.36775 
@@ -1943,7 +1943,7 @@ L 377.672969 58.1755
 L 349.789219 58.1755 
 L 349.789219 39.36775 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_53">
     <path d="M 266.137969 58.1755 
@@ -1952,7 +1952,7 @@ L 294.021719 76.98325
 L 266.137969 76.98325 
 L 266.137969 58.1755 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_54">
     <path d="M 294.021719 58.1755 
@@ -1961,7 +1961,7 @@ L 321.905469 76.98325
 L 294.021719 76.98325 
 L 294.021719 58.1755 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_55">
     <path d="M 321.905469 58.1755 
@@ -1970,7 +1970,7 @@ L 349.789219 76.98325
 L 321.905469 76.98325 
 L 321.905469 58.1755 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_56">
     <path d="M 349.789219 58.1755 
@@ -1979,7 +1979,7 @@ L 377.672969 76.98325
 L 349.789219 76.98325 
 L 349.789219 58.1755 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_57">
     <path d="M 266.137969 76.98325 
@@ -1988,7 +1988,7 @@ L 294.021719 95.791
 L 266.137969 95.791 
 L 266.137969 76.98325 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_58">
     <path d="M 294.021719 76.98325 
@@ -1997,7 +1997,7 @@ L 321.905469 95.791
 L 294.021719 95.791 
 L 294.021719 76.98325 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_59">
     <path d="M 321.905469 76.98325 
@@ -2006,7 +2006,7 @@ L 349.789219 95.791
 L 321.905469 95.791 
 L 321.905469 76.98325 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_60">
     <path d="M 349.789219 76.98325 
@@ -2015,7 +2015,7 @@ L 377.672969 95.791
 L 349.789219 95.791 
 L 349.789219 76.98325 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_61">
     <path d="M 266.137969 95.791 
@@ -2024,7 +2024,7 @@ L 294.021719 114.59875
 L 266.137969 114.59875 
 L 266.137969 95.791 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_62">
     <path d="M 294.021719 95.791 
@@ -2033,7 +2033,7 @@ L 321.905469 114.59875
 L 294.021719 114.59875 
 L 294.021719 95.791 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_63">
     <path d="M 321.905469 95.791 
@@ -2042,7 +2042,7 @@ L 349.789219 114.59875
 L 321.905469 114.59875 
 L 321.905469 95.791 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_64">
     <path d="M 349.789219 95.791 
@@ -2051,14 +2051,14 @@ L 377.672969 114.59875
 L 349.789219 114.59875 
 L 349.789219 95.791 
 z
-" clip-path="url(#p160f460bcb)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pd8c77f94b2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_5">
     <g id="xtick_9">
      <g id="line2d_19"/>
      <g id="text_58">
       <!-- 1 -->
-      <g style="fill: #52514e" transform="translate(277.865859 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(277.865859 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-12"/>
       </g>
      </g>
@@ -2067,7 +2067,7 @@ z
      <g id="line2d_20"/>
      <g id="text_59">
       <!-- 2 -->
-      <g style="fill: #52514e" transform="translate(305.749609 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(305.749609 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-13"/>
       </g>
      </g>
@@ -2076,7 +2076,7 @@ z
      <g id="line2d_21"/>
      <g id="text_60">
       <!-- 3 -->
-      <g style="fill: #52514e" transform="translate(333.633359 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(333.633359 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-14"/>
       </g>
      </g>
@@ -2085,14 +2085,14 @@ z
      <g id="line2d_22"/>
      <g id="text_61">
       <!-- 4 -->
-      <g style="fill: #52514e" transform="translate(361.517109 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(361.517109 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-15"/>
       </g>
      </g>
     </g>
     <g id="text_62">
      <!-- 初期値 -->
-     <g style="fill: #52514e" transform="translate(309.905469 137.63875) scale(0.08 -0.08)">
+     <g style="fill: #5c5b57" transform="translate(309.905469 137.63875) scale(0.08 -0.08)">
       <use xlink:href="#NotoSansCJKjp-Thin-2ba3"/>
       <use xlink:href="#NotoSansCJKjp-Thin-50ff" transform="translate(100 0)"/>
       <use xlink:href="#NotoSansCJKjp-Thin-2841" transform="translate(200 0)"/>
@@ -2118,7 +2118,7 @@ z
    </g>
    <g id="text_63">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(275.879562 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(275.879562 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2126,7 +2126,7 @@ z
    </g>
    <g id="text_64">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(303.763312 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(303.763312 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2134,7 +2134,7 @@ z
    </g>
    <g id="text_65">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(331.647062 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(331.647062 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2142,7 +2142,7 @@ z
    </g>
    <g id="text_66">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(359.530812 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(359.530812 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2150,7 +2150,7 @@ z
    </g>
    <g id="text_67">
     <!-- .10 -->
-    <g style="fill: #0b0b0b" transform="translate(275.879562 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(275.879562 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2158,7 +2158,7 @@ z
    </g>
    <g id="text_68">
     <!-- .10 -->
-    <g style="fill: #0b0b0b" transform="translate(303.763312 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(303.763312 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2166,7 +2166,7 @@ z
    </g>
    <g id="text_69">
     <!-- .09 -->
-    <g style="fill: #0b0b0b" transform="translate(331.647062 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(331.647062 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -2174,7 +2174,7 @@ z
    </g>
    <g id="text_70">
     <!-- .10 -->
-    <g style="fill: #0b0b0b" transform="translate(359.530812 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(359.530812 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2182,7 +2182,7 @@ z
    </g>
    <g id="text_71">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(275.879562 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(275.879562 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2190,7 +2190,7 @@ z
    </g>
    <g id="text_72">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(303.763312 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(303.763312 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2198,7 +2198,7 @@ z
    </g>
    <g id="text_73">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(331.647062 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(331.647062 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2206,7 +2206,7 @@ z
    </g>
    <g id="text_74">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(359.530812 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(359.530812 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2214,7 +2214,7 @@ z
    </g>
    <g id="text_75">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(275.879562 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(275.879562 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2222,7 +2222,7 @@ z
    </g>
    <g id="text_76">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(303.763312 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(303.763312 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2230,7 +2230,7 @@ z
    </g>
    <g id="text_77">
     <!-- .11 -->
-    <g style="fill: #0b0b0b" transform="translate(331.647062 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(331.647062 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2238,7 +2238,7 @@ z
    </g>
    <g id="text_78">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(359.530812 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(359.530812 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2246,7 +2246,7 @@ z
    </g>
    <g id="text_79">
     <!-- .11 -->
-    <g style="fill: #0b0b0b" transform="translate(275.879562 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(275.879562 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2254,7 +2254,7 @@ z
    </g>
    <g id="text_80">
     <!-- .11 -->
-    <g style="fill: #0b0b0b" transform="translate(303.763312 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(303.763312 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2262,7 +2262,7 @@ z
    </g>
    <g id="text_81">
     <!-- .11 -->
-    <g style="fill: #0b0b0b" transform="translate(331.647062 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(331.647062 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2270,7 +2270,7 @@ z
    </g>
    <g id="text_82">
     <!-- .11 -->
-    <g style="fill: #0b0b0b" transform="translate(359.530812 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(359.530812 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2278,7 +2278,7 @@ z
    </g>
    <g id="text_83">
     <!-- $f_{1,3}$ -->
-    <g style="fill: #0b0b0b" transform="translate(314.162969 15.56) scale(0.095 -0.095)">
+    <g style="fill: #1b1b1a" transform="translate(314.162969 15.56) scale(0.095 -0.095)">
      <defs>
       <path id="DejaVuSans-14" d="M 794 531 
 L 1825 531 
@@ -2343,9 +2343,9 @@ L 387.392969 20.56
 z
 " style="fill: #ffffff"/>
    </g>
-   <g clip-path="url(#p3ec1860ca2)">
+   <g clip-path="url(#pcd8690e395)">
     <image xlink:href="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAABwUlEQVR4nO3csU0DQRRF0Zm1JRIKoCvaogF6oSwCEiR7TQV2eHeAcyp4sq8m+zvfPj5vY1Hz6AEPbHPNdftt2b9zbEcP4P8QGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZE5X67rXlDPRa/OxxhjjnV/t1V52ciIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjcz56AGP7Pu6nzi4rTttWV42MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MufTNo/ecJer87/Fy0ZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZmvry+L3t3fnp6PnrCXdfvr6Mn/DpeNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjI/kg0XLlFSFckAAAAASUVORK5CYII=" id="image48ab8b2002" transform="scale(1 -1) translate(0 -94.32)" x="387.36" y="-20.51875" width="111.6" height="94.32"/>
+iVBORw0KGgoAAAANSUhEUgAAAJsAAACDCAYAAACa5Gl6AAABsklEQVR4nO3cwU3DQBRFUU9i+m+DPigiHbBMAUSQVGAkNncm5JwKnuSrvxuPy+fXfVvVmD3g2KrT1v2Y23aaPYDXITYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjIzYyYiMjNjJiIyM2MmIjs//c131DPZZ9d772y/NVuWxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZGbGTERkZsZMRGRmxkxEZmnz3gNyv/GoK/c9nIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjI7KcxZm845D38/+KykREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkREbGbGRERsZsZERGxmxkdnfP66zNxx6O89ecOz2PXvB83HZyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyIiNjNjIiI2M2MiIjYzYyDwAP6ISGgBM+0QAAAAASUVORK5CYII=" id="image7a9903383d" transform="scale(1 -1) translate(0 -94.32)" x="387.36" y="-20.51875" width="111.6" height="94.32"/>
    </g>
    <g id="patch_66">
     <path d="M 387.392969 20.56 
@@ -2354,7 +2354,7 @@ L 415.276719 39.36775
 L 387.392969 39.36775 
 L 387.392969 20.56 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_67">
     <path d="M 415.276719 20.56 
@@ -2363,7 +2363,7 @@ L 443.160469 39.36775
 L 415.276719 39.36775 
 L 415.276719 20.56 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_68">
     <path d="M 443.160469 20.56 
@@ -2372,7 +2372,7 @@ L 471.044219 39.36775
 L 443.160469 39.36775 
 L 443.160469 20.56 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_69">
     <path d="M 471.044219 20.56 
@@ -2381,7 +2381,7 @@ L 498.927969 39.36775
 L 471.044219 39.36775 
 L 471.044219 20.56 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_70">
     <path d="M 387.392969 39.36775 
@@ -2390,7 +2390,7 @@ L 415.276719 58.1755
 L 387.392969 58.1755 
 L 387.392969 39.36775 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_71">
     <path d="M 415.276719 39.36775 
@@ -2399,7 +2399,7 @@ L 443.160469 58.1755
 L 415.276719 58.1755 
 L 415.276719 39.36775 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_72">
     <path d="M 443.160469 39.36775 
@@ -2408,7 +2408,7 @@ L 471.044219 58.1755
 L 443.160469 58.1755 
 L 443.160469 39.36775 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_73">
     <path d="M 471.044219 39.36775 
@@ -2417,7 +2417,7 @@ L 498.927969 58.1755
 L 471.044219 58.1755 
 L 471.044219 39.36775 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_74">
     <path d="M 387.392969 58.1755 
@@ -2426,7 +2426,7 @@ L 415.276719 76.98325
 L 387.392969 76.98325 
 L 387.392969 58.1755 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_75">
     <path d="M 415.276719 58.1755 
@@ -2435,7 +2435,7 @@ L 443.160469 76.98325
 L 415.276719 76.98325 
 L 415.276719 58.1755 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_76">
     <path d="M 443.160469 58.1755 
@@ -2444,7 +2444,7 @@ L 471.044219 76.98325
 L 443.160469 76.98325 
 L 443.160469 58.1755 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_77">
     <path d="M 471.044219 58.1755 
@@ -2453,7 +2453,7 @@ L 498.927969 76.98325
 L 471.044219 76.98325 
 L 471.044219 58.1755 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_78">
     <path d="M 387.392969 76.98325 
@@ -2462,7 +2462,7 @@ L 415.276719 95.791
 L 387.392969 95.791 
 L 387.392969 76.98325 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_79">
     <path d="M 415.276719 76.98325 
@@ -2471,7 +2471,7 @@ L 443.160469 95.791
 L 415.276719 95.791 
 L 415.276719 76.98325 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_80">
     <path d="M 443.160469 76.98325 
@@ -2480,7 +2480,7 @@ L 471.044219 95.791
 L 443.160469 95.791 
 L 443.160469 76.98325 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_81">
     <path d="M 471.044219 76.98325 
@@ -2489,7 +2489,7 @@ L 498.927969 95.791
 L 471.044219 95.791 
 L 471.044219 76.98325 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_82">
     <path d="M 387.392969 95.791 
@@ -2498,7 +2498,7 @@ L 415.276719 114.59875
 L 387.392969 114.59875 
 L 387.392969 95.791 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_83">
     <path d="M 415.276719 95.791 
@@ -2507,7 +2507,7 @@ L 443.160469 114.59875
 L 415.276719 114.59875 
 L 415.276719 95.791 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_84">
     <path d="M 443.160469 95.791 
@@ -2516,7 +2516,7 @@ L 471.044219 114.59875
 L 443.160469 114.59875 
 L 443.160469 95.791 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_85">
     <path d="M 471.044219 95.791 
@@ -2525,14 +2525,14 @@ L 498.927969 114.59875
 L 471.044219 114.59875 
 L 471.044219 95.791 
 z
-" clip-path="url(#p3ec1860ca2)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pcd8690e395)" style="fill: none; stroke: #ffffff; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_7">
     <g id="xtick_13">
      <g id="line2d_28"/>
      <g id="text_84">
       <!-- 1 -->
-      <g style="fill: #52514e" transform="translate(399.120859 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(399.120859 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-12"/>
       </g>
      </g>
@@ -2541,7 +2541,7 @@ z
      <g id="line2d_29"/>
      <g id="text_85">
       <!-- 2 -->
-      <g style="fill: #52514e" transform="translate(427.004609 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(427.004609 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-13"/>
       </g>
      </g>
@@ -2550,7 +2550,7 @@ z
      <g id="line2d_30"/>
      <g id="text_86">
       <!-- 3 -->
-      <g style="fill: #52514e" transform="translate(454.888359 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(454.888359 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-14"/>
       </g>
      </g>
@@ -2559,14 +2559,14 @@ z
      <g id="line2d_31"/>
      <g id="text_87">
       <!-- 4 -->
-      <g style="fill: #52514e" transform="translate(482.772109 125.57875) scale(0.085 -0.085)">
+      <g style="fill: #5c5b57" transform="translate(482.772109 125.57875) scale(0.085 -0.085)">
        <use xlink:href="#NotoSansCJKjp-Thin-15"/>
       </g>
      </g>
     </g>
     <g id="text_88">
      <!-- 初期値 -->
-     <g style="fill: #52514e" transform="translate(431.160469 137.63875) scale(0.08 -0.08)">
+     <g style="fill: #5c5b57" transform="translate(431.160469 137.63875) scale(0.08 -0.08)">
       <use xlink:href="#NotoSansCJKjp-Thin-2ba3"/>
       <use xlink:href="#NotoSansCJKjp-Thin-50ff" transform="translate(100 0)"/>
       <use xlink:href="#NotoSansCJKjp-Thin-2841" transform="translate(200 0)"/>
@@ -2592,7 +2592,7 @@ z
    </g>
    <g id="text_89">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(397.134562 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(397.134562 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2600,7 +2600,7 @@ z
    </g>
    <g id="text_90">
     <!-- .94 -->
-    <g style="fill: #ffffff" transform="translate(425.018312 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(425.018312 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-15" transform="translate(75.1875 0)"/>
@@ -2608,7 +2608,7 @@ z
    </g>
    <g id="text_91">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(452.902062 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(452.902062 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2616,7 +2616,7 @@ z
    </g>
    <g id="text_92">
     <!-- 1.0 -->
-    <g style="fill: #ffffff" transform="translate(480.785812 32.471875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(480.785812 32.471875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-12"/>
      <use xlink:href="#NotoSansCJKjp-Thin-f" transform="translate(52.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2624,7 +2624,7 @@ z
    </g>
    <g id="text_93">
     <!-- .29 -->
-    <g style="fill: #0b0b0b" transform="translate(397.134562 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(397.134562 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -2632,7 +2632,7 @@ z
    </g>
    <g id="text_94">
     <!-- .29 -->
-    <g style="fill: #0b0b0b" transform="translate(425.018312 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(425.018312 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -2640,7 +2640,7 @@ z
    </g>
    <g id="text_95">
     <!-- .30 -->
-    <g style="fill: #0b0b0b" transform="translate(452.902062 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(452.902062 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2648,7 +2648,7 @@ z
    </g>
    <g id="text_96">
     <!-- .29 -->
-    <g style="fill: #0b0b0b" transform="translate(480.785812 51.279625) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(480.785812 51.279625) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -2656,7 +2656,7 @@ z
    </g>
    <g id="text_97">
     <!-- .31 -->
-    <g style="fill: #0b0b0b" transform="translate(397.134562 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(397.134562 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2664,7 +2664,7 @@ z
    </g>
    <g id="text_98">
     <!-- .31 -->
-    <g style="fill: #0b0b0b" transform="translate(425.018312 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(425.018312 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2672,7 +2672,7 @@ z
    </g>
    <g id="text_99">
     <!-- .31 -->
-    <g style="fill: #0b0b0b" transform="translate(452.902062 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(452.902062 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2680,7 +2680,7 @@ z
    </g>
    <g id="text_100">
     <!-- .32 -->
-    <g style="fill: #0b0b0b" transform="translate(480.785812 70.087375) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(480.785812 70.087375) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(75.1875 0)"/>
@@ -2688,7 +2688,7 @@ z
    </g>
    <g id="text_101">
     <!-- .31 -->
-    <g style="fill: #0b0b0b" transform="translate(397.134562 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(397.134562 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-12" transform="translate(75.1875 0)"/>
@@ -2696,7 +2696,7 @@ z
    </g>
    <g id="text_102">
     <!-- .30 -->
-    <g style="fill: #0b0b0b" transform="translate(425.018312 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(425.018312 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2704,7 +2704,7 @@ z
    </g>
    <g id="text_103">
     <!-- .30 -->
-    <g style="fill: #0b0b0b" transform="translate(452.902062 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(452.902062 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2712,7 +2712,7 @@ z
    </g>
    <g id="text_104">
     <!-- .30 -->
-    <g style="fill: #0b0b0b" transform="translate(480.785812 88.895125) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(480.785812 88.895125) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-14" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-11" transform="translate(75.1875 0)"/>
@@ -2720,7 +2720,7 @@ z
    </g>
    <g id="text_105">
     <!-- .29 -->
-    <g style="fill: #0b0b0b" transform="translate(397.134562 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(397.134562 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-1a" transform="translate(75.1875 0)"/>
@@ -2728,7 +2728,7 @@ z
    </g>
    <g id="text_106">
     <!-- .28 -->
-    <g style="fill: #0b0b0b" transform="translate(425.018312 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(425.018312 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(75.1875 0)"/>
@@ -2736,7 +2736,7 @@ z
    </g>
    <g id="text_107">
     <!-- .28 -->
-    <g style="fill: #0b0b0b" transform="translate(452.902062 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(452.902062 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(75.1875 0)"/>
@@ -2744,7 +2744,7 @@ z
    </g>
    <g id="text_108">
     <!-- .28 -->
-    <g style="fill: #0b0b0b" transform="translate(480.785812 107.702875) scale(0.066 -0.066)">
+    <g style="fill: #1b1b1a" transform="translate(480.785812 107.702875) scale(0.066 -0.066)">
      <use xlink:href="#NotoSansCJKjp-Thin-f"/>
      <use xlink:href="#NotoSansCJKjp-Thin-13" transform="translate(23.09375 0)"/>
      <use xlink:href="#NotoSansCJKjp-Thin-19" transform="translate(75.1875 0)"/>
@@ -2752,7 +2752,7 @@ z
    </g>
    <g id="text_109">
     <!-- $f_{3,1}$ -->
-    <g style="fill: #0b0b0b" transform="translate(435.417969 15.56) scale(0.095 -0.095)">
+    <g style="fill: #1b1b1a" transform="translate(435.417969 15.56) scale(0.095 -0.095)">
      <use xlink:href="#DejaVuSans-Oblique-49" transform="translate(0 0.015625)"/>
      <use xlink:href="#DejaVuSans-16" transform="translate(35.205078 -14.984326) scale(0.7)"/>
      <use xlink:href="#DejaVuSans-f" transform="translate(79.741211 -14.984326) scale(0.7)"/>
@@ -2762,16 +2762,16 @@ z
   </g>
  </g>
  <defs>
-  <clipPath id="p91eb9f44fe">
+  <clipPath id="pcb82850723">
    <rect x="23.627969" y="20.56" width="111.535" height="94.03875"/>
   </clipPath>
-  <clipPath id="p0898cb01a8">
+  <clipPath id="p920748c358">
    <rect x="144.882969" y="20.56" width="111.535" height="94.03875"/>
   </clipPath>
-  <clipPath id="p160f460bcb">
+  <clipPath id="pd8c77f94b2">
    <rect x="266.137969" y="20.56" width="111.535" height="94.03875"/>
   </clipPath>
-  <clipPath id="p3ec1860ca2">
+  <clipPath id="pcd8690e395">
    <rect x="387.392969" y="20.56" width="111.535" height="94.03875"/>
   </clipPath>
  </defs>

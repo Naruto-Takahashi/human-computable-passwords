@@ -21,10 +21,17 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(REPO, "docs/reports/figures")
 THRESHOLD = 0.5
 
-BLUE, ORANGE, AQUA, VIOLET = "#2a78d6", "#eb6834", "#1baf7a", "#4a3aa7"
-SEQ = ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95"]
-INK, INK2, INK3 = "#0b0b0b", "#52514e", "#8a8880"
-GRID = "#e3e2dd"
+# パステル配色（2026-09-28）。dataviz スキルの検証器を通してある:
+#   node scripts/validate_palette.js "#7FA9E8,#F0946A,#41C2A8,#A98CE0" --mode light
+#     明度帯 PASS / 彩度下限 PASS / 色覚異常の隣接分離 ΔE 9.4（目標8以上）PASS /
+#     通常視の隣接分離 ΔE 21.5（下限15）PASS / 地色とのコントラストは 3:1 未満 WARN
+#   WARN は「直接ラベルか表を必ず添える」という条件つきで許容される（relief 規則）。
+#   本報告の図はすべて直接ラベルを持ち，同じ数値が本文の表にもある。
+BLUE, ORANGE, AQUA, VIOLET = "#7FA9E8", "#F0946A", "#41C2A8", "#A98CE0"
+# 連続値（ヒートマップ）は単一色相で明→暗。上のパステル青を最濃に置く
+SEQ = ["#F2F7FE", "#E1EDFC", "#CBDFF8", "#AEC9F0", "#93B6EB", "#7FA9E8"]
+INK, INK2, INK3 = "#1b1b1a", "#5c5b57", "#94928a"
+GRID = "#ebeae4"
 
 plt.rcParams.update({
     # Typst(resvg) は可変フォントを扱えず，SVG 内のフォント名解決も環境依存になる．
@@ -151,7 +158,7 @@ def fig_keyinit(rows):
                 v = m[i, j]
                 txt = "1.0" if v >= 0.995 else f"{v:.2f}"[1:]
                 ax.text(j, i, txt, ha="center", va="center",
-                        fontsize=6.6, color="white" if v > 0.6 else INK)
+                        fontsize=6.6, color=INK)
                 ax.add_patch(Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False,
                                        edgecolor="white", lw=1.2))
         ax.set_xticks(range(len(inits)))
