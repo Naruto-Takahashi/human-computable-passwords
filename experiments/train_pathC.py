@@ -42,6 +42,7 @@ sys.path.insert(0, os.path.join(REPO_ROOT, "src"))
 from hcp.algorithms import get_algorithm  # noqa: E402
 
 DRY_RUN = os.environ.get("HCP_DRY_RUN") == "1"
+_INIT_SEED_ORIGIN = 700  # init_index の原点（--init_seed_base の既定値）
 
 
 def make_dataset(algorithm, datasize: int, seed: int):
@@ -126,9 +127,12 @@ def one_run(args, algorithm, run_index: int) -> dict:
     from baseline_ml.models import Models
 
     key_index = run_index % args.n_keys
-    init_index = run_index // args.n_keys
     key_seed = args.key_seed_base + key_index
-    init_seed = args.init_seed_base + init_index
+    init_seed = args.init_seed_base + run_index // args.n_keys
+    # init_index は「初期値の通し番号」。--init_seed_base をずらして分割起動すると
+    # run_index // n_keys は各プロセス内で 0 に戻るため，seed から引く
+    # （2026-09-28 修正。分解の集計が全ブロックを1列に潰していた）。
+    init_index = init_seed - _INIT_SEED_ORIGIN
 
     x, y, key = make_dataset(algorithm, args.datasize, key_seed)
     (xtr, ytr), (xva, yva), (xte, yte) = split_8_1_1(x, y, key_seed)
