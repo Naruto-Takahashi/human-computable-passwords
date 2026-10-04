@@ -243,9 +243,78 @@ def fig_datasize(rows):
     plt.close(fig)
 
 
+# --------------------------------------------- 図6（C2）離陸率と95%信頼区間
+C2_ALGOS = ["func_31", "func_22", "func_13_k26"]
+C2_LABEL = {"func_31": "$f_{3,1}$  $k_2$=1", "func_22": "$f_{2,2}$  $k_2$=2",
+            "func_13_k26": "$f_{1,3}$  $k_2$=3"}
+
+
+def fig_takeoff_c2(rows):
+    fig, ax = plt.subplots(figsize=(7.1, 2.0))
+    ys = np.arange(len(C2_ALGOS))[::-1]
+    for y, a in zip(ys, C2_ALGOS):
+        rs = sel(rows, a, 50000)
+        k = sum(1 for r in rs if r["val_accuracy_max"] > THRESHOLD)
+        n = len(rs)
+        lo, hi = wilson(k, n)
+        ax.plot([lo, hi], [y, y], color=BLUE, lw=2, solid_capstyle="round",
+                alpha=0.35, zorder=2)
+        ax.plot([k / n], [y], "o", ms=8, color=BLUE, zorder=3,
+                markeredgecolor="white", markeredgewidth=1.2)
+        ax.text(hi + 0.035, y, f"{k}/{n}", va="center", ha="left",
+                fontsize=8.5, color=INK)
+    ax.set_yticks(ys)
+    ax.set_yticklabels([C2_LABEL[a] for a in C2_ALGOS])
+    ax.set_xlim(-0.04, 1.30)
+    ax.set_xticks([0, 0.25, 0.5, 0.75, 1.0])
+    ax.set_xticklabels(["0", "25", "50", "75", "100%"])
+    ax.xaxis.grid(True, color=GRID, lw=0.6)
+    ax.set_axisbelow(True)
+    ax.set_xlabel("離陸率（鍵20本，95% Wilson 区間。$N$=26・50,000件）", color=INK2)
+    tidy(ax)
+    fig.tight_layout()
+    fig.savefig(f"{OUT}/c2_takeoff_rate.svg", bbox_inches="tight")
+    plt.close(fig)
+
+
+# --------------------------------------- 図7（C2）鍵の偏り（最多重複）と離陸
+def fig_c2_skew(rows):
+    from scipy import stats as _stats
+    fig, axes = plt.subplots(1, 3, figsize=(7.1, 2.6), sharey=True)
+    for ax, a in zip(axes, C2_ALGOS):
+        rs = sel(rows, a, 50000)
+        dup, frac = [], []
+        for ks in sorted({r["key_seed"] for r in rs}):
+            sub = [r for r in rs if r["key_seed"] == ks]
+            c = np.bincount(sub[0]["key"], minlength=10)
+            dup.append(int(c.max()))
+            frac.append(sum(1 for r in sub if r["val_accuracy_max"] > THRESHOLD) / len(sub))
+        rho, p = _stats.spearmanr(dup, frac)
+        rng = np.random.default_rng(3)
+        x = np.array(dup) + rng.uniform(-0.08, 0.08, len(dup))
+        ax.scatter(x, frac, s=30, color=BLUE, alpha=0.8, linewidths=0.8,
+                   edgecolors="white", zorder=3)
+        star = "**" if p < 0.01 else "*" if p < 0.05 else ""
+        ax.text(0.04, 0.96, f"$\\rho$={rho:+.2f}{star}\n$p$={p:.3f}",
+                transform=ax.transAxes, fontsize=8, color=INK2, va="top")
+        ax.set_xlabel("鍵の最多重複（0〜9のうち最頻値の個数）", color=INK2, fontsize=7.6)
+        ax.set_title(C2_LABEL[a], fontsize=9.5, color=INK, pad=6)
+        ax.set_xticks(range(4, 9))
+        ax.yaxis.grid(True, color=GRID, lw=0.6)
+        ax.set_axisbelow(True)
+        tidy(ax)
+    axes[0].set_ylabel("鍵ごとの離陸率（初期値内）", color=INK2)
+    axes[0].set_ylim(-0.08, 1.08)
+    fig.tight_layout()
+    fig.savefig(f"{OUT}/c2_skew_correlation.svg", bbox_inches="tight")
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     rows = load()
     fig_takeoff(rows); fig_runs(rows); fig_keyinit(rows)
     fig_curve(rows); fig_datasize(rows)
-    for f in sorted(glob.glob(f"{OUT}/c1_*.svg")):
+    rows_c2 = load("C2")
+    fig_takeoff_c2(rows_c2); fig_c2_skew(rows_c2)
+    for f in sorted(glob.glob(f"{OUT}/c1_*.svg")) + sorted(glob.glob(f"{OUT}/c2_*.svg")):
         print(f"  {os.path.basename(f)}  {os.path.getsize(f)//1024} KB")

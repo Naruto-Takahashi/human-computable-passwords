@@ -21,6 +21,15 @@
 #
 # 設計と検出力の検討は docs/experiment_index.md の実験C2 にある。
 #
+# 本番前の見直し（2026-10-02）: C1 の分散分解で f_2,2 は交互作用が48%と最大
+# だった（鍵27%・初期値25%・交互作用48%）。初期値2通りのままだと鍵ごとの
+# 離陸率の点推定（0/2・1/2・2/2 の3値）がこの関数だけ特に粗くなるため，
+# f_2,2 だけ初期値を4通りに増やす（f_31・f_13_k26 は鍵が分散の85〜100%を
+# 説明しており2通りで足りる）。100エポックという予算は，実験C1 で離陸しな
+# かった f_3,1 の4鍵の検証曲線（既存データ）を確認済み。終盤10エポックで
+# 上昇の気配がなく（例: seed20260928 は ep10=0.284→ep100=0.25），予算不足
+# の疑いは当たらなかったため変更なし。
+#
 # 使い方:
 #   HCP_DRY_RUN=1 bash experiments/batch/run_C2.sh     # 条件一覧だけ出す
 #   nohup bash experiments/batch/run_C2.sh > results/logs/C2.out 2>&1 & disown
@@ -31,23 +40,27 @@ JOBS=${HCP_JOBS:-5}
 THREADS=${HCP_THREADS:-4}
 PY=.venv/bin/python
 
-# 鍵20本 × 初期値2通り = 40 run。--runs は n_keys で割られて初期値の通り数になる
+# 鍵20本 × 初期値2〜4通り。--runs は n_keys で割られて初期値の通り数になる
 # （key_index = run_index % n_keys, init は run_index / n_keys）。
-# 1コマンドで 40 run を回すと1プロセスが長時間占有するので初期値ごとに分ける。
+# 1コマンドで40run以上を回すと1プロセスが長時間占有するので初期値ごとに分ける。
 COMMON="--datasize 50000 --epochs 100 --readout cls --d_model 32 --num_layers 2 \
 --n_keys 20 --runs 20 --experiment C2"
 
 plan() {
-  for a in func_31 func_22 func_13_k26; do
+  for a in func_31 func_13_k26; do
     for i in 700 701; do
       echo "--algorithm $a --init_seed_base $i $COMMON"
     done
+  done
+  # f_2,2 だけ初期値4通り（交互作用48%対策，上の見直しを参照）
+  for i in 700 701 702 703; do
+    echo "--algorithm func_22 --init_seed_base $i $COMMON"
   done
 }
 
 N=$(plan | wc -l)
 echo "=== [$(date '+%m/%d %H:%M:%S')] 実験C2: ${N} 条件 / $((N * 20)) run を ${JOBS} 並列 ==="
-echo "    鍵20本 × 初期値2通り × 3関数。1 run 約11分，見込み約4.5時間"
+echo "    鍵20本 × 初期値2通り（f_31・f_13_k26）／4通り（f_2,2）。1 run 約11分，見込み約6時間"
 plan | nl
 if [ "${HCP_DRY_RUN:-}" = "1" ]; then
   echo "HCP_DRY_RUN=1 のため学習はしない"

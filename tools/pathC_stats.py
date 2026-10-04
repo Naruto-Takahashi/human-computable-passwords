@@ -10,8 +10,15 @@
      実験13 で Kruskal-Wallis → Friedman に直したのと同じ理由。
   3. 鍵サイズ 26 対 50 は対応なし（鍵の長さが違えば別の鍵）→ Fisher の正確検定
   4. 「離陸は鍵で決まるか」= 鍵5本 × 離陸/非離陸 の 5×2 表の Fisher 正確検定
-  5. 鍵のエントロピーと離陸数の Spearman 相関（鍵5本なので検出力は低い）
+  5. 鍵の数字分布の偏り（エントロピー・最多重複・異なる数字の数）と離陸数の
+     Spearman 相関（C1 は鍵5本なので検出力は低い。C2 は鍵20本で検証する）
+
+実験C2（鍵20本）を見るには --experiment C2 を渡す（func_pow が無く N=50 も
+回していないため，関数間比較・鍵サイズ比較の節は C1 専用のまま飛ばす）:
+
+    python3 tools/pathC_stats.py --experiment C2
 """
+import argparse
 import glob
 import itertools
 import json
@@ -27,6 +34,7 @@ LABEL = {"func_pow": "h (統制)", "func_22": "f22", "func_13_k26": "f13", "func
          "func_31_k50": "f31"}
 K26 = ["func_pow", "func_22", "func_13_k26", "func_31"]
 K50 = ["func_pow_k50", "func_22_k50", "func_13_k50", "func_31_k50"]
+C2_ALGOS = ["func_31", "func_22", "func_13_k26"]  # func_pow なし・N=50 なし
 THRESHOLD = 0.5
 
 
@@ -72,12 +80,17 @@ def mcnemar_exact(a: dict, b: dict) -> tuple[int, int, float]:
 
 
 def main():
-    rows = load()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--experiment", default="C1")
+    args = ap.parse_args()
+    rows = load(args.experiment)
+    size_groups = ((C2_ALGOS, 26),) if args.experiment == "C2" else ((K26, 26), (K50, 50))
+
     print("=" * 78)
     print("1. 離陸率と Wilson 95% 信頼区間（50,000件）")
     print("=" * 78)
     print(f"{'関数':12s}{'N':>4s}{'離陸':>8s}{'率':>8s}{'95% CI':>18s}{'平均正解率':>14s}")
-    for algos, N in ((K26, 26), (K50, 50)):
+    for algos, N in size_groups:
         for a in algos:
             rs = [r for r in rows if r["algorithm"] == a and r["datasize"] == 50000]
             v = np.array([r["val_accuracy_max"] for r in rs])
@@ -85,65 +98,72 @@ def main():
             lo, hi = wilson(k, len(v))
             print(f"{LABEL[a]:12s}{N:>4d}{k:>5d}/{len(v):<3d}{k/len(v):>8.2f}"
                   f"   [{lo:.2f}, {hi:.2f}]   {v.mean():>7.4f}±{v.std(ddof=1):.4f}")
-    print()
-    print("=" * 78)
-    print("2. 関数間の比較（McNemar の正確検定・両側）— 同じ (鍵, 初期値) を共有する対応データ")
-    print("=" * 78)
-    for algos, N in ((K26, 26), (K50, 50)):
-        print(f"  N={N}")
-        for x, y in itertools.combinations(algos, 2):
-            a, b = takeoff_map(rows, x, 50000), takeoff_map(rows, y, 50000)
-            n10, n01, p = mcnemar_exact(a, b)
+    if args.experiment == "C1":
+        print()
+        print("=" * 78)
+        print("2. 関数間の比較（McNemar の正確検定・両側）— 同じ (鍵, 初期値) を共有する対応データ")
+        print("=" * 78)
+        for algos, N in ((K26, 26), (K50, 50)):
+            print(f"  N={N}")
+            for x, y in itertools.combinations(algos, 2):
+                a, b = takeoff_map(rows, x, 50000), takeoff_map(rows, y, 50000)
+                n10, n01, p = mcnemar_exact(a, b)
+                star = "**" if p < 0.01 else "*" if p < 0.05 else "  "
+                print(f"    {LABEL[x]:10s}対 {LABEL[y]:10s} "
+                      f"{LABEL[x]}のみ離陸 {n10:2d} / {LABEL[y]}のみ離陸 {n01:2d}  p={p:.4f} {star}")
+        print()
+        print("=" * 78)
+        print("3. 鍵サイズ 26 対 50（Fisher の正確検定・両側）— 鍵の長さが違うので対応なし")
+        print("=" * 78)
+        for a26, a50 in zip(K26, K50):
+            k26 = sum(takeoff_map(rows, a26, 50000).values()); n26 = len(takeoff_map(rows, a26, 50000))
+            k50 = sum(takeoff_map(rows, a50, 50000).values()); n50 = len(takeoff_map(rows, a50, 50000))
+            odds, p = stats.fisher_exact([[k26, n26 - k26], [k50, n50 - k50]])
             star = "**" if p < 0.01 else "*" if p < 0.05 else "  "
-            print(f"    {LABEL[x]:10s}対 {LABEL[y]:10s} "
-                  f"{LABEL[x]}のみ離陸 {n10:2d} / {LABEL[y]}のみ離陸 {n01:2d}  p={p:.4f} {star}")
+            print(f"  {LABEL[a26]:12s} {k26:2d}/{n26} → {k50:2d}/{n50}   p={p:.4f} {star}")
+        print()
+        print("=" * 78)
+        print("4. 離陸は鍵で決まるか（鍵5本 × 離陸/非離陸 の Fisher 正確検定）")
+        print("=" * 78)
+        for algos, N in ((K26, 26), (K50, 50)):
+            for a in algos:
+                m = takeoff_map(rows, a, 50000)
+                keys = sorted({k for k, _ in m})
+                tbl = [[sum(1 for (kk, ii), v in m.items() if kk == k and v),
+                        sum(1 for (kk, ii), v in m.items() if kk == k and not v)] for k in keys]
+                if sum(r[0] for r in tbl) in (0, sum(sum(r) for r in tbl)):
+                    print(f"  {LABEL[a]:12s} N={N}  全一致（検定不能）")
+                    continue
+                p = stats.fisher_exact(tbl)[1] if len(tbl) == 2 else _fisher_rxc(tbl)
+                star = "**" if p < 0.01 else "*" if p < 0.05 else "  "
+                print(f"  {LABEL[a]:12s} N={N}  鍵ごとの離陸 "
+                      f"{[r[0] for r in tbl]}  p={p:.4f} {star}")
     print()
     print("=" * 78)
-    print("3. 鍵サイズ 26 対 50（Fisher の正確検定・両側）— 鍵の長さが違うので対応なし")
+    n_keys = len({r["key_seed"] for r in rows if r.get("algorithm") in
+                  (C2_ALGOS if args.experiment == "C2" else K26)})
+    print(f"5. 鍵の偏りと離陸数（Spearman，鍵{n_keys}本）")
     print("=" * 78)
-    for a26, a50 in zip(K26, K50):
-        k26 = sum(takeoff_map(rows, a26, 50000).values()); n26 = len(takeoff_map(rows, a26, 50000))
-        k50 = sum(takeoff_map(rows, a50, 50000).values()); n50 = len(takeoff_map(rows, a50, 50000))
-        odds, p = stats.fisher_exact([[k26, n26 - k26], [k50, n50 - k50]])
-        star = "**" if p < 0.01 else "*" if p < 0.05 else "  "
-        print(f"  {LABEL[a26]:12s} {k26:2d}/{n26} → {k50:2d}/{n50}   p={p:.4f} {star}")
-    print()
-    print("=" * 78)
-    print("4. 離陸は鍵で決まるか（鍵5本 × 離陸/非離陸 の Fisher 正確検定）")
-    print("=" * 78)
-    for algos, N in ((K26, 26), (K50, 50)):
-        for a in algos:
-            m = takeoff_map(rows, a, 50000)
-            keys = sorted({k for k, _ in m})
-            tbl = [[sum(1 for (kk, ii), v in m.items() if kk == k and v),
-                    sum(1 for (kk, ii), v in m.items() if kk == k and not v)] for k in keys]
-            if sum(r[0] for r in tbl) in (0, sum(sum(r) for r in tbl)):
-                print(f"  {LABEL[a]:12s} N={N}  全一致（検定不能）")
-                continue
-            p = stats.fisher_exact(tbl)[1] if len(tbl) == 2 else _fisher_rxc(tbl)
-            star = "**" if p < 0.01 else "*" if p < 0.05 else "  "
-            print(f"  {LABEL[a]:12s} N={N}  鍵ごとの離陸 "
-                  f"{[r[0] for r in tbl]}  p={p:.4f} {star}")
-    print()
-    print("=" * 78)
-    print("5. 鍵のエントロピーと離陸数（Spearman，鍵5本なので検出力は低い）")
-    print("=" * 78)
-    for algos, N in ((K26, 26), (K50, 50)):
+    for algos, N in size_groups:
         for a in algos:
             rs = [r for r in rows if r["algorithm"] == a and r["datasize"] == 50000]
-            ent, off = [], []
+            ent, dup, dist, off = [], [], [], []
             for ks in sorted({r["key_seed"] for r in rs}):
                 sub = [r for r in rs if r["key_seed"] == ks]
                 c = np.bincount(sub[0]["key"], minlength=10)
                 pr = c[c > 0] / len(sub[0]["key"])
                 ent.append(float(-(pr * np.log2(pr)).sum()))
+                dup.append(int(c.max()))
+                dist.append(int((c > 0).sum()))
                 off.append(sum(1 for r in sub if r["val_accuracy_max"] > THRESHOLD))
             if len(set(off)) == 1:
                 print(f"  {LABEL[a]:12s} N={N}  離陸数が全鍵で同一（相関を定義できない）")
                 continue
-            rho, p = stats.spearmanr(ent, off)
-            print(f"  {LABEL[a]:12s} N={N}  エントロピー {np.round(ent,3).tolist()} "
-                  f"離陸 {off}  rho={rho:+.2f} p={p:.3f}")
+            print(f"  {LABEL[a]:12s} N={N}  離陸 {off}")
+            for name, x in (("エントロピー", ent), ("最多重複", dup), ("異なる数字の数", dist)):
+                rho, p = stats.spearmanr(x, off)
+                star = "**" if p < 0.01 else "*" if p < 0.05 else "  "
+                print(f"    {name:14s} {np.round(x, 3).tolist()}  rho={rho:+.2f} p={p:.3f} {star}")
 
 
 def _fisher_rxc(table, n_perm=20000, seed=0):
