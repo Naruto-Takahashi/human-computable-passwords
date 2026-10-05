@@ -84,7 +84,7 @@ def main():
     ap.add_argument("--experiment", default="C1")
     args = ap.parse_args()
     rows = load(args.experiment)
-    size_groups = ((C2_ALGOS, 26),) if args.experiment == "C2" else ((K26, 26), (K50, 50))
+    size_groups = ((K26, 26), (K50, 50)) if args.experiment == "C1" else ((C2_ALGOS, 26),)
 
     print("=" * 78)
     print("1. 離陸率と Wilson 95% 信頼区間（50,000件）")
@@ -141,7 +141,7 @@ def main():
     print()
     print("=" * 78)
     n_keys = len({r["key_seed"] for r in rows if r.get("algorithm") in
-                  (C2_ALGOS if args.experiment == "C2" else K26)})
+                  (K26 if args.experiment == "C1" else C2_ALGOS)})
     print(f"5. 鍵の偏りと離陸数（Spearman，鍵{n_keys}本）")
     print("=" * 78)
     for algos, N in size_groups:

@@ -127,7 +127,8 @@ def one_run(args, algorithm, run_index: int) -> dict:
     from baseline_ml.models import Models
 
     key_index = run_index % args.n_keys
-    key_seed = args.key_seed_base + key_index
+    key_seed = (args.key_seeds_parsed[key_index] if args.key_seeds_parsed
+                else args.key_seed_base + key_index)
     init_seed = args.init_seed_base + run_index // args.n_keys
     # init_index は「初期値の通し番号」。--init_seed_base をずらして分割起動すると
     # run_index // n_keys は各プロセス内で 0 に戻るため，seed から引く
@@ -222,6 +223,10 @@ def main():
     ap.add_argument("--init_seed_base", type=int, default=700)
     ap.add_argument("--n_keys", type=int, default=5,
                     help="鍵の本数．--runs はこれで割って初期値の通り数になる")
+    ap.add_argument("--key_seeds", type=str, default=None,
+                    help="鍵seedを明示的に指定（コンマ区切り）。基準線を揃えて選んだ"
+                         "鍵など，連番にならない鍵集合を使うとき（実験C2.1）。"
+                         "指定時は --n_keys・--key_seed_base を上書きする")
     ap.add_argument("--d_model", type=int, default=64)
     ap.add_argument("--num_heads", type=int, default=4)
     ap.add_argument("--num_layers", type=int, default=2)
@@ -231,6 +236,12 @@ def main():
     ap.add_argument("--experiment", default="C1pre0", help="results/ の仕分け用ラベル")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args()
+
+    if args.key_seeds:
+        args.key_seeds_parsed = [int(s) for s in args.key_seeds.split(",")]
+        args.n_keys = len(args.key_seeds_parsed)
+    else:
+        args.key_seeds_parsed = None
 
     algorithms = [get_algorithm(name) for name in args.algorithm]
     out_dir = os.path.join(REPO_ROOT, "results", "path_c", args.experiment)
