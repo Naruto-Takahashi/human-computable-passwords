@@ -20,6 +20,28 @@ from keras.layers import (
 )
 from keras.models import Model, Sequential
 from keras.optimizers import Adam
+from keras.optimizers.schedules import LearningRateSchedule
+
+
+class LinearWarmup(LearningRateSchedule):
+    """線形warmupのあと一定（既定の定数学習率の方針を維持する．減衰は入れない）．
+
+    `d_model` を大きくすると崩壊する現象（実験C1 予備実験4）が，post-LN構成で
+    warmupが無いことによる最適化の不安定性なのかを確かめるために追加した。
+    """
+
+    def __init__(self, target_lr: float, warmup_steps: int):
+        super().__init__()
+        self.target_lr = target_lr
+        self.warmup_steps = max(1, warmup_steps)
+
+    def __call__(self, step):
+        step = ops.cast(step, "float32")
+        frac = ops.minimum(1.0, (step + 1.0) / float(self.warmup_steps))
+        return self.target_lr * frac
+
+    def get_config(self):
+        return {"target_lr": self.target_lr, "warmup_steps": self.warmup_steps}
 
 
 class PositionalEmbedding(Layer):
@@ -189,6 +211,7 @@ class Models:
         ff_dim: int = 128,
         readout: str = "mean",
         learning_rate: float = 1e-3,
+        warmup_steps: int = 0,
     ) -> Model:
         """**小川ら(2025) §5.4 の第一の将来課題に対応するモデル。**
 
@@ -271,9 +294,10 @@ class Models:
         x = Dense(64, activation="relu")(x)
         outputs = Dense(10, activation="softmax")(x)
         model = Model(inputs=inputs, outputs=outputs)
+        lr = LinearWarmup(learning_rate, warmup_steps) if warmup_steps > 0 else learning_rate
         model.compile(
             loss="categorical_crossentropy",
-            optimizer=Adam(learning_rate=learning_rate),
+            optimizer=Adam(learning_rate=lr),
             metrics=["accuracy"],
         )
         return model

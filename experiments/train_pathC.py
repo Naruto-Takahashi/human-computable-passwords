@@ -142,6 +142,8 @@ def one_run(args, algorithm, run_index: int) -> dict:
     # 初期値が鍵に依存してしまう）
     keras.utils.set_random_seed(init_seed)
 
+    steps_per_epoch = -(-len(xtr) // args.batch_size)  # ceil
+    warmup_steps = round(args.warmup_epochs * steps_per_epoch)
     model = Models.embed_transformer(          # 欠陥1: run ごとに新規構築
         n_images=algorithm.challenge_domain(),
         d_model=args.d_model,
@@ -150,6 +152,7 @@ def one_run(args, algorithm, run_index: int) -> dict:
         ff_dim=args.ff_dim,
         readout=args.readout,
         learning_rate=args.learning_rate,
+        warmup_steps=warmup_steps,
     )
     n_params = int(model.count_params())
 
@@ -195,6 +198,8 @@ def one_run(args, algorithm, run_index: int) -> dict:
         "ff_dim": args.ff_dim,
         "readout": args.readout,
         "learning_rate": args.learning_rate,
+        "warmup_epochs": args.warmup_epochs,
+        "warmup_steps": warmup_steps,
         "n_params": n_params,
         "elapsed_seconds": round(elapsed, 1),
         # 欠陥3: 最大・最終・全履歴のすべてを残す
@@ -233,6 +238,9 @@ def main():
     ap.add_argument("--ff_dim", type=int, default=128)
     ap.add_argument("--readout", default="mean", choices=("flatten", "mean", "cls"))
     ap.add_argument("--learning_rate", type=float, default=1e-3)
+    ap.add_argument("--warmup_epochs", type=float, default=0.0,
+                    help="線形warmupに使うエポック数（0ならwarmupなし，既定の定数学習率）。"
+                         "post-LN構成でd_modelを大きくすると崩壊する現象の検証用")
     ap.add_argument("--experiment", default="C1pre0", help="results/ の仕分け用ラベル")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args()
