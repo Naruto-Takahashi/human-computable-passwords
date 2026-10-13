@@ -1004,6 +1004,8 @@ _CASE_COUNT_LADDER = [_make_table_add3(15), _make_narrowptr(5, 2)]
 _PATH_C_GRID = [
     _make_func(2, 2, 50, "func_22_k50"), _make_func(2, 2, 100, "func_22_k100"),
     _make_func(1, 3, 50, "func_13_k50"),
+    # 実験C3 の双子の鍵（N=26 の鍵を4回並べる）用。104 = 4 × 26
+    _make_func(2, 2, 104, "func_22_k104"), _make_func(1, 3, 104, "func_13_k104"),
     _make_func(3, 1, 50, "func_31_k50"), _make_func(3, 1, 100, "func_31_k100"),
     _make_func_pow(50), _make_func_pow(100),
     _make_table_add3(50), _make_table_add3(100),
