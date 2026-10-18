@@ -13,6 +13,7 @@
 | [blocki2017_towards_human_computable_passwords.md](blocki2017_towards_human_computable_passwords.md) | Blocki, Blum, Datta, Vempala, "Towards Human Computable Passwords", ITCS 2017 | **原論文**。HCP方式・関数族 $`f_{k_1,k_2}`$・安全性パラメータ $s(f)$・UF-RCAゲームを定義 |
 | [ogawa2025_learning_hcp_neural_models.md](ogawa2025_learning_hcp_neural_models.md) | Ogawa, Ikeda, Sakurai, "Learning Human-Computable Passwords: What Makes Them Hard (or Easy) for Neural Models?" | **直接の先行研究**。CNN/Bi-LSTM/MLPによる学習ベース攻撃。経路Bとほぼ同一の結論を先に取得 |
 | [kachi2025_lagrange_interpolation_hcp.md](kachi2025_lagrange_interpolation_hcp.md) | Kachi, Viglietta, Sakurai, "Applying Lagrange Interpolation to Polynomial Expressions of Human-Computable Functions", SCIS 2025 | **理論的裏付け**。$f$ を $`\mathbb{F}_{11}`$ 上の多項式として明示的に表現 |
+| [related_work_survey.md](related_work_survey.md) | 関連研究の調査（2026-10-18） | **被引用・派生方式・攻撃理論の洗い出し**。Murata ら（WISA 2022）が学習ベース評価の査読付き先行研究であること，$`f_{k_1,k_2}`$ に代わる関数族は無いことを確認 |
 
 ## 3本の関係
 
@@ -50,5 +51,6 @@
 | | |
 |---|---|
 | [研究室の卒論4本](lab_theses.md) | 直接の系譜 |
+| [関連研究の調査](related_work_survey.md) | 研究室の外の HCP 研究と攻撃の理論 |
 
 📚 [ドキュメント索引](README.md) へ戻る
