@@ -15,6 +15,40 @@
 | [kachi2025_lagrange_interpolation_hcp.md](kachi2025_lagrange_interpolation_hcp.md) | Kachi, Viglietta, Sakurai, "Applying Lagrange Interpolation to Polynomial Expressions of Human-Computable Functions", SCIS 2025 | **理論的裏付け**。$f$ を $`\mathbb{F}_{11}`$ 上の多項式として明示的に表現 |
 | [related_work_survey.md](related_work_survey.md) | 関連研究の調査（2026-10-18） | **被引用・派生方式・攻撃理論の洗い出し**。Murata ら（WISA 2022）が学習ベース評価の査読付き先行研究であること，$`f_{k_1,k_2}`$ に代わる関数族は無いことを確認 |
 
+## 文献調査の台帳（2026-10-18〜）
+
+| ファイル | 役割 | 誰が書くか |
+|---|---|---|
+| [search_log.md](search_log.md) | **検索の記録**。いつ・どこを・何で検索し，何件見つけたか | スクリプトが自動で1行足す。手で検索したら手で足す |
+| [candidates.csv](candidates.csv) | **候補論文の一覧**。1論文1行 | スクリプトが「未読」で追記する。状態・関連度・メモは人が付ける |
+| `<引用キー>.md` | 精読した論文のメモ | 人 |
+
+書誌情報と PDF の正本は Zotero に置く（PDF はリポジトリに入れない）。台帳は
+「何を調べ，何を読み，どう判断したか」の正本である。
+
+**状態**: 未読 → 要旨（要旨と書誌だけ確認）→ 本文（本文を読んだ），または 除外（理由をメモに書く）
+
+**関連度**:
+
+| | 意味 |
+|---|---|
+| A | 論文の位置づけに直結する。必ず精読して引用する |
+| B | 関連研究の節で触れる |
+| C | 周辺。引用するかは任意 |
+
+**検索**（`tools/lit_search.py`。使い方はファイル冒頭）:
+
+```
+python3 tools/lit_search.py cites  <DOI>        # 被引用（前向き）
+python3 tools/lit_search.py refs   <DOI>        # 参考文献（後ろ向き）
+python3 tools/lit_search.py search "<語句>"     # 語句検索（OpenAlex・DBLP・arXiv）
+python3 tools/lit_search.py add    <DOI>        # 1本だけ足す
+```
+
+> [!WARNING]
+> どのデータベースも被引用・参考文献の網羅率は低い（Murata ら の参考文献は10件しか
+> 取れなかった）。**Google Scholar の「引用元」と，本文の参考文献リストで必ず補う。**
+
 ## 3本の関係
 
 ```
