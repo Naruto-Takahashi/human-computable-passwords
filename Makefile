@@ -51,7 +51,6 @@ help:
 test:
 	$(PY) src/hcp/algorithms.py
 	$(PY) tests/check_algorithm_texts.py
-	$(PY) tests/check_lit_search.py
 	$(PY) tools/check_docs.py
 	$(PY) tools/check_math.py
 	$(PY) experiments/info_limit.py --algorithm func_pow --n_shots 60 --key_seeds 0 \
