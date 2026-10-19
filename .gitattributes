@@ -1,0 +1,2 @@
+# Windows で書き出した参考文献が CRLF になり，全行が差分になるのを防ぐ
+*.bib text eol=lf
