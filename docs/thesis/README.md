@@ -74,11 +74,11 @@
 
 **素材**
 - 3.1 → [../hcp_background.md](../hcp_background.md)，
-  [../literature/blocki2017_towards_human_computable_passwords.md](../literature/blocki2017_towards_human_computable_passwords.md)
+  [../literature/related_work_survey.md](../literature/related_work_survey.md) の「原論文と本研究の対応」
 - 3.2 → [../literature/lab_theses.md](../literature/lab_theses.md)（CSP solver → MLP →
-  LSTM → 埋め込み+BiLSTM → 埋め込み+CNN の系譜），
-  [../literature/ogawa2025_learning_hcp_neural_models.md](../literature/ogawa2025_learning_hcp_neural_models.md)，
-  [../literature/kachi2025_lagrange_interpolation_hcp.md](../literature/kachi2025_lagrange_interpolation_hcp.md)
+  LSTM → 埋め込み+BiLSTM → 埋め込み+CNN の系譜と，経路Cによる説明），
+  [../literature/related_work_survey.md](../literature/related_work_survey.md)（小川ら・加地らとの対応）
+- 各論文の事実（手法・条件・数値）は非公開の論文ノートにある
 
 **足りないもの**
 - R6 池田の第4章の構成（CSPSolver → MLP → LSTM）がそのまま型になる。素材は揃った。

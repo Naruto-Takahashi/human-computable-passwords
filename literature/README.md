@@ -4,8 +4,8 @@
 > [docs/literature/](../docs/literature/) にある**
 >
 > 📚 [ドキュメント索引](../docs/README.md) ／ 関連:
-> [研究室の卒業研究](../docs/literature/lab_theses.md) ・
-> [小川ら英語論文](../docs/literature/ogawa2025_learning_hcp_neural_models.md)
+> [研究室の先行研究](../docs/literature/lab_theses.md) ・
+> [関連研究の調査](../docs/literature/related_work_survey.md)
 
 > [!IMPORTANT]
 > **GitHub 上では，このディレクトリはこの README しか見えない。**
@@ -18,21 +18,13 @@ Google Driveフォルダ: https://drive.google.com/drive/folders/1iBuo0FqA4w1V-3
 
 ## 収録資料
 
-- R4_村田.pdf / R4_村田_卒論スライド.pptx
-- R5_丸野.pdf
-- R6_池田.pdf / R6_池田_卒論スライド.pptx
-- R7_小川.pdf / R7_小川_卒論スライド.pptx
-- Towards Human Computable Passwords.pdf
-- 櫻井_学会スライド.pptx
-- 小川さん_英語論文.pdf … **手元に未取得**（2026-09-20 時点）
-- 加地先生.pdf … **手元に未取得**（2026-09-20 時点）
+**論文の PDF の正本は Zotero に移した**（PDF は Google Drive の `Zotero/` フォルダ。Zotero から
+リンクしている）。卒論4本・原論文・小川さんの英語論文・加地先生の論文はすべてそこにある。
+Google Drive の `卒業研究/03_参考資料/` には，論文以外の資料（卒論のスライド・櫻井先生の学会スライド）を置く。
+同じフォルダに残っている論文の PDF は，Zotero 側と重複している。
 
-**この一覧は Google Drive の中身**であり，手元にあるとは限らない。
-上の2件は未取得である。小川さんの英語論文は週次報告で数値を引用している
-（$f_{2,2}$ で平均 0.2872 ± 0.1651，最大 68.58%）ので，原文にあたる必要が
-生じたら Drive から取得すること。要約は
-[docs/literature/ogawa2025_learning_hcp_neural_models.md](../docs/literature/ogawa2025_learning_hcp_neural_models.md)
-にある。
+各論文に書いてある事実は，研究に依らない個人の論文ノート（非公開）にある。
+この研究にとっての位置づけは [docs/literature/](../docs/literature/README.md) にある。
 
 新しい資料を追加する場合は、上記Google Driveフォルダにアップロードし、このリストを更新してください。
 

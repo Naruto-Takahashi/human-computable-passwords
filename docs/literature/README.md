@@ -1,19 +1,17 @@
 # 文献要約
 
-> 先行研究の資料一覧（実体は Google Drive）
+> 先行研究が本研究にとって何を意味するか（論文そのものの要約は非公開の論文ノートにある）
 >
-> 📚 [ドキュメント索引](../README.md) ／ 関連: [研究室の卒論4本](lab_theses.md) ・ [HCP の前提知識](../hcp_background.md)
+> 📚 [ドキュメント索引](../README.md) ／ 関連: [研究室の先行研究](lab_theses.md) ・ [HCP の前提知識](../hcp_background.md)
 
-論文の読解メモ。PDF実体は `literature/`（Google Drive管理）を参照。
+このフォルダには，先行研究が**本研究にとって何を意味するか**だけを置く。
 
 ## 収録
 
-| ファイル | 論文 | 位置づけ |
-|---|---|---|
-| [blocki2017_towards_human_computable_passwords.md](blocki2017_towards_human_computable_passwords.md) | Blocki, Blum, Datta, Vempala, "Towards Human Computable Passwords", ITCS 2017 | **原論文**。HCP方式・関数族 $`f_{k_1,k_2}`$・安全性パラメータ $s(f)$・UF-RCAゲームを定義 |
-| [ogawa2025_learning_hcp_neural_models.md](ogawa2025_learning_hcp_neural_models.md) | Ogawa, Ikeda, Sakurai, "Learning Human-Computable Passwords: What Makes Them Hard (or Easy) for Neural Models?" | **直接の先行研究**。CNN/Bi-LSTM/MLPによる学習ベース攻撃。経路Bとほぼ同一の結論を先に取得 |
-| [kachi2025_lagrange_interpolation_hcp.md](kachi2025_lagrange_interpolation_hcp.md) | Kachi, Viglietta, Sakurai, "Applying Lagrange Interpolation to Polynomial Expressions of Human-Computable Functions", SCIS 2025 | **理論的裏付け**。$f$ を $`\mathbb{F}_{11}`$ 上の多項式として明示的に表現 |
-| [related_work_survey.md](related_work_survey.md) | 関連研究の調査（2026-10-18） | **被引用・派生方式・攻撃理論の洗い出し**。Murata ら（WISA 2022）が学習ベース評価の査読付き先行研究であること，$`f_{k_1,k_2}`$ に代わる関数族は無いことを確認 |
+| ファイル | 中身 |
+|---|---|
+| [lab_theses.md](lab_theses.md) | **研究室の先行研究と本研究の位置づけ**。系譜の表，先行研究の観察を経路Cの結果で説明する対応表，評価手順の突き合わせ |
+| [related_work_survey.md](related_work_survey.md) | **関連研究の調査**。原論文・加地ら・小川らとの対応，被引用・派生方式・攻撃理論の洗い出し |
 
 ## 文献の管理
 
@@ -27,9 +25,9 @@
 | 論文ノート・検索の記録・候補の選別（採否と理由） | 個人の非公開の保管庫（Obsidian） |
 | 関連研究の位置づけ | [related_work_survey.md](related_work_survey.md)（このリポジトリ） |
 | 論文で引用する参考文献 | `references.bib`（Zotero の「HCP」コレクションから自動で書き出す。このリポジトリ） |
-| 既存の読解メモ（下の「収録」） | このリポジトリ |
+| 各論文に書いてある事実（手法・条件・数値・著者の結論） | 個人の非公開の保管庫の論文ノート |
 
-## 3本の関係
+## 研究の関係
 
 ```
         Blocki et al. 2017（原論文）
@@ -42,20 +40,22 @@
              │     → j項があることで f が非自明に絡み合った代数構造を持つことを示す
              │     （σ は扱わない）
              │
-             └──▶ 小川ら 2025（実証方向）
-                   f∘σ を学習ベース攻撃で評価（CNN/Bi-LSTM/MLP）
-                   → no-j ablation で「j項こそが学習耐性の主因」を実証
+             └──▶ 研究室の系譜（実証方向。MLP → LSTM → 埋め込み+BiLSTM → 埋め込み+CNN）
+                   f∘σ を学習ベース攻撃で評価
+                   → 小川ら（英語論文の原稿）: j 項を除くと学習できる → j 項が耐性の主因
                    → 将来課題として Transformer / self-attention を名指し
                         │
                         └──▶ 本研究
-                              経路B（FT）: 小川らの知見をLLM微調整で再現（収束的証拠）
-                              経路A（in-context）: 小川らが残した空白を埋める
+                              経路C（1から学習した Transformer）: N=26 で j 項を解く。
+                                離陸は鍵の数字の偏りで決まり，N≈100 の壁は鍵の分布の側
+                              経路B（FT）: 小川らの知見を LLM 微調整で再現（収束的証拠）
+                              経路A（in-context）: 小川らの枠組みの外（σ の復元）
 ```
 
 ## 本研究にとっての要点3行
 
 1. **Stage 2（規則開示・鍵非開示）は恣意的な設定ではない** — 原論文のPassword Unforgeabilityゲーム（"The adversary is given the function f"）と厳密に一致する。
-2. **経路Bの結論は新発見ではなく追試** — 小川ら(2025)がCNN/LSTMで既に同一の結論（j項＝動的参照だけが崩壊の原因）を得ている。新規性は経路A以降に置く。
+2. **新規性は経路Cの仕組みの特定に置く** — 経路Bの結論（$`j`$ 項＝動的参照が崩壊の原因）は小川らと同じ知見である。経路Cは，先行研究に混ざっていた鍵の違いを取り出し，離陸と $`N`$ の壁が鍵の分布で決まることを示した（[lab_theses.md](lab_theses.md)）。
 3. **$`k_2`$（最後の加算項）が安全性を担う** — $s(f)$ の式がそれを示しており，これは2026年8月に発見した「足し算のない関数では鍵の偏りがレスポンス分布に漏れる」現象の理論的裏付けになる。
 
 ---

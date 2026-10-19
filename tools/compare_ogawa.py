@@ -5,7 +5,7 @@
     python3 tools/compare_ogawa.py --md      # docs に貼る markdown
 
 小川らの数値は英語論文 PDF の Table 3/4/5/6 から写した（2026-09-27 に原典確認）。
-出所は docs/literature/ogawa2025_learning_hcp_neural_models.md §3.3。
+出所は英語論文の原稿（未公開，2026年5月版）の Table 3〜6。
 
 **揃っている条件**: 鍵サイズ $N$，データ量，関数，10クラス分類，鍵は run ごとに独立生成。
 **揃っていない条件**:
