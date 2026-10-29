@@ -44,3 +44,54 @@ def first_order_signal(P, k1, k2):
         mix = q[:, i, None, None] * shifts + (1 - q[:, i, None, None]) * Pz[:, None, :]
         total = total + (HPz - (P * _H(mix)).sum(-1))
     return total, Pz.max(-1)
+
+
+def _conv(a, b):
+    r"""$\mathbb{Z}_{10}$ 上の巡回畳み込み（最後の軸）．"""
+    return np.clip(np.real(np.fft.ifft(np.fft.fft(a, axis=-1) * np.fft.fft(b, axis=-1), axis=-1)), 0, None)
+
+
+def _cond_z(p, k1, k2, fixed):
+    r"""位置→数字の割り当て fixed（高々数個）のもとでの $P(z \mid D_S)$（長さ10）．"""
+    ptr = range(10, 10 + k1)
+    add = range(10 + k1, 10 + k1 + k2)
+    pj = np.eye(10)[0]
+    for i in ptr:
+        pj = _conv(pj, np.eye(10)[fixed[i]] if i in fixed else p)
+    rest = np.eye(10)[0]
+    for i in add:
+        rest = _conv(rest, np.eye(10)[fixed[i]] if i in fixed else p)
+    out = np.zeros(10)
+    for j in range(10):
+        if pj[j] > 0:
+            out += pj[j] * _conv(np.eye(10)[fixed[j]] if j in fixed else p, rest)
+    return out
+
+
+def efron_stein_weights(p, k1, k2):
+    r"""鍵の数字分布 p から，$f_{k_1,k_2}$ の答え（one-hot）の分散を次数ごとに分けた重み．
+
+    各位置の数字 $D_i$ は p に i.i.d. に従うので，$p$ に関して直交する分解
+    （Efron–Stein，一様でない入力でのフーリエ展開）が使える．1次は1つの位置だけで
+    説明できる分散，2次は2つの位置の組で初めて現れる分散である．
+    一様な p では $r(f)=k_2+1$ 未満の次数の重みが0になる（原論文 Theorem 3）．
+
+    戻り値: (W1, W2, W2 のうちポインタ項の位置を含む組の分)．
+    """
+    p = np.asarray(p, float)
+    pz = _cond_z(p, k1, k2, {})
+    h1 = {a: np.stack([_cond_z(p, k1, k2, {a: u}) for u in range(10)]) for a in range(14)}
+    W1 = sum((p[:, None] * (h1[a] - pz) ** 2).sum() for a in range(14))
+    W2 = W2ptr = 0.0
+    ptr = set(range(10, 10 + k1))
+    for a in range(14):
+        for b in range(a + 1, 14):
+            w = 0.0
+            for u in range(10):
+                for v in range(10):
+                    h = _cond_z(p, k1, k2, {a: u, b: v}) - h1[a][u] - h1[b][v] + pz
+                    w += p[u] * p[v] * (h ** 2).sum()
+            W2 += w
+            if a in ptr or b in ptr:
+                W2ptr += w
+    return W1, W2, W2ptr
