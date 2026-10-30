@@ -45,7 +45,8 @@ DRY_RUN = os.environ.get("HCP_DRY_RUN") == "1"
 _INIT_SEED_ORIGIN = 700  # init_index の原点（--init_seed_base の既定値）
 
 
-def make_dataset(algorithm, datasize: int, seed: int, tile: int = 1, balanced: bool = False):
+def make_dataset(algorithm, datasize: int, seed: int, tile: int = 1, balanced: bool = False,
+                 digit_perm=None):
     """鍵とチャレンジを seed から独立に引く．
 
     小川らも「$\\sigma$ は実行ごとに独立生成」としている（多対一写像であり
@@ -72,6 +73,10 @@ def make_dataset(algorithm, datasize: int, seed: int, tile: int = 1, balanced: b
         key = np.tile(rng.integers(0, 10, algorithm.key_size // tile), tile).tolist()
     else:
         key = rng.integers(0, 10, algorithm.key_size).tolist()
+    if digit_perm is not None:
+        # 数字の付け替え（実験C6）: 鍵の数字 d を digit_perm[d] に置き換える。どの位置どうしが
+        # 同じ数字かとヒストグラムの形は変わらない。乱数は消費しないので，チャレンジは元の鍵と同じになる
+        key = [int(digit_perm[d]) for d in key]
     n_values = algorithm.challenge_domain()
     challenges = rng.integers(0, n_values, (datasize, algorithm.challenge_len))
     z = np.array(
@@ -150,7 +155,8 @@ def one_run(args, algorithm, run_index: int) -> dict:
     # （2026-09-28 修正。分解の集計が全ブロックを1列に潰していた）。
     init_index = init_seed - _INIT_SEED_ORIGIN
 
-    x, y, key = make_dataset(algorithm, args.datasize, key_seed, args.tile_key, args.balanced_key)
+    x, y, key = make_dataset(algorithm, args.datasize, key_seed, args.tile_key, args.balanced_key,
+                             args.digit_perm_parsed)
     (xtr, ytr), (xva, yva), (xte, yte) = split_8_1_1(x, y, key_seed)
 
     # 鍵とデータを引き終えてから初期化の seed を置く（順序を変えると
@@ -206,6 +212,7 @@ def one_run(args, algorithm, run_index: int) -> dict:
         "key": key,
         "tile_key": args.tile_key,
         "balanced_key": args.balanced_key,
+        "digit_perm": args.digit_perm,
         "datasize": args.datasize,
         "epochs": args.epochs,
         "batch_size": args.batch_size,
@@ -255,6 +262,9 @@ def main():
     ap.add_argument("--balanced_key", action="store_true",
                     help="0〜9 を同じ個数ずつ持つ鍵を seed で並べ替えて作る（実験C5 のそろえた鍵）。"
                          "key_size は 10 の倍数に限る")
+    ap.add_argument("--digit_perm", type=str, default=None,
+                    help="生成した鍵の数字 d を digit_perm[d] に付け替える（実験C6）。"
+                         "0〜9 の並べ替えを10桁の文字列で渡す（例: 3012456789）")
     ap.add_argument("--d_model", type=int, default=64)
     ap.add_argument("--num_heads", type=int, default=4)
     ap.add_argument("--num_layers", type=int, default=2)
@@ -268,6 +278,11 @@ def main():
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args()
 
+    args.digit_perm_parsed = None
+    if args.digit_perm is not None:
+        if sorted(args.digit_perm) != list("0123456789"):
+            ap.error(f"--digit_perm は 0〜9 の並べ替えでなければならない: {args.digit_perm}")
+        args.digit_perm_parsed = [int(c) for c in args.digit_perm]
     if args.key_seeds:
         args.key_seeds_parsed = [int(s) for s in args.key_seeds.split(",")]
         args.n_keys = len(args.key_seeds_parsed)
