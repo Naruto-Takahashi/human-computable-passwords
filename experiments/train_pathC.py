@@ -45,7 +45,7 @@ DRY_RUN = os.environ.get("HCP_DRY_RUN") == "1"
 _INIT_SEED_ORIGIN = 700  # init_index の原点（--init_seed_base の既定値）
 
 
-def make_dataset(algorithm, datasize: int, seed: int, tile: int = 1):
+def make_dataset(algorithm, datasize: int, seed: int, tile: int = 1, balanced: bool = False):
     """鍵とチャレンジを seed から独立に引く．
 
     小川らも「$\\sigma$ は実行ごとに独立生成」としている（多対一写像であり
@@ -56,7 +56,15 @@ def make_dataset(algorithm, datasize: int, seed: int, tile: int = 1):
     「この初期値が当たり」なのかを切り分けられなかった（実験5b・7 と同じ穴）．
     """
     rng = np.random.default_rng(seed)
-    if tile > 1:
+    if balanced and tile > 1:
+        raise ValueError("balanced と tile は同時に指定できない")
+    if balanced:
+        # そろえた鍵（実験C5）: 0〜9 を key_size/10 個ずつ並べ，seed で位置を並べ替える。
+        # 数字の分布が厳密に一様になり，k2+1 個未満の位置と答えが無相関になる
+        if algorithm.key_size % 10:
+            raise ValueError(f"key_size {algorithm.key_size} は 10 で割り切れない")
+        key = rng.permutation(np.repeat(np.arange(10), algorithm.key_size // 10)).tolist()
+    elif tile > 1:
         # 双子の鍵（実験C3）: 長さ key_size/tile の鍵を tile 回並べる。最初に引く数が
         # 同じなので，同じ seed の N=key_size/tile の鍵と数字の並びが完全に一致する
         if algorithm.key_size % tile:
@@ -142,7 +150,7 @@ def one_run(args, algorithm, run_index: int) -> dict:
     # （2026-09-28 修正。分解の集計が全ブロックを1列に潰していた）。
     init_index = init_seed - _INIT_SEED_ORIGIN
 
-    x, y, key = make_dataset(algorithm, args.datasize, key_seed, args.tile_key)
+    x, y, key = make_dataset(algorithm, args.datasize, key_seed, args.tile_key, args.balanced_key)
     (xtr, ytr), (xva, yva), (xte, yte) = split_8_1_1(x, y, key_seed)
 
     # 鍵とデータを引き終えてから初期化の seed を置く（順序を変えると
@@ -197,6 +205,7 @@ def one_run(args, algorithm, run_index: int) -> dict:
         "n_images": algorithm.challenge_domain(),
         "key": key,
         "tile_key": args.tile_key,
+        "balanced_key": args.balanced_key,
         "datasize": args.datasize,
         "epochs": args.epochs,
         "batch_size": args.batch_size,
@@ -243,6 +252,9 @@ def main():
     ap.add_argument("--tile_key", type=int, default=1,
                     help="鍵を key_size/tile_key 桁で引き，tile_key 回並べる（実験C3 の双子の鍵）。"
                          "数字の分布が N=key_size/tile_key の同じ seed の鍵と厳密に一致する")
+    ap.add_argument("--balanced_key", action="store_true",
+                    help="0〜9 を同じ個数ずつ持つ鍵を seed で並べ替えて作る（実験C5 のそろえた鍵）。"
+                         "key_size は 10 の倍数に限る")
     ap.add_argument("--d_model", type=int, default=64)
     ap.add_argument("--num_heads", type=int, default=4)
     ap.add_argument("--num_layers", type=int, default=2)
