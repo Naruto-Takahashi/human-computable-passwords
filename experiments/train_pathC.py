@@ -165,16 +165,21 @@ def one_run(args, algorithm, run_index: int) -> dict:
 
     steps_per_epoch = -(-len(xtr) // args.batch_size)  # ceil
     warmup_steps = round(args.warmup_epochs * steps_per_epoch)
-    model = Models.embed_transformer(          # 欠陥1: run ごとに新規構築
-        n_images=algorithm.challenge_domain(),
-        d_model=args.d_model,
-        num_heads=args.num_heads,
-        num_layers=args.num_layers,
-        ff_dim=args.ff_dim,
-        readout=args.readout,
-        learning_rate=args.learning_rate,
-        warmup_steps=warmup_steps,
-    )
+    if args.model == "cnn":
+        # 小川らの埋め込み＋CNN（実験C7）。学習率は原典どおり Adam の既定（1e-3）で，
+        # 構成の引数（d_model など）は使わない
+        model = Models.embed_cnn(n_images=algorithm.challenge_domain(), summary=False)
+    else:
+        model = Models.embed_transformer(          # 欠陥1: run ごとに新規構築
+            n_images=algorithm.challenge_domain(),
+            d_model=args.d_model,
+            num_heads=args.num_heads,
+            num_layers=args.num_layers,
+            ff_dim=args.ff_dim,
+            readout=args.readout,
+            learning_rate=args.learning_rate,
+            warmup_steps=warmup_steps,
+        )
     n_params = int(model.count_params())
 
     to_cat = keras.utils.to_categorical
@@ -203,6 +208,7 @@ def one_run(args, algorithm, run_index: int) -> dict:
 
     return {
         "algorithm": algorithm.name,
+        "model": args.model,
         "run_index": run_index,
         "key_seed": key_seed,
         "init_seed": init_seed,
@@ -265,6 +271,9 @@ def main():
     ap.add_argument("--digit_perm", type=str, default=None,
                     help="生成した鍵の数字 d を digit_perm[d] に付け替える（実験C6）。"
                          "0〜9 の並べ替えを10桁の文字列で渡す（例: 3012456789）")
+    ap.add_argument("--model", default="transformer", choices=("transformer", "cnn"),
+                    help="cnn は小川らの埋め込み＋CNN（実験C7）。--d_model から --warmup_epochs までは"
+                         "使わない（学習率も Adam の既定 1e-3 で固定）")
     ap.add_argument("--d_model", type=int, default=64)
     ap.add_argument("--num_heads", type=int, default=4)
     ap.add_argument("--num_layers", type=int, default=2)
@@ -277,6 +286,8 @@ def main():
     ap.add_argument("--experiment", default="C1pre0", help="results/ の仕分け用ラベル")
     ap.add_argument("--verbose", action="store_true")
     args = ap.parse_args()
+    if args.model == "cnn" and (args.learning_rate != 1e-3 or args.warmup_epochs):
+        ap.error("--model cnn は学習率 1e-3・warmup なしで固定（小川らの原典どおり）")
 
     args.digit_perm_parsed = None
     if args.digit_perm is not None:
@@ -294,6 +305,7 @@ def main():
 
     print(f"条件: {len(algorithms)} 関数 × {args.runs} run = "
           f"{len(algorithms) * args.runs} run")
+    print(f"  モデル: {args.model}")
     for a in algorithms:
         print(f"  {a.name}: 鍵{a.key_size}マス, 値域 0〜{a.challenge_domain() - 1}")
     if DRY_RUN:

@@ -183,8 +183,10 @@ class Models:
 
     @staticmethod
     # 埋め込み層 (Embedding) と 1次元畳み込み層 (Conv1D) を組み合わせたCNNモデル
-    def embed_cnn() -> Model:
-        N = 26  # ユーザーの記憶情報 (画像数)
+    def embed_cnn(n_images: int = 26, summary: bool = True) -> Model:
+        # 小川ら(2025) の卒論の付録のコードと同じ構成。原典は語彙数を26に固定していたので，
+        # 実験C7 で N を渡せるようにした（既定は原典のまま）
+        N = n_images  # ユーザーの記憶情報 (画像数)
         inputs = Input(shape=(14,))
         embedding = Embedding(input_dim=N, output_dim=3)(inputs)
         conv = Conv1D(filters=32, kernel_size=3, activation="relu")(embedding)
@@ -198,7 +200,8 @@ class Models:
         model.compile(
             loss="categorical_crossentropy", optimizer="Adam", metrics=["accuracy"]
         )
-        model.summary()
+        if summary:
+            model.summary()
         return model
 
     @staticmethod
