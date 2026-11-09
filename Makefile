@@ -139,7 +139,7 @@ REPORT_DIR := docs/reports
 REPORT_TPL := $(REPORT_DIR)/template.typ
 REPORT_OUT := $(REPORT_DIR)/pdf
 REPORT_PORT ?= 8765
-SEND_TO ?= surface-pro
+SEND_TO ?= macbook-pro
 
 REPORT_MDS  := $(sort $(wildcard $(REPORT_DIR)/weekly_report_*.md))
 REPORT_PDFS := $(patsubst $(REPORT_DIR)/%.md,$(REPORT_OUT)/%.pdf,$(REPORT_MDS))
