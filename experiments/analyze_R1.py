@@ -68,11 +68,13 @@ def load_units(exp, keep=lambda r: True):
             if (fn is None or r.get("model", "transformer") != "transformer"
                     or r["init_seed"] not in INITS or not keep(r)):
                 continue
+            # C5 のそろえた鍵とランダムな鍵は seed が同じなので balanced_key でも分ける
             uid = (exp, r["algorithm"], r["key_seed"], r.get("digit_perm"), r.get("tile_key", 1),
-                   r["epochs"], r["datasize"])
+                   bool(r.get("balanced_key")), r["epochs"], r["datasize"])
             u = units[uid]
             u.update(exp=exp, func=fn, algorithm=r["algorithm"], key_seed=r["key_seed"],
                      digit_perm=r.get("digit_perm"), tile=r.get("tile_key", 1), n=r["n_images"],
+                     balanced=bool(r.get("balanced_key")),
                      key=r["key"], baseline=r["baseline_majority_val"])
             u["vals"][r["init_seed"]] = r["val_accuracy_max"]
     out = []
@@ -195,12 +197,12 @@ def evaluate():
     D = load_units("C2") + load_units("C2_1")
     arm = {}
     for algo, d in json.load(open(os.path.join(REPO, "results/path_c/C5_keys.json"))).items():
-        for name in ("balanced", "random", "skewed"):
+        for name in ("random", "skewed"):
             for k in d[name]:
                 arm[(algo, k["key_seed"])] = name
     C5 = load_units("C5")
     for u in C5:
-        u["arm"] = arm[(u["algorithm"], u["key_seed"])]
+        u["arm"] = "balanced" if u["balanced"] else arm[(u["algorithm"], u["key_seed"])]
     C6 = load_units("C6")
     C3 = load_units("C3", keep=lambda r: r["n_images"] == 104 and r["epochs"] == 100)
 
